@@ -3,6 +3,16 @@ import {io} from "cucumber-messages";
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
 import IFeature = io.cucumber.messages.IFeature;
 import IScenario = io.cucumber.messages.IScenario;
+import styled from 'styled-components';
+
+const Keyword = styled.span`
+    color: green;
+`
+
+const Name = styled.span`
+    color: blue;
+`
+
 
 export interface GherkinProps {
     gherkinDocument: IGherkinDocument
@@ -21,7 +31,7 @@ interface FeatureProps {
 
 const Feature = ({feature}: FeatureProps) => {
     return <div>
-        <h2 className="feature"><span className="keyword">{feature.keyword}: </span><span className="name">{feature.name}</span></h2>
+        <h2 className="feature"><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h2>
         {feature.children.map((child) => {
             if (child.scenario) {
                 return <Scenario scenario={child.scenario} />
