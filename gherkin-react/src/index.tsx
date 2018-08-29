@@ -1,17 +1,16 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Gherkin } from "./components/Gherkin";
+import {GherkinDocument} from "./components/GherkinDocument";
 import {io} from "cucumber-messages";
-const {GherkinDocument, Feature} = io.cucumber.messages;
+import readWrapper from "./readWrapper";
 
-const gherkinDocument = GherkinDocument.create({
-    feature: Feature.create({
-        name: "Hello"
-    })
-})
+const data = document.getElementById("messages").innerText;
+const wrapper = readWrapper(data)
 
-ReactDOM.render(
-    <Gherkin gherkinDocument={gherkinDocument} />,
-    document.getElementById("example")
-);
+if(wrapper.gherkinDocument) {
+    ReactDOM.render(
+        <GherkinDocument gherkinDocument={wrapper.gherkinDocument}/>,
+        document.getElementById("example")
+    );    
+}

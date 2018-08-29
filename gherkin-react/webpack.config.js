@@ -1,13 +1,29 @@
-module.exports = {
-  entry: './dist/index.js',
-  output: {
-    filename: 'bundle.js',
-    path: __dirname + '/dist',
-  },
+const path = require('path')
 
+module.exports = {
+  entry: {
+    'gherkin-react': './src/index.tsx',
+    'gherkin-react.min': './src/index.tsx',
+  },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].js',
+    libraryTarget: 'umd',
+    library: 'GherkinReact',
+    umdNamedDefine: true,
+  },
+  optimization: {
+    minimize: false,
+  },
   // Enable sourcemaps for debugging webpack's output.
   devtool: 'source-map',
-
+  // plugins: [
+  //   new webpack.optimize.UglifyJsPlugin({
+  //     minimize: true,
+  //     sourceMap: true,
+  //     include: /\.min\.js$/,
+  //   }),
+  // ],
   resolve: {
     // Add '.ts' and '.tsx' as resolvable extensions.
     extensions: ['.ts', '.tsx', '.js', '.json'],
@@ -16,7 +32,14 @@ module.exports = {
   module: {
     rules: [
       // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-      { test: /\.tsx?$/, loader: 'awesome-typescript-loader' },
+      {
+        test: /\.tsx?$/,
+        loader: 'awesome-typescript-loader',
+        exclude: /node_modules/,
+        query: {
+          declaration: false,
+        },
+      },
 
       // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
