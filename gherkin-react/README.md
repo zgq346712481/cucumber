@@ -15,7 +15,7 @@ Render GherkinDocument documents with React:
 
 Update messages:
 
-    ../gherkin/go/bin/gherkin --no-source --no-pickles testdata/test.feature | base64 | pbcopy
+    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/test.feature | base64 | pbcopy
     # Paste into `#messages` in `index.html`.
 
 Take a gander:
