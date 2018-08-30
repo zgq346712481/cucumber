@@ -1,4 +1,6 @@
 import {io} from "cucumber-messages";
+import {array} from "prop-types";
+import * as protobuf from "protobufjs/minimal";
 import IWrapper = io.cucumber.messages.IWrapper;
 import Wrapper = io.cucumber.messages.Wrapper;
 
@@ -13,7 +15,12 @@ function convertDataURIToBinary(base64: string): Uint8Array {
     return array;
 }
 
-export default function readWrapper(data: string | Uint8Array): IWrapper {
+export default function eachWrapper(data: string | Uint8Array, fn: (wrapper: IWrapper) => void) {
     const array: Uint8Array = typeof data === 'string' ? convertDataURIToBinary(data) : data;
-    return Wrapper.decodeDelimited(array)
+    const reader = protobuf.BufferReader.create(array)
+    while (true) {
+        const wrapper = Wrapper.decodeDelimited(reader)
+        if (!wrapper) break
+        fn(wrapper)
+    }
 }
