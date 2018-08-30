@@ -153,3 +153,9 @@ in the "Cucumber Open Source" vault.
 
 The images are published [in the cucumber repository section at
 Docker Hub](https://hub.docker.com/r/cucumber/).
+
+### Go
+
+Speed up the build by only cross-compiling for a single (your) platform:
+
+    export GOX_FLAGS='-osarch="darwin/amd64"'
