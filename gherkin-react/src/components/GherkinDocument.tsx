@@ -5,8 +5,12 @@ import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
 import IFeature = io.cucumber.messages.IFeature;
 import IRule = io.cucumber.messages.IRule;
 import IBackground = io.cucumber.messages.IBackground;
+import IExamples = io.cucumber.messages.IExamples;
 import IScenario = io.cucumber.messages.IScenario;
 import IStep = io.cucumber.messages.IStep;
+import IDataTable = io.cucumber.messages.IDataTable;
+import ITableRow = io.cucumber.messages.ITableRow;
+import ITag = io.cucumber.messages.ITag;
 
 const Keyword = styled.span`
     color: green;
@@ -22,6 +26,22 @@ const StepText = styled.span`
 
 const StepList = styled.ol`
     list-style-type: none;
+`
+
+const TagList = styled.ul`
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+`
+
+const Tag = styled.li`
+    float: left;
+    display: block;
+    color: red;
+    text-align: center;
+    padding: 2px;
+    text-decoration: none;
 `
 
 export interface GherkinProps {
@@ -41,14 +61,15 @@ interface FeatureProps {
 
 const Feature = ({feature}: FeatureProps) => {
     return <div>
-        <h2 className="feature"><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h2>
+        <Tags tags={feature.tags}/>
+        <h2><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h2>
         {feature.children.map((child, index) => {
             if (child.background) {
-                return <Background key={`background-${index}`} background={child.background}/>
+                return <Background key={index} background={child.background}/>
             } else if (child.scenario) {
-                return <Scenario key={`scenario-${index}`} scenario={child.scenario}/>
+                return <Scenario key={index} scenario={child.scenario}/>
             } else if (child.rule) {
-                return <Rule key={`rule-${index}`} rule={child.rule}/>
+                return <Rule key={index} rule={child.rule}/>
             }
         })}
     </div>
@@ -60,12 +81,12 @@ interface RuleProps {
 
 const Rule = ({rule}: RuleProps) => {
     return <div>
-        <h3 className="rule"><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h3>
+        <h3><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h3>
         {rule.children.map((child, index) => {
             if (child.background) {
-                return <Background key={`background-${index}`} background={child.background}/>
+                return <Background key={index} background={child.background}/>
             } else if (child.scenario) {
-                return <Scenario key={`scenario-${index}`} scenario={child.scenario}/>
+                return <Scenario key={index} scenario={child.scenario}/>
             }
         })}
     </div>
@@ -77,11 +98,21 @@ interface BackgroundProps {
 
 const Background = ({background}: BackgroundProps) => {
     return <div>
-        <h3 className="background"><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h3>
+        <h3><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h3>
         <StepList>
-            {background.steps.map((step, index) => <Step key={`step-${index}`} step={step}/>)}
+            {background.steps.map((step, index) => <Step key={index} step={step}/>)}
         </StepList>
     </div>
+};
+
+interface TagProps {
+    tags: ITag[]
+}
+
+const Tags = ({tags}: TagProps) => {
+    return <TagList>
+        {tags.map((tag, index) => <Tag key={index}>{tag.name}</Tag>)}
+    </TagList>
 };
 
 interface ScenarioProps {
@@ -90,10 +121,25 @@ interface ScenarioProps {
 
 const Scenario = ({scenario}: ScenarioProps) => {
     return <div>
-        <h3 className="scenario"><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h3>
+        <Tags tags={scenario.tags}/>
+        <h3><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h3>
         <StepList>
-            {scenario.steps.map((step, index) => <Step key={`step-${index}`} step={step}/>)}
+            {scenario.steps.map((step, index) => <Step key={index} step={step}/>)}
         </StepList>
+
+        {scenario.examples.map((examples, index) => <Examples key={index} examples={examples}/>)}
+    </div>
+};
+
+interface ExamplesProps {
+    examples: IExamples
+}
+
+const Examples = ({examples}: ExamplesProps) => {
+    return <div>
+        <Tags tags={examples.tags}/>
+        <h3><Keyword>{examples.keyword}</Keyword>: <Name>{examples.name}</Name></h3>
+        <ExamplesTable tableHeader={examples.tableHeader} tableBody={examples.tableBody}/>
     </div>
 };
 
@@ -102,5 +148,43 @@ interface StepProps {
 }
 
 const Step = ({step}: StepProps) => {
-    return <li><Keyword>{step.keyword}</Keyword><StepText>{step.text}</StepText></li>
+    return <li>
+        <Keyword>{step.keyword}</Keyword><StepText>{step.text}</StepText>
+        {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
+    </li>
 };
+
+interface ExamplesTableProps {
+    tableHeader: ITableRow
+    tableBody: ITableRow[]
+}
+
+const ExamplesTable = ({tableHeader, tableBody}: ExamplesTableProps) => {
+    return <table>
+        <thead>
+        <tr>
+            {tableHeader.cells.map((cell, j) => <th key={j}>{cell.value}</th>)}
+        </tr>
+        </thead>
+        <tbody>
+        {tableBody.map((row, i) => <tr key={i}>
+            {row.cells.map((cell, j) => <td key={j}>{cell.value}</td>)}
+        </tr>)}
+        </tbody>
+    </table>
+};
+
+interface DataTableProps {
+    dataTable: IDataTable
+}
+
+const DataTable = ({dataTable}: DataTableProps) => {
+    return <table>
+        <tbody>
+        {dataTable.rows.map((row, i) => <tr key={i}>
+            {row.cells.map((cell, j) => <td key={j}>{cell.value}</td>)}
+        </tr>)}
+        </tbody>
+    </table>
+};
+    
