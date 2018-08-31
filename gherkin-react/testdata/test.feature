@@ -1,8 +1,13 @@
 # A
 Feature: A
+  The feature
+  description
 
 # B
 Background: B
+  The background
+  description
+
   Given b
     | text | number |
     | a    |     10 |

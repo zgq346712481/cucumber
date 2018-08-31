@@ -12,20 +12,51 @@ import IDataTable = io.cucumber.messages.IDataTable;
 import ITableRow = io.cucumber.messages.ITableRow;
 import ITag = io.cucumber.messages.ITag;
 
+const GherkinDocumentWrapper = styled.section`
+    font-family: Arial;
+    color: #113654;
+
+    h1 { font-size: 24px;}
+    h2 { font-size: 22px;}
+    h3 { font-size: 18px;}
+    h4 { font-size: 16px;}
+    h5 { font-size: 12px;}
+    h6 { font-size: 10px;}    
+    section {
+      padding-left: 12pt;
+      
+      h1, h2, h3 {
+        padding: 0;
+        margin-top: 4pt;
+        margin-bottom: 2pt;
+      }
+    }
+`
+
+const DescriptionDiv = styled.div`
+      padding-left: 12pt;
+`
+
 const Keyword = styled.span`
-    color: green;
+    font-weight: bold;
+    color: #072a80;
 `
 
 const Name = styled.span`
-    color: blue;
+    color: #0741c7;
 `
 
 const StepText = styled.span`
-    color: lightblue;
 `
 
 const StepList = styled.ol`
     list-style-type: none;
+    padding-left: 0;
+    margin-top: 2pt;
+
+    li {
+        margin-left: 12pt;
+    }
 `
 
 const TagList = styled.ul`
@@ -38,10 +69,25 @@ const TagList = styled.ul`
 const Tag = styled.li`
     float: left;
     display: block;
-    color: red;
+    color: #0741c7;
     text-align: center;
     padding: 2px;
     text-decoration: none;
+`
+
+const TableTag = styled.table`
+  border-collapse: collapse;
+  margin-left: 12pt;
+  margin-top: 2pt;
+  
+  th, td {
+    border: 1px solid #ccc;
+    
+    pre {
+      margin: 0;
+      padding: 2pt;
+    }
+  }
 `
 
 export interface GherkinProps {
@@ -49,10 +95,9 @@ export interface GherkinProps {
 }
 
 export const GherkinDocument = ({gherkinDocument}: GherkinProps) => {
-    if (!gherkinDocument.feature) {
-        return <div>No feature</div>
-    }
-    return <Feature feature={gherkinDocument.feature}/>
+    return <GherkinDocumentWrapper>
+        {gherkinDocument.feature ? <Feature feature={gherkinDocument.feature}/> : <div>Empty Gherkin document :-(</div>}
+    </GherkinDocumentWrapper>
 };
 
 interface FeatureProps {
@@ -60,9 +105,10 @@ interface FeatureProps {
 }
 
 const Feature = ({feature}: FeatureProps) => {
-    return <div>
+    return <section>
         <Tags tags={feature.tags}/>
-        <h2><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h2>
+        <h1><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h1>
+        <Description description={feature.description}/>
         {feature.children.map((child, index) => {
             if (child.background) {
                 return <Background key={index} background={child.background}/>
@@ -72,16 +118,25 @@ const Feature = ({feature}: FeatureProps) => {
                 return <Rule key={index} rule={child.rule}/>
             }
         })}
-    </div>
+    </section>
 };
+
+interface DescriptionProps {
+    description: string
+}
+
+const Description = ({description}: DescriptionProps) => {
+    return description ? <DescriptionDiv>{description}</DescriptionDiv> : null
+}
 
 interface RuleProps {
     rule: IRule
 }
 
 const Rule = ({rule}: RuleProps) => {
-    return <div>
-        <h3><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h3>
+    return <section>
+        <h2><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h2>
+        <Description description={rule.description}/>
         {rule.children.map((child, index) => {
             if (child.background) {
                 return <Background key={index} background={child.background}/>
@@ -89,7 +144,7 @@ const Rule = ({rule}: RuleProps) => {
                 return <Scenario key={index} scenario={child.scenario}/>
             }
         })}
-    </div>
+    </section>
 };
 
 interface BackgroundProps {
@@ -97,12 +152,13 @@ interface BackgroundProps {
 }
 
 const Background = ({background}: BackgroundProps) => {
-    return <div>
-        <h3><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h3>
+    return <section>
+        <h2><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h2>
+        <Description description={background.description}/>
         <StepList>
             {background.steps.map((step, index) => <Step key={index} step={step}/>)}
         </StepList>
-    </div>
+    </section>
 };
 
 interface TagProps {
@@ -120,15 +176,16 @@ interface ScenarioProps {
 }
 
 const Scenario = ({scenario}: ScenarioProps) => {
-    return <div>
+    return <section>
         <Tags tags={scenario.tags}/>
-        <h3><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h3>
+        <h2><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h2>
+        <Description description={scenario.description}/>
         <StepList>
             {scenario.steps.map((step, index) => <Step key={index} step={step}/>)}
         </StepList>
 
         {scenario.examples.map((examples, index) => <Examples key={index} examples={examples}/>)}
-    </div>
+    </section>
 };
 
 interface ExamplesProps {
@@ -136,11 +193,12 @@ interface ExamplesProps {
 }
 
 const Examples = ({examples}: ExamplesProps) => {
-    return <div>
+    return <section>
         <Tags tags={examples.tags}/>
         <h3><Keyword>{examples.keyword}</Keyword>: <Name>{examples.name}</Name></h3>
+        <Description description={examples.description}/>
         <ExamplesTable tableHeader={examples.tableHeader} tableBody={examples.tableBody}/>
-    </div>
+    </section>
 };
 
 interface StepProps {
@@ -160,18 +218,22 @@ interface ExamplesTableProps {
 }
 
 const ExamplesTable = ({tableHeader, tableBody}: ExamplesTableProps) => {
-    return <table>
+    return <TableTag>
         <thead>
         <tr>
-            {tableHeader.cells.map((cell, j) => <th key={j}>{cell.value}</th>)}
+            {tableHeader.cells.map((cell, j) => <th key={j}>
+                <pre>{cell.value}</pre>
+            </th>)}
         </tr>
         </thead>
         <tbody>
         {tableBody.map((row, i) => <tr key={i}>
-            {row.cells.map((cell, j) => <td key={j}>{cell.value}</td>)}
+            {row.cells.map((cell, j) => <td key={j}>
+                <pre>{cell.value}</pre>
+            </td>)}
         </tr>)}
         </tbody>
-    </table>
+    </TableTag>
 };
 
 interface DataTableProps {
@@ -179,12 +241,14 @@ interface DataTableProps {
 }
 
 const DataTable = ({dataTable}: DataTableProps) => {
-    return <table>
+    return <TableTag>
         <tbody>
         {dataTable.rows.map((row, i) => <tr key={i}>
-            {row.cells.map((cell, j) => <td key={j}>{cell.value}</td>)}
+            {row.cells.map((cell, j) => <td key={j}>
+                <pre>{cell.value}</pre>
+            </td>)}
         </tr>)}
         </tbody>
-    </table>
+    </TableTag>
 };
     
