@@ -91,10 +91,11 @@ const TableTag = styled.table`
 `
 
 export interface GherkinDocumentProps {
-    gherkinDocument: IGherkinDocument
+    gherkinDocument?: IGherkinDocument
 }
 
-export const GherkinDocument = ({gherkinDocument}: GherkinDocumentProps) => {
+export const GherkinDocument: React.SFC<GherkinDocumentProps> = ({gherkinDocument}) => {
+    if (!gherkinDocument) return <div>No gherkin doc</div>
     return <GherkinDocumentWrapper>
         {gherkinDocument.feature ? <Feature feature={gherkinDocument.feature}/> :
             <div>Empty Gherkin document :-(</div>}
@@ -107,7 +108,7 @@ interface FeatureProps {
     feature: IFeature
 }
 
-const Feature = ({feature}: FeatureProps) => {
+const Feature: React.SFC<FeatureProps> = ({feature}) => {
     return <section>
         <Tags tags={feature.tags}/>
         <h1><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h1>
@@ -128,7 +129,7 @@ interface DescriptionProps {
     description: string
 }
 
-const Description = ({description}: DescriptionProps) => {
+const Description: React.SFC<DescriptionProps> = ({description}) => {
     return description ? <DescriptionDiv>{description}</DescriptionDiv> : null
 }
 
@@ -136,7 +137,7 @@ interface RuleProps {
     rule: IRule
 }
 
-const Rule = ({rule}: RuleProps) => {
+const Rule: React.SFC<RuleProps> = ({rule}) => {
     return <section>
         <h2><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h2>
         <Description description={rule.description}/>
@@ -154,7 +155,7 @@ interface BackgroundProps {
     background: IBackground
 }
 
-const Background = ({background}: BackgroundProps) => {
+const Background: React.SFC<BackgroundProps> = ({background}) => {
     return <section>
         <h2><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h2>
         <Description description={background.description}/>
@@ -168,7 +169,7 @@ interface TagProps {
     tags: ITag[]
 }
 
-const Tags = ({tags}: TagProps) => {
+const Tags: React.SFC<TagProps> = ({tags}) => {
     return <TagList>
         {tags.map((tag, index) => <Tag key={index}>{tag.name}</Tag>)}
     </TagList>
@@ -178,7 +179,7 @@ interface ScenarioProps {
     scenario: IScenario
 }
 
-const Scenario = ({scenario}: ScenarioProps) => {
+const Scenario: React.SFC<ScenarioProps> = ({scenario}) => {
     return <section>
         <Tags tags={scenario.tags}/>
         <h2><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h2>
@@ -195,7 +196,7 @@ interface ExamplesProps {
     examples: IExamples
 }
 
-const Examples = ({examples}: ExamplesProps) => {
+const Examples: React.SFC<ExamplesProps> = ({examples}) => {
     return <section>
         <Tags tags={examples.tags}/>
         <h3><Keyword>{examples.keyword}</Keyword>: <Name>{examples.name}</Name></h3>
@@ -208,7 +209,7 @@ interface StepProps {
     step: IStep
 }
 
-const Step = ({step}: StepProps) => {
+const Step: React.SFC<StepProps> = ({step}) => {
     return <li>
         <Keyword>{step.keyword}</Keyword><StepText>{step.text}</StepText>
         {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
@@ -220,7 +221,7 @@ interface ExamplesTableProps {
     tableBody: ITableRow[]
 }
 
-const ExamplesTable = ({tableHeader, tableBody}: ExamplesTableProps) => {
+const ExamplesTable: React.SFC<ExamplesTableProps> = ({tableHeader, tableBody}) => {
     return <TableTag>
         <thead>
         <tr>
@@ -243,7 +244,7 @@ interface DataTableProps {
     dataTable: IDataTable
 }
 
-const DataTable = ({dataTable}: DataTableProps) => {
+const DataTable: React.SFC<DataTableProps> = ({dataTable}) => {
     return <TableTag>
         <tbody>
         {dataTable.rows.map((row, i) => <tr key={i}>

@@ -4,10 +4,7 @@ Gherkin-React is a set of React components for rendering Gherkin documents and C
 There is an `App` that renders a navigation pane and a search bar for Gherkin documents, and a
 document pane where the current Gherkin document is rendered.
 
-There is also a `GherkinDocument` component, which is designed to render juse a single document.
-Finally there is a `ScenarioList` component, which will render a list of scenarios. This component
-is particularly useful for rendering relevant scenarios in 3rd-party tools, such as JIRA, Confluence
-and various issue trackers that support plugins.
+There is also a `GherkinDocument` component, which is designed to render just a single document.
 
 Gherkin-React is configured with a message provider, which will stream cucumber messages to the component, which
 will update accordingly. Internally this uses Redux, but this is opaque to the users of the component.
@@ -49,3 +46,12 @@ Update messages:
 Take a gander:
 
     open index.html
+    
+## Ideas
+
+### `ScenarioList` component
+
+A component that renders a list of scenarios (possibly from multiple files, filtered by e.g. tag). 
+
+This component could be used to render relevant scenarios in 3rd-party tools, such as JIRA, Confluence
+and various issue trackers that support plugins.
