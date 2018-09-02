@@ -19,9 +19,13 @@
   "dependencies": {
     "@types/react": "^16.4.12",
     "@types/react-dom": "^16.0.7",
+    "@types/react-redux": "^6.0.6",
     "cucumber-messages": "cucumber/cucumber-messages-javascript",
+    "immutable": "^3.8.2",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
+    "react-redux": "^5.0.7",
+    "simple-redux-websocket-middleware": "0.0.2",
     "styled-components": "^3.4.5"
   },
   "devDependencies": {

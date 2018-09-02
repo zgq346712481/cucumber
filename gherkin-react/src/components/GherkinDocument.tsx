@@ -1,6 +1,6 @@
 import * as React from "react";
-import {io} from "cucumber-messages";
 import styled from 'styled-components';
+import {io} from "cucumber-messages";
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
 import IFeature = io.cucumber.messages.IFeature;
 import IRule = io.cucumber.messages.IRule;
@@ -90,15 +90,18 @@ const TableTag = styled.table`
   }
 `
 
-export interface GherkinProps {
+export interface GherkinDocumentProps {
     gherkinDocument: IGherkinDocument
 }
 
-export const GherkinDocument = ({gherkinDocument}: GherkinProps) => {
+export const GherkinDocument = ({gherkinDocument}: GherkinDocumentProps) => {
     return <GherkinDocumentWrapper>
-        {gherkinDocument.feature ? <Feature feature={gherkinDocument.feature}/> : <div>Empty Gherkin document :-(</div>}
+        {gherkinDocument.feature ? <Feature feature={gherkinDocument.feature}/> :
+            <div>Empty Gherkin document :-(</div>}
     </GherkinDocumentWrapper>
-};
+}
+
+//// INTERNAL
 
 interface FeatureProps {
     feature: IFeature
@@ -251,4 +254,4 @@ const DataTable = ({dataTable}: DataTableProps) => {
         </tbody>
     </TableTag>
 };
-    
+
