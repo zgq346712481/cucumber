@@ -11,18 +11,19 @@ const Container = styled.div`
 `
 
 const Column = styled.div`
-    height: 100%;  /*allows both columns to span the full height of the browser window*/
-    display: flex;
-    flex-direction: column;  /*places the left and right headers above the bottom content*/
+  height: 100%;  /*allows both columns to span the full height of the browser window*/
+  display: flex;
+  flex-direction: column;  /*places the left and right headers above the bottom content*/
 `
 
 const LeftColumn = styled(Column)`
-    flex-shrink: 0;  /*makes sure that content is not cut off in a smaller browser window*/
+  flex-shrink: 0;  /*makes sure that content is not cut off in a smaller browser window*/
   background-color: #072a80;
   color: white;
 `
 
 const RightColumn = styled(Column)`
+  flex-grow: 1;
   background-color: #f3f3f3;
 `
 
