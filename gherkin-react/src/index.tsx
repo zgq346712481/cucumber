@@ -9,6 +9,7 @@ import {dispatchActionsFromStreamedMessages} from "./middlewares/dispatchActions
 import {CucumberGui} from "./components/CucumberGui";
 import uint8ArrayFromBinaryString from "./streams/uint8ArrayFromBinaryString";
 import {ErrorBoundary} from "./components/ErrorBoundary";
+import 'typeface-roboto'
 
 const store = createStore(reducer, applyMiddleware(dispatchActionsFromStreamedMessages))
 

@@ -1,6 +1,12 @@
 import * as React from "react";
 import styled from 'styled-components';
 import {io} from "cucumber-messages";
+import Table from '@material-ui/core/Table';
+import TableHead from '@material-ui/core/TableHead';
+import TableCell from '@material-ui/core/TableCell';
+import TableBody from '@material-ui/core/TableBody';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
 import IFeature = io.cucumber.messages.IFeature;
 import IRule = io.cucumber.messages.IRule;
@@ -75,21 +81,6 @@ const Tag = styled.li`
     text-decoration: none;
 `
 
-const TableTag = styled.table`
-  border-collapse: collapse;
-  margin-left: 12pt;
-  margin-top: 2pt;
-  
-  th, td {
-    border: 1px solid #ccc;
-    
-    pre {
-      margin: 0;
-      padding: 2pt;
-    }
-  }
-`
-
 export interface GherkinDocumentProps {
     gherkinDocument?: IGherkinDocument
 }
@@ -111,7 +102,7 @@ interface FeatureProps {
 const Feature: React.SFC<FeatureProps> = ({feature}) => {
     return <section>
         <Tags tags={feature.tags}/>
-        <h1><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></h1>
+        <Typography variant={"headline"}><Keyword>{feature.keyword}</Keyword>: <Name>{feature.name}</Name></Typography>
         <Description description={feature.description}/>
         {feature.children.map((child, index) => {
             if (child.background) {
@@ -139,7 +130,7 @@ interface RuleProps {
 
 const Rule: React.SFC<RuleProps> = ({rule}) => {
     return <section>
-        <h2><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></h2>
+        <Typography variant={"title"}><Keyword>{rule.keyword}</Keyword>: <Name>{rule.name}</Name></Typography>
         <Description description={rule.description}/>
         {rule.children.map((child, index) => {
             if (child.background) {
@@ -157,7 +148,8 @@ interface BackgroundProps {
 
 const Background: React.SFC<BackgroundProps> = ({background}) => {
     return <section>
-        <h2><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></h2>
+        <Typography
+            variant={"title"}><Keyword>{background.keyword}</Keyword>: <Name>{background.name}</Name></Typography>
         <Description description={background.description}/>
         <StepList>
             {background.steps.map((step, index) => <Step key={index} step={step}/>)}
@@ -182,7 +174,7 @@ interface ScenarioProps {
 const Scenario: React.SFC<ScenarioProps> = ({scenario}) => {
     return <section>
         <Tags tags={scenario.tags}/>
-        <h2><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></h2>
+        <Typography variant={"title"}><Keyword>{scenario.keyword}</Keyword>: <Name>{scenario.name}</Name></Typography>
         <Description description={scenario.description}/>
         <StepList>
             {scenario.steps.map((step, index) => <Step key={index} step={step}/>)}
@@ -199,7 +191,8 @@ interface ExamplesProps {
 const Examples: React.SFC<ExamplesProps> = ({examples}) => {
     return <section>
         <Tags tags={examples.tags}/>
-        <h3><Keyword>{examples.keyword}</Keyword>: <Name>{examples.name}</Name></h3>
+        <Typography
+            variant={"subheading"}><Keyword>{examples.keyword}</Keyword>: <Name>{examples.name}</Name></Typography>
         <Description description={examples.description}/>
         <ExamplesTable tableHeader={examples.tableHeader} tableBody={examples.tableBody}/>
     </section>
@@ -222,22 +215,24 @@ interface ExamplesTableProps {
 }
 
 const ExamplesTable: React.SFC<ExamplesTableProps> = ({tableHeader, tableBody}) => {
-    return <TableTag>
-        <thead>
-        <tr>
-            {tableHeader.cells.map((cell, j) => <th key={j}>
-                <pre>{cell.value}</pre>
-            </th>)}
-        </tr>
-        </thead>
-        <tbody>
-        {tableBody.map((row, i) => <tr key={i}>
-            {row.cells.map((cell, j) => <td key={j}>
-                <pre>{cell.value}</pre>
-            </td>)}
-        </tr>)}
-        </tbody>
-    </TableTag>
+    return <Table>
+        <TableHead>
+            <TableRow>
+                {tableHeader.cells.map((cell, j) =>
+                    <TableCell key={j}>
+                        <pre>{cell.value}</pre>
+                    </TableCell>)}
+            </TableRow>
+        </TableHead>
+        <TableBody>
+            {tableBody.map((row, i) =>
+                <TableRow key={i}>
+                    {row.cells.map((cell, j) => <TableCell key={j}>
+                        <pre>{cell.value}</pre>
+                    </TableCell>)}
+                </TableRow>)}
+        </TableBody>
+    </Table>
 };
 
 interface DataTableProps {
@@ -245,14 +240,16 @@ interface DataTableProps {
 }
 
 const DataTable: React.SFC<DataTableProps> = ({dataTable}) => {
-    return <TableTag>
-        <tbody>
-        {dataTable.rows.map((row, i) => <tr key={i}>
-            {row.cells.map((cell, j) => <td key={j}>
-                <pre>{cell.value}</pre>
-            </td>)}
-        </tr>)}
-        </tbody>
-    </TableTag>
+    return <Table>
+        <TableBody>
+            {dataTable.rows.map((row, i) =>
+                <TableRow key={i}>
+                    {row.cells.map((cell, j) =>
+                        <TableCell key={j}>
+                            <pre>{cell.value}</pre>
+                        </TableCell>)}
+                </TableRow>)}
+        </TableBody>
+    </Table>
 };
 

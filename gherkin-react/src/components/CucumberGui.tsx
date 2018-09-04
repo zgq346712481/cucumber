@@ -2,12 +2,14 @@ import * as React from "react";
 import styled from 'styled-components';
 import GherkinDocument from "./WrappedGherkinDocument";
 import DocumentList from "./DocumentList";
+import Button from '@material-ui/core/Button';
 
 const Container = styled.div`
   height: 100%;
   overflow: hidden;
   margin: 0;
   display: flex;
+  font-family: Roboto;
 `
 
 const Column = styled.div`
@@ -68,7 +70,9 @@ export const CucumberGui: React.SFC<CucumberGuiProps> = () => {
     return <Container>
         <LeftColumn>
             <TopLeft>
-                Documents
+                <Button variant="contained" color="primary">
+                    Hello World
+                </Button>
             </TopLeft>
             <Bottom>
                 <DocumentList/>
