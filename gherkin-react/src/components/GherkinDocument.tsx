@@ -34,7 +34,7 @@ const GherkinDocumentWrapper = styled.section`
 `
 
 const DescriptionDiv = styled.div`
-      padding-left: 12pt;
+    padding-left: 12pt;
 `
 
 const Keyword = styled.span`

@@ -6,7 +6,7 @@ import {io} from "cucumber-messages";
 import reducer from './reducers'
 import {ActionTypes} from "./actions";
 import {dispatchActionsFromStreamedMessages} from "./middlewares/dispatchActionsFromStreamedMessages";
-import GherkinDocument from "./components/WrappedGherkinDocument";
+import {CucumberGui} from "./components/CucumberGui";
 import uint8ArrayFromBinaryString from "./streams/uint8ArrayFromBinaryString";
 import {ErrorBoundary} from "./components/ErrorBoundary";
 
@@ -15,10 +15,10 @@ const store = createStore(reducer, applyMiddleware(dispatchActionsFromStreamedMe
 ReactDOM.render(
     <ErrorBoundary>
         <Provider store={store}>
-            <GherkinDocument/>
+            <CucumberGui/>
         </Provider>
     </ErrorBoundary>,
-    document.getElementById("gherkin")
+    document.getElementById("app")
 );
 
 const base64 = document.getElementById("messages").innerText;
