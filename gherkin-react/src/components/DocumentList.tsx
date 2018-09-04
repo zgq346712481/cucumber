@@ -1,25 +1,22 @@
 import * as React from "react";
-import styled from 'styled-components';
 import {io} from "cucumber-messages";
-import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
-import IFeature = io.cucumber.messages.IFeature;
-import IRule = io.cucumber.messages.IRule;
-import IBackground = io.cucumber.messages.IBackground;
-import IExamples = io.cucumber.messages.IExamples;
-import IScenario = io.cucumber.messages.IScenario;
-import IStep = io.cucumber.messages.IStep;
-import IDataTable = io.cucumber.messages.IDataTable;
-import ITableRow = io.cucumber.messages.ITableRow;
-import ITag = io.cucumber.messages.ITag;
-import {GherkinDocument, GherkinDocumentProps} from "./GherkinDocument";
-import ApplicationState from "../ApplicationState";
 import {connect} from "react-redux";
+import styled from "styled-components";
+import {AnyAction, Dispatch} from "redux";
+import {ActionTypes} from "../actions";
+import {Map} from "immutable";
+import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
+import ApplicationState from "../ApplicationState";
 
-const DocumentList: React.SFC<StateProps> = ({urls}) => {
-    return <div>{urls.map(url => <p>{url}</p>)}</div>
-}
+const DocumentLink = styled.a`
+  color: white;
+`
 
-interface OwnProps {
+// interface State {
+//     gherkinDocuments: Map<string, IGherkinDocument>
+// }
+
+export interface OwnProps {
 }
 
 export interface StateProps {
@@ -27,18 +24,36 @@ export interface StateProps {
 }
 
 interface DispatchProps {
+    showDocument: (url: string) => void
 }
 
-//type Props = StateProps & DispatchProps & OwnProps
+type Props = StateProps & DispatchProps & OwnProps
 
 type State = ApplicationState
 
+const DocumentList: React.SFC<Props> = ({urls, showDocument}) => {
+    return <div>
+        {urls.map(url => <p key={url}>
+            <DocumentLink href="#" onClick={e => showDocument(url)}>{url}</DocumentLink>
+        </p>)}
+    </div>
+}
+
 function mapStateToProps(state: State, ownProps: OwnProps): StateProps {
-    let urls:string[] = []
+    let urls: string[] = []
     state.gherkinDocuments.forEach((_, url) => urls.push(url))
     return {
         urls: urls
     }
 }
 
-export default connect<StateProps, DispatchProps, OwnProps>(mapStateToProps)(DocumentList)
+function mapDispatchToProps(dispatch: Dispatch, ownProps: OwnProps): DispatchProps {
+    return {
+        showDocument: (url) => dispatch({
+            type: ActionTypes.SHOW_DOCUMENT,
+            url
+        })
+    }
+}
+
+export default connect<StateProps, DispatchProps, OwnProps>(mapStateToProps, mapDispatchToProps)(DocumentList)

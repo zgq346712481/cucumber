@@ -70,16 +70,16 @@ export const CucumberGui: React.SFC<CucumberGuiProps> = () => {
                 Documents
             </TopLeft>
             <Bottom>
-                <DocumentList />
+                <DocumentList/>
             </Bottom>
         </LeftColumn>
         <RightColumn>
             <TopRight>
                 <Menu>
-                    <li>one</li>
-                    <li>two</li>
-                    <li>three</li>
-                    <li>four</li>
+                    <MenuItem>one</MenuItem>
+                    <MenuItem>two</MenuItem>
+                    <MenuItem>three</MenuItem>
+                    <MenuItem>four</MenuItem>
                 </Menu>
             </TopRight>
             <Bottom>

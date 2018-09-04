@@ -40,7 +40,7 @@ That's it! you should see some nicely rendered Gherkin in your browser.
 
 Update messages:
 
-    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/test.feature | base64 | pbcopy
+    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/*.feature | base64 | pbcopy
     # Paste into `#messages` in `index.html`.
 
 Take a gander:

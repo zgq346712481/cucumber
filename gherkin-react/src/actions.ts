@@ -8,7 +8,10 @@ export enum ActionTypes {
     CUCUMBER_MESSAGE = 'CUCUMBER_MESSAGE',
 
     // redux-websocket-middleware
-    WEBSOCKET_EVENT_MESSAGE = 'WEBSOCKET/EVENT/MESSAGE'
+    WEBSOCKET_EVENT_MESSAGE = 'WEBSOCKET/EVENT/MESSAGE',
+
+    // User actions
+    SHOW_DOCUMENT = 'SHOW_DOCUMENT'
 }
 
 export interface LoadMessagesAction {
@@ -28,17 +31,27 @@ export interface ReduxWebSocketMiddlewareMessageAction {
     payload: ReduxWebSocketMiddlewarePayload
 }
 
-interface ReduxWebSocketMiddlewarePayload {
+export interface ReduxWebSocketMiddlewarePayload {
     id: string,
     event: ReduxWebSocketMiddlewareEvent
 }
 
-interface ReduxWebSocketMiddlewareEvent {
+export interface ReduxWebSocketMiddlewareEvent {
     type: string,
     data: Uint8Array | string
 }
 
-export type AppAction = AnyAction | LoadMessagesAction | CucumberMessageAction | ReduxWebSocketMiddlewareMessageAction
+export interface ShowDocumentAction {
+    type: ActionTypes.SHOW_DOCUMENT,
+    url: string
+}
+
+export type AppAction = 
+    AnyAction | 
+    LoadMessagesAction | 
+    CucumberMessageAction | 
+    ReduxWebSocketMiddlewareMessageAction |
+    ShowDocumentAction
 
 export interface AppDispatch extends Dispatch<AppAction> {
 }

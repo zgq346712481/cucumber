@@ -1,5 +1,5 @@
 import {io} from "cucumber-messages";
-import {ActionTypes, AppAction, CucumberMessageAction} from "../actions";
+import {ActionTypes, AppAction, CucumberMessageAction, ShowDocumentAction} from "../actions";
 import {Map} from "immutable"
 import ApplicationState from "../ApplicationState";
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
@@ -11,7 +11,7 @@ const defaultState: ApplicationState = {
 
 export default (state: ApplicationState = defaultState, action: AppAction): ApplicationState => {
     switch (action.type) {
-        case ActionTypes.CUCUMBER_MESSAGE:
+        case ActionTypes.CUCUMBER_MESSAGE: {
             const a = action as CucumberMessageAction
             if (a.messageType === 'gherkinDocument') {
                 // TODO: Split this up in 2 combined reducers
@@ -21,6 +21,14 @@ export default (state: ApplicationState = defaultState, action: AppAction): Appl
                 }
             }
             return state
+        }
+        case ActionTypes.SHOW_DOCUMENT: {
+            const a = action as ShowDocumentAction
+            return {
+                gherkinDocumentUri: a.url,
+                gherkinDocuments: state.gherkinDocuments
+            }
+        }
 
         default:
             return state
