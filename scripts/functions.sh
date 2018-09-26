@@ -81,47 +81,66 @@ function subrepo_remote()
   fi
 }
 
+function subrepo_owner_name()
+{
+  subrepo=$1
+  cat ${subrepo}/.subrepo
+}
+
 function git_branch() {
-  if [ -z "${TRAVIS_BRANCH}" ]; then
-    git rev-parse --abbrev-ref HEAD
-  else
+  if [ -z "${TRAVIS_TAG}" ]; then
+    # Only report branch if we're not on a tag
     echo "${TRAVIS_BRANCH}"
   fi
 }
 
+function git_tag() {
+  echo "${TRAVIS_TAG}"
+}
+
 function push_subrepos()
 {
+  echo "TRAVIS_BRANCH=${TRAVIS_BRANCH}"
+  echo "TRAVIS_TAG=${TRAVIS_TAG}"
+  
   if [ "${TRAVIS_PULL_REQUEST}" = "false" ] || [ -z "${TRAVIS_PULL_REQUEST}" ]; then
-    # Travis builds PRs with TRAVIS_BRANCH=master (or whatever)
-    # the base branch of the PR is. We don't want to push to subrepos in this
-    # case, as it would push the wrong branch. Travis also builds the branch,
-    # which is sufficient.
     subrepos $1 | while read subrepo; do
-      push_subrepo_branch "${subrepo}"
-      push_subrepo_tag_maybe "${subrepo}"
+      push_subrepo_branch_maybe "${subrepo}"
     done
+    push_subrepo_tag_maybe
   else
     echo "Skipping pushing to subrepos on Travis pull request builds."
   fi
 }
 
-function push_subrepo_branch()
+function push_subrepo_branch_maybe()
 {
   subrepo=$1
   remote=$(subrepo_remote "${subrepo}")
   branch=$(git_branch)
   
-  git push --force "${remote}" $(splitsh-lite --prefix=${subrepo}):refs/heads/${branch}
+  if [ -z "${branch}" ]; then
+    echo "No branch to push"
+  else
+    git push --force "${remote}" $(splitsh-lite --prefix=${subrepo}):refs/heads/${branch}
+  fi
 }
 
 function push_subrepo_tag_maybe()
 {
-  subrepo=$1
-  remote=$(subrepo_remote "${subrepo}")
-  if [ -z "${TRAVIS_TAG}" ]; then
-    echo "No tags to push"
+  tag=$(git_tag)
+  if [ -z "${tag}" ]; then
+    echo "No tag to push"
   else
-    git push --force "${remote}" $(splitsh-lite --prefix=${subrepo} --origin=refs/tags/${TRAVIS_TAG}):refs/tags/${TRAVIS_TAG}
+    tagged_subrepo=$(echo "${tag}" | cut -d/ -f 1)
+    vtag=$(echo "${tag}" | cut -d/ -f 2)
+    subrepos . | while read subrepo; do
+      if [[ "${subrepo}" = "${tagged_subrepo}"* ]]; then
+        remote=$(subrepo_remote "${subrepo}")
+        ref=$(splitsh-lite --prefix=${subrepo} --origin=refs/tags/${tag})
+        git push --force "${remote}" ${ref}:refs/tags/${vtag}
+      fi
+    done
   fi
 }
 
@@ -151,15 +170,74 @@ function release_subrepos()
   done
 }
 
-function release_subrepo()
+function release_module()
+{
+  module=$1
+  version=$2
+
+  subrepos "${module}" | while read subrepo; do
+    version_subrepo "${subrepo}" "${version}"
+  done
+  
+  git commit -am "Release ${module} v${version}"
+  git tag "${module}/v${version}"
+  git push && git push --tags
+}
+
+ function release_subrepo()
+ {
+   subrepo=$1
+   version=$2
+   next_version=$3
+
+   clone_for_release "${subrepo}"
+   release_subrepo_clone "$(release_dir "${subrepo}")" "${version}" "${next_version}"
+ }
+
+# Sets up GPG in a module dir
+function setup_gpg()
 {
   subrepo=$1
-  version=$2
-  next_version=$3
+  repo=$(subrepo_owner_name "${subrepo}")
 
-  clone_for_release "${subrepo}"
-  release_subrepo_clone "$(release_dir "${subrepo}")" "${version}" "${next_version}"
+  pushd "${subrepo}"
+
+  gpg --export-secret-key E60E1F911B996560FFB135DAF4CABFB5B89B8BE6 > scripts/codesigning.asc
+
+  # Encrypt the signing key to scripts/codesigning.asc.enc. Store the encrypted
+  # decryption keys in `.travis.yml` and copy the openssl command to decrypt it.
+  rm -f scripts/codesigning.asc.enc
+  openssl_line=$(travis encrypt-file \
+    scripts/codesigning.asc \
+    scripts/codesigning.asc.enc \
+    --repo "${repo}" | grep openssl)
+  
+  cat << EOF > scripts/decrypt_signing_key.sh
+#!/usr/bin/env bash
+set -euf -o pipefail
+${openssl_line}
+EOF
+  
+  # Remove the unencrypted key. We don't want that to accidentally end up in git!
+  rm scripts/codesigning.asc
+  
+  chmod +x scripts/decrypt_signing_key.sh 
+  git add scripts/codesigning.asc.enc scripts/decrypt_signing_key.sh
+  git commit -m "Add encrypted signing keys for ${subrepo}"
+  
+  popd
 }
+
+function setup_travis_token() {
+  subrepo=$1
+  repo=$(subrepo_owner_name "${subrepo}")
+  pushd "${subrepo}"
+
+  travis encrypt TRAVIS_API_TOKEN=${TRAVIS_API_TOKEN} --add --repo "${repo}"
+
+  popd
+}
+
 
 # Clones a subrepo into a temporary directory, which is where the release will be
 # made from.
@@ -187,6 +265,18 @@ function release_subrepo_clone()
     eval ${ptype}_release "${dir}" "${version}" "${next_version}"
   fi
 }
+
+function version_subrepo()
+{
+  dir=$1
+  version=$2
+
+  ptype=$(project_type "${dir}")
+  if [ -n "${ptype}" ]; then
+    eval ${ptype}_version "${dir}" "${version}"
+  fi
+}
+
 
 function release_dir()
 {
@@ -282,10 +372,27 @@ function maven_release()
   git add .
   git commit -m "Update to ${version}-SNAPSHOT"
 
+  # LIBRARY_VERSION specifies what executable version to download - if any
+  LIBRARY_VERSION=${version} make
+
   mvn --batch-mode release:clean release:prepare -Darguments="-DskipTests=true"  
   mvn --batch-mode release:perform -Psign-source-javadoc -DskipTests=true
   
   cp pom.xml ../pom.xml
+  popd
+}
+
+function maven_version()
+{
+  dir=$1
+  version=$2
+  next_version=$3
+
+  pushd "${dir}"
+  xmlstarlet ed --inplace --ps -N pom="http://maven.apache.org/POM/4.0.0" \
+    --update "/pom:project/pom:version" \
+    --value "${version}" \
+    "pom.xml"
   popd
 }
 
@@ -304,12 +411,21 @@ function npm_release() {
 
   pushd "${dir}"
   npm install
-  npm version "${version}"
+  npm version "${version}" --allow-same-version
   npm publish
   git push
   git push --tags
 
   cp package.json ../package.json
+  popd
+}
+
+function npm_version() {
+  dir=$1
+  version=$2
+
+  pushd "${dir}"
+  npm --no-git-tag-version version "${version}"
   popd
 }
 
@@ -334,6 +450,15 @@ function rubygem_release() {
   git show > .release.patch
   cd ..
   patch -p1 < .release/.release.patch
+  popd
+}
+
+function rubygem_version() {
+  dir=$1
+  version=$2
+
+  pushd "${dir}"
+  sed -i "" "s/\(s\.version *= *'\)[0-9]*\.[0-9]*\.[0-9]*\('\)/\1${version}\2/" "$(find_path "." "*.gemspec")"
   popd
 }
 
@@ -477,6 +602,11 @@ function go_release() {
   git push
   git push --tags
   popd
+}
+
+function go_version() {
+  # no-op
+  echo ""
 }
 
 ################ xcode ################
