@@ -8,13 +8,13 @@ There is also a `GherkinDocument` component, which is designed to render just a 
 
 Gherkin-React is configured with a message provider, which will stream cucumber messages to the component, which
 will update accordingly. Internally this uses Redux, but this is opaque to the users of the component.
-You can use this component even if you're not using Redux.
+You can use Gherkin-React even if you're not using Redux.
 
 There are built-in message providers for base64-encoded messages embedded in a page as well as streaming over
-a WebSocket. Other message providers can be implemented to source messages from another source, for example
+a WebSocket. Other message providers can be implemented stream messages from another source, for example
 polling a CI server for a cucumber.bin log file, or querying a service for messages pertaining to specific criteria,
 such as tags, paths, git revisions etc. One such service is [Cucumber-Reports](#) which serves an enhanced
-version of the Gherkin `App`, with advanced features such as trend metrics, collaborative editing, example
+version of the `App`, with advanced features such as trend metrics, collaborative editing, example
 mapping, JIRA integration and more.
 
 The encoding of the messages are based on [cucumber-messages](https://github.com/cucumber/cucumber/tree/master/messages),
@@ -32,21 +32,17 @@ That's it! you should see some nicely rendered Gherkin in your browser.
 ## Build / hack
 
     npm install
-    # Work around a bug in cucumber-messages' build (typescript defs not included)
-    mkdir -p node_modules/cucumber-messages/dist/src
-    cp node_modules/cucumber-messages/src/cucumber-messages.d.ts node_modules/cucumber-messages/dist/src
-    # Build code
     ./node_modules/.bin/webpack --mode development --watch
-
-Update messages:
-
-    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/*.feature | base64 | pbcopy
-    # Paste into `#messages` in `index.html`.
 
 Take a gander:
 
     open index.html
     
+Update messages:
+
+    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/*.feature | base64 | pbcopy
+    # Paste into `#messages` in `index.html`.
+
 ## Ideas
 
 ### `ScenarioList` component
@@ -81,8 +77,8 @@ Each scenario displayed underneath each other, grouped by feature file. The feat
 ## Tag search
 
 * Render a tag cloud for all tags
-    * Size: count
-    * Color: pass/fail/undefined
+  * Size: count
+  * Color: pass/fail/undefined
     
 ## On-demand data
 

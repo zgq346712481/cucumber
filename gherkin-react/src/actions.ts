@@ -14,44 +14,44 @@ export enum ActionTypes {
     SHOW_DOCUMENT = 'SHOW_DOCUMENT'
 }
 
-export interface LoadMessagesAction {
+export interface ILoadMessagesAction {
     type: ActionTypes.LOAD_MESSAGES;
     data?: Uint8Array;
     url?: string;
 }
 
-export interface CucumberMessageAction {
+export interface ICucumberMessageAction {
     type: ActionTypes.CUCUMBER_MESSAGE;
     messageType: string;
     message: any;
 }
 
-export interface ReduxWebSocketMiddlewareMessageAction {
+export interface IReduxWebSocketMiddlewareMessageAction {
     type: ActionTypes.WEBSOCKET_EVENT_MESSAGE,
-    payload: ReduxWebSocketMiddlewarePayload
+    payload: IReduxWebSocketMiddlewarePayload
 }
 
-export interface ReduxWebSocketMiddlewarePayload {
+export interface IReduxWebSocketMiddlewarePayload {
     id: string,
-    event: ReduxWebSocketMiddlewareEvent
+    event: IReduxWebSocketMiddlewareEvent
 }
 
-export interface ReduxWebSocketMiddlewareEvent {
+export interface IReduxWebSocketMiddlewareEvent {
     type: string,
     data: Uint8Array | string
 }
 
-export interface ShowDocumentAction {
+export interface IShowDocumentAction {
     type: ActionTypes.SHOW_DOCUMENT,
     url: string
 }
 
-export type AppAction = 
-    AnyAction | 
-    LoadMessagesAction | 
-    CucumberMessageAction | 
-    ReduxWebSocketMiddlewareMessageAction |
-    ShowDocumentAction
+export type AppAction =
+    AnyAction |
+    ILoadMessagesAction |
+    ICucumberMessageAction |
+    IReduxWebSocketMiddlewareMessageAction |
+    IShowDocumentAction
 
-export interface AppDispatch extends Dispatch<AppAction> {
+export interface IAppDispatch extends Dispatch<AppAction> {
 }

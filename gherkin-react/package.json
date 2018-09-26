@@ -8,7 +8,7 @@
   "license": "MIT",
   "scripts": {
     "test": "mocha test/**/*.ts",
-    "eslint-fix": "echo 'skipping eslint on generated code'",
+    "eslint-fix": "eslint",
     "coverage": "nyc --reporter=html --reporter=text mocha test/**/*.ts",
     "build": "babel src --out-dir dist/src",
     "build-test": "babel test --out-dir dist/test && tsc",
@@ -21,11 +21,13 @@
     "@types/react": "^16.4.12",
     "@types/react-dom": "^16.0.7",
     "@types/react-redux": "^6.0.6",
-    "cucumber-messages": "cucumber/cucumber-messages-javascript",
+    "cucumber-messages": "^1.0.4",
     "immutable": "^3.8.2",
+    "protobufjs": "^6.8.8",
     "react": "^16.4.2",
     "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
+    "redux": "^4.0.0",
     "simple-redux-websocket-middleware": "0.0.2",
     "styled-components": "^3.4.5",
     "typeface-roboto": "0.0.54"
@@ -39,11 +41,6 @@
     "@types/mocha": "^5.2.5",
     "awesome-typescript-loader": "^5.2.0",
     "css-loader": "^1.0.0",
-    "eslint": "^5.3.0",
-    "eslint-config-eslint": "^5.0.1",
-    "eslint-config-prettier": "^3.0.1",
-    "eslint-plugin-node": "^7.0.1",
-    "eslint-plugin-prettier": "^2.6.2",
     "file-loader": "^2.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.0.1",
@@ -51,8 +48,14 @@
     "source-map-loader": "^0.2.4",
     "style-loader": "^0.23.0",
     "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.15.0",
     "typescript": "^3.0.1",
     "webpack": "^4.17.1",
     "webpack-cli": "^3.1.0"
+  },
+  "prettier": {
+    "semi": false,
+    "parser": "typescript"
   }
 }

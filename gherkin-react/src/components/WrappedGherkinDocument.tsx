@@ -1,28 +1,29 @@
 // https://medium.com/knerd/typescript-tips-series-proper-typing-of-react-redux-connected-components-eda058b6727d
 
-import ApplicationState from "../ApplicationState";
-import {connect} from "react-redux";
-import {GherkinDocument, GherkinDocumentProps} from "./GherkinDocument";
-import {io} from "cucumber-messages";
-import * as React from "react";
+import IApplicationState from "../IApplicationState"
+import { connect } from "react-redux"
+import { GherkinDocument, IGherkinDocumentProps } from "./GherkinDocument"
+import { io } from "cucumber-messages"
+import * as React from "react"
 
-interface OwnProps {
+// interface IOwnProps {}
+type IOwnProps = any
+
+type IStateProps = IGherkinDocumentProps
+
+// interface IDispatchProps {}
+type IDispatchProps = any
+
+// type Props = IStateProps & IDispatchProps & IOwnProps
+
+type IState = IApplicationState
+
+function mapStateToProps(state: IState, ownProps: IOwnProps): IStateProps {
+  return {
+    gherkinDocument: state.gherkinDocuments.get(state.gherkinDocumentUri)
+  }
 }
 
-type StateProps = GherkinDocumentProps
-
-interface DispatchProps {
-}
-
-//type Props = StateProps & DispatchProps & OwnProps
-
-type State = ApplicationState
-
-function mapStateToProps(state: State, ownProps: OwnProps): StateProps {
-    return {
-        gherkinDocument: state.gherkinDocuments.get(state.gherkinDocumentUri)
-    }
-}
-
-export default connect<StateProps, DispatchProps, OwnProps>(mapStateToProps)(GherkinDocument)
-
+export default connect<IStateProps, IDispatchProps, IOwnProps>(mapStateToProps)(
+  GherkinDocument
+)
