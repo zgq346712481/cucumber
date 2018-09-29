@@ -1,5 +1,5 @@
 import {AnyAction, Dispatch} from "redux";
-import {io} from "cucumber-messages";
+// import {io} from "cucumber-messages";
 
 // https://spin.atomicobject.com/2017/07/24/redux-action-pattern-typescript/
 
@@ -16,8 +16,7 @@ export enum ActionTypes {
 
 export interface ILoadMessagesAction {
     type: ActionTypes.LOAD_MESSAGES;
-    data?: Uint8Array;
-    url?: string;
+    data: Uint8Array;
 }
 
 export interface ICucumberMessageAction {

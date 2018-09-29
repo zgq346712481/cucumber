@@ -21,6 +21,7 @@ export default class extends Writable {
     _: string,
     callback: (error?: Error | null) => void
   ): void {
+      console.log("WRAPPER", wrapper)
     for (const messageType of Object.getOwnPropertyNames(wrapper)) {
       const message = Reflect.get(wrapper, messageType)
       this.api.dispatch({

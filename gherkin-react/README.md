@@ -98,4 +98,10 @@ The config is essentially command line options. They can be modified in the gui.
 Rerun on file change can also be set up. This just makes the whole DX simple.
 
 ## Alerts
+
 The app could use the OS to send screen messages (autotest like)
+
+## TODO / PLAN
+
+* Design a layout on paper (take pictures)
+* Write tests (with Enzyme)

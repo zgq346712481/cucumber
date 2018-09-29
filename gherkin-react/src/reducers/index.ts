@@ -17,10 +17,12 @@ const defaultState: IApplicationState = {
   pickles: Map<string, List<IPickle>>()
 }
 
-export default (
+export default function reducer(
   state: IApplicationState = defaultState,
   action: AppAction
-): IApplicationState => {
+): IApplicationState {
+    console.log('ACTION', action)
+    return state
   switch (action.type) {
     case ActionTypes.CUCUMBER_MESSAGE: {
       const a = action as ICucumberMessageAction
@@ -43,7 +45,7 @@ export default (
         }
         return {
           gherkinDocumentUri: state.gherkinDocumentUri,
-          gherkinDocuments: state.gherkinDocuments.set(pickle.uri, pickle),
+          gherkinDocuments: state.gherkinDocuments,
           pickles: state.pickles.update(pickle.uri, pickles =>
             pickles.push(pickle)
           )

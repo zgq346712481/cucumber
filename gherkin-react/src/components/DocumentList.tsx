@@ -55,7 +55,7 @@ const DocumentList: React.SFC<IProps> = ({ urls, pickles, showDocument }) => {
 
 function mapStateToProps(state: State, ownProps: IOwnProps): IStateProps {
   const urls: string[] = []
-  state.gherkinDocuments.forEach((_, url) => urls.push(url))
+  state.gherkinDocuments.forEach((_, url) => url ? urls.push(url) : null)
   return {
     urls,
     pickles: state.pickles

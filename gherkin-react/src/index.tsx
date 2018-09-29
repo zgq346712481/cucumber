@@ -1,35 +1,39 @@
 import * as React from "react"
 import * as ReactDOM from "react-dom"
-import { Provider } from "react-redux"
-import { applyMiddleware, createStore } from "redux"
-import { io } from "cucumber-messages"
-import reducer from "./reducers"
-import { ActionTypes } from "./actions"
-import { dispatchActionsFromStreamedMessages } from "./middlewares/dispatchActionsFromStreamedMessages"
-import { CucumberGui } from "./components/CucumberGui"
-import uint8ArrayFromBinaryString from "./streams/uint8ArrayFromBinaryString"
-import { ErrorBoundary } from "./components/ErrorBoundary"
+import {ErrorBoundary} from "./components/ErrorBoundary"
 import "typeface-roboto"
+import App from "./components/App";
+import {Provider} from "react-redux";
+import {dispatchActionsFromStreamedMessages} from "./middlewares/dispatchActionsFromStreamedMessages";
+import {applyMiddleware, createStore} from "redux";
+import uint8ArrayFromBinaryString from "./streams/uint8ArrayFromBinaryString";
+import {ActionTypes} from "./actions";
+import reducer from "./reducers"
 
 const store = createStore(
-  reducer,
-  applyMiddleware(dispatchActionsFromStreamedMessages)
+    reducer,
+    applyMiddleware(dispatchActionsFromStreamedMessages)
 )
 
 ReactDOM.render(
-  <ErrorBoundary color={"pink"}>
-    <Provider store={store}>
-      <CucumberGui />
-    </Provider>
-  </ErrorBoundary>,
-  document.getElementById("app")
+    <ErrorBoundary color={"pink"}>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </ErrorBoundary>,
+    document.getElementById("app")
 )
 
-const base64 = document.getElementById("messages").innerText
-const binaryString = window.atob(base64)
-const data = uint8ArrayFromBinaryString(binaryString)
+const $messages = document.getElementById("cucumber-messages");
+if ($messages && $messages.innerText) {
+    const base64 = $messages.innerText
+    const binaryString = window.atob(base64)
+    const data = uint8ArrayFromBinaryString(binaryString)
+    console.log('DATA', data)
 
-store.dispatch({
-  type: ActionTypes.LOAD_MESSAGES,
-  data
-})
+    store.dispatch({
+        type: ActionTypes.LOAD_MESSAGES,
+        data: 'JALLA',
+        // data
+    })
+}

@@ -7,7 +7,7 @@ export interface IErrorBoundaryProps {
 
 export interface IErrorBoundaryState {
   error?: Error
-  errorInfo: React.ErrorInfo
+  errorInfo?: React.ErrorInfo
 }
 
 export class ErrorBoundary extends React.Component<
@@ -16,7 +16,7 @@ export class ErrorBoundary extends React.Component<
 > {
   constructor(props: IErrorBoundaryProps) {
     super(props)
-    this.state = { error: null, errorInfo: null }
+    this.state = { error: undefined, errorInfo: undefined }
   }
 
   public componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
@@ -28,7 +28,7 @@ export class ErrorBoundary extends React.Component<
       // You can render any custom fallback UI
       return (
         <pre style={{backgroundColor: this.props.color}}>
-          Something went wrong: ${this.state.error.message}$
+          Something went wrong: ${this.state.error.message}
           {this.state.error.stack}
         </pre>
       )
