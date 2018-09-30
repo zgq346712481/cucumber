@@ -5,7 +5,6 @@ import Feature from "./gherkin/Feature";
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
 
 const GherkinDocumentWrapper = styled.section`
-  font-family: Arial;
   color: #113654;
 
   h1 {

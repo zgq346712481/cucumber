@@ -3,6 +3,7 @@ import DataTable from "./DataTable";
 import {io} from "cucumber-messages";
 import Keyword from "./Keyword";
 import IStep = io.cucumber.messages.IStep;
+import {Typography} from "@material-ui/core";
 
 interface IStepProps {
     step: IStep
@@ -11,8 +12,10 @@ interface IStepProps {
 const Step: React.SFC<IStepProps> = ({step}) => {
     return (
         <li>
-            <Keyword>{step.keyword}</Keyword><span>{step.text}</span>
-            {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
+            <Typography>
+                <Keyword>{step.keyword}</Keyword><span>{step.text}</span>
+                {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
+            </Typography>
         </li>
     )
 }
