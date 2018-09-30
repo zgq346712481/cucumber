@@ -14,8 +14,8 @@ const Step: React.SFC<IStepProps> = ({step}) => {
         <li>
             <Typography>
                 <Keyword>{step.keyword}</Keyword><span>{step.text}</span>
-                {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
             </Typography>
+            {step.dataTable ? <DataTable dataTable={step.dataTable}/> : null}
         </li>
     )
 }
