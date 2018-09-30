@@ -23,7 +23,7 @@
     "@types/react-dom": "^16.0.8",
     "@types/react-redux": "^6.0.6",
     "classnames": "^2.2.6",
-    "cucumber-messages": "^1.0.4",
+    "cucumber-messages": "^1.1.1",
     "immutable": "^3.8.2",
     "protobufjs": "^6.8.8",
     "react": "^16.4.2",

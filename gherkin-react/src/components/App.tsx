@@ -5,7 +5,6 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
@@ -13,6 +12,8 @@ import Badge from '@material-ui/core/Badge';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
+import DocumentList from "./DocumentList";
+import GherkinDocument from "./WrappedGherkinDocument";
 
 interface IProps {
     classes: any
@@ -59,7 +60,7 @@ class Dashboard extends React.Component<IProps, IState> {
                                 <MenuIcon />
                             </IconButton>
                             <Typography variant="title" color="inherit" noWrap className={classes.title}>
-                                Dashboard
+                                Cucumber
                             </Typography>
                             <IconButton color="inherit">
                                 <Badge badgeContent={4} color="secondary">
@@ -80,25 +81,12 @@ class Dashboard extends React.Component<IProps, IState> {
                                 <ChevronLeftIcon />
                             </IconButton>
                         </div>
+                        <DocumentList />
                         <Divider />
-                        <List>PRIMARY</List>
-                        <Divider />
-                        <List>SECONDARY</List>
                     </Drawer>
                     <main className={classes.content}>
                         <div className={classes.appBarSpacer} />
-                        <Typography variant="display1" gutterBottom>
-                            Orders
-                        </Typography>
-                        <Typography component="div" className={classes.chartContainer}>
-                            SimpleLineChart
-                        </Typography>
-                        <Typography variant="display1" gutterBottom>
-                            Products
-                        </Typography>
-                        <div className={classes.tableContainer}>
-                            SimpleTable
-                        </div>
+                        <GherkinDocument />
                     </main>
                 </div>
             </React.Fragment>
@@ -184,4 +172,4 @@ const styles = (theme: Theme): StyleRules => {
     });
 };
 
-export default withStyles<string>(styles, {withTheme: true})(Dashboard);
+export default withStyles(styles, {withTheme: true})(Dashboard);

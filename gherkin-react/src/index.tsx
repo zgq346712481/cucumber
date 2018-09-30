@@ -29,11 +29,9 @@ if ($messages && $messages.innerText) {
     const base64 = $messages.innerText
     const binaryString = window.atob(base64)
     const data = uint8ArrayFromBinaryString(binaryString)
-    console.log('DATA', data)
 
     store.dispatch({
         type: ActionTypes.LOAD_MESSAGES,
-        data: 'JALLA',
-        // data
+        data
     })
 }

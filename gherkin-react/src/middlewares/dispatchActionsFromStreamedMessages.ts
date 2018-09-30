@@ -24,7 +24,6 @@ export const dispatchActionsFromStreamedMessages: ICucumberMessagesMiddleware<IA
     <S extends IApplicationState>(api: MiddlewareAPI<IAppDispatch>) => (
         next: Dispatch<AppAction>
     ) => <A extends AppAction>(action: A): A => {
-        console.log("ACTION", action)
         switch (action.type) {
             case ActionTypes.WEBSOCKET_EVENT_MESSAGE: {
                 const rw = action as IReduxWebSocketMiddlewareMessageAction

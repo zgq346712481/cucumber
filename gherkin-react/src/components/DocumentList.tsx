@@ -1,17 +1,13 @@
 import * as React from "react"
-import { io } from "cucumber-messages"
-import { connect } from "react-redux"
-import styled from "styled-components"
-import { Dispatch } from "redux"
-import { ActionTypes } from "../actions"
+import {io} from "cucumber-messages"
+import {connect} from "react-redux"
+import {Dispatch} from "redux"
+import {ActionTypes} from "../actions"
 import IApplicationState from "../IApplicationState"
-import { Badge } from "@material-ui/core"
-import { List, Map } from "immutable"
-import IPickle = io.cucumber.messages.IPickle
-
-const DocumentLink = styled.a`
-  color: white;
-`
+import {ListItem} from "@material-ui/core"
+import * as Immutable from "immutable"
+import List from '@material-ui/core/List';
+import IPickle = io.cucumber.messages.IPickle;
 
 // interface IState {
 //     gherkinDocuments: Map<string, IGherkinDocument>
@@ -22,7 +18,7 @@ type IOwnProps = any
 
 export interface IStateProps {
   urls: string[]
-  pickles: Map<string, List<IPickle>>
+  pickles: Immutable.Map<string, Immutable.List<IPickle>>
 }
 
 interface IDispatchProps {
@@ -36,20 +32,15 @@ type State = IApplicationState
 
 const DocumentList: React.SFC<IProps> = ({ urls, pickles, showDocument }) => {
   return (
-    <div>
+    <List>
       {urls.map(url => (
-        <p key={url}>
-          <Badge
-            badgeContent={pickles.has(url) ? pickles.get(url).size : "0"}
-            color={"error"}
-          >
-            <DocumentLink href="#" onClick={e => showDocument(url)}>
-              {url}
-            </DocumentLink>
-          </Badge>
-        </p>
+        <ListItem key={url} button={true}>
+            <a href="#" onClick={e => showDocument(url)}>
+                {url}
+            </a>
+        </ListItem>
       ))}
-    </div>
+    </List>
   )
 }
 

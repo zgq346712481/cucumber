@@ -21,8 +21,6 @@ export default function reducer(
   state: IApplicationState = defaultState,
   action: AppAction
 ): IApplicationState {
-    console.log('ACTION', action)
-    return state
   switch (action.type) {
     case ActionTypes.CUCUMBER_MESSAGE: {
       const a = action as ICucumberMessageAction
