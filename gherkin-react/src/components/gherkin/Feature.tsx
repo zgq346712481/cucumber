@@ -5,9 +5,9 @@ import Keyword from "./Keyword";
 import Description from "./Description";
 import Scenario from "./Scenario";
 import {io} from "cucumber-messages";
-import IFeature = io.cucumber.messages.IFeature;
 import Rule from "./Rule";
 import Background from "./Background";
+import IFeature = io.cucumber.messages.IFeature;
 
 interface IFeatureProps {
     feature: IFeature
@@ -16,12 +16,12 @@ interface IFeatureProps {
 const Feature: React.SFC<IFeatureProps> = ({feature}) => {
     return (
         <section>
-            <Tags tags={feature.tags}/>
+            {feature.tags ? <Tags tags={feature.tags}/> : null}
             <Typography variant={"headline"}>
                 <Keyword>{feature.keyword}</Keyword>: <span>{feature.name}</span>
             </Typography>
-            <Description description={feature.description}/>
-            {feature.children.map((child, index) => {
+            {feature.description ? <Description description={feature.description}/> : null}
+            {(feature.children || []).map((child, index) => {
                 if (child.background) {
                     return <Background key={index} background={child.background}/>
                 } else if (child.scenario) {

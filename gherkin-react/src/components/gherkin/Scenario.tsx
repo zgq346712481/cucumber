@@ -6,8 +6,8 @@ import Description from "./Description";
 import Step from "./Step";
 import Examples from "./Examples";
 import {io} from "cucumber-messages";
-import IScenario = io.cucumber.messages.IScenario;
 import StepList from "./StepList";
+import IScenario = io.cucumber.messages.IScenario;
 
 interface IScenarioProps {
     scenario: IScenario
@@ -22,12 +22,12 @@ const Scenario: React.SFC<IScenarioProps> = ({scenario}) => {
             </Typography>
             <Description description={scenario.description}/>
             <StepList>
-                {scenario.steps.map((step, index) => (
+                {(scenario.steps || []).map((step, index) => (
                     <Step key={index} step={step}/>
                 ))}
             </StepList>
 
-            {scenario.examples.map((examples, index) => (
+            {(scenario.examples || []).map((examples, index) => (
                 <Examples key={index} examples={examples}/>
             ))}
         </section>

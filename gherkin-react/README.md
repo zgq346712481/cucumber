@@ -40,7 +40,7 @@ Take a gander:
     
 Update messages:
 
-    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/*.feature | base64 | pbcopy
+    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results ../gherkin/testdata/good/*.feature | base64 | pbcopy
     # Paste into `#messages` in `index.html`.
 
 ## Ideas

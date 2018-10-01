@@ -37,8 +37,8 @@ const DocumentList: React.SFC<IProps> = ({gherkinDocuments, pickles, showDocumen
     return (
         <List>
             {gherkinDocuments.map(gherkinDocument => (
-                <ListItem key={gherkinDocument.uri} button={true}>
-                    <ListItemText onClick={e => showDocument(gherkinDocument.uri)}>{gherkinDocument.feature.name}</ListItemText>
+                <ListItem key={gherkinDocument.uri!} button={true}>
+                    <ListItemText onClick={e => showDocument(gherkinDocument.uri!)}>{gherkinDocument.feature ? gherkinDocument.feature.name : 'UNKNOWN'}</ListItemText>
                 </ListItem>
             ))}
         </List>

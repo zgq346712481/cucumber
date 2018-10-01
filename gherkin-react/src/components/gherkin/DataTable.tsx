@@ -4,16 +4,17 @@ import {io} from "cucumber-messages";
 import IDataTable = io.cucumber.messages.IDataTable;
 
 interface IDataTableProps {
-    dataTable: IDataTable
+    dataTable?: IDataTable | null
 }
 
 const DataTable: React.SFC<IDataTableProps> = ({dataTable}) => {
+    if (!dataTable) { return null }
     return (
         <Table>
             <TableBody>
-                {dataTable.rows.map((row, i) => (
+                {(dataTable.rows || []).map((row, i) => (
                     <TableRow key={i}>
-                        {row.cells.map((cell, j) => (
+                        {(row.cells || []).map((cell, j) => (
                             <TableCell key={j}>
                                 <pre>{cell.value}</pre>
                             </TableCell>

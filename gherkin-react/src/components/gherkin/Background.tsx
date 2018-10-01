@@ -18,11 +18,15 @@ const Background: React.SFC<IBackgroundProps> = ({background}) => {
                 <Keyword>{background.keyword}</Keyword>: <span>{background.name}</span>
             </Typography>
             <Description description={background.description}/>
-            <StepList>
-                {background.steps.map((step, index) => (
-                    <Step key={index} step={step}/>
-                ))}
-            </StepList>
+            {background.steps ?
+                <StepList>
+                    {background.steps.map((step, index) => (
+                        <Step key={index} step={step}/>
+                    ))}
+                </StepList>
+                :
+                null
+            }
         </section>
     )
 }

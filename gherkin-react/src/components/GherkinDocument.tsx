@@ -39,7 +39,7 @@ const GherkinDocumentWrapper = styled.section`
 `
 
 export interface IGherkinDocumentProps {
-    gherkinDocument?: IGherkinDocument
+    gherkinDocument?: IGherkinDocument | null
 }
 
 export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocument}) => {

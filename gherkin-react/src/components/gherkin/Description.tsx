@@ -7,7 +7,7 @@ const DescriptionDiv = styled.div`
 `
 
 interface IDescriptionProps {
-    description: string
+    description?: string|null
 }
 
 const Description: React.SFC<IDescriptionProps> = ({description}) => {

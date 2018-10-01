@@ -3,15 +3,18 @@ import {Typography} from "@material-ui/core";
 import Keyword from "./Keyword";
 import ExamplesTable from "./ExamplesTable";
 import {io} from "cucumber-messages";
-import IExamples = io.cucumber.messages.IExamples;
 import Tags from "./Tags";
 import Description from "./Description";
+import IExamples = io.cucumber.messages.IExamples;
 
 interface IExamplesProps {
-    examples: IExamples
+    examples?: IExamples | null
 }
 
 const Examples: React.SFC<IExamplesProps> = ({examples}) => {
+    if (!examples) {
+        return null
+    }
     return (
         <section>
             <Tags tags={examples.tags}/>

@@ -18,7 +18,7 @@ const Rule: React.SFC<IRuleProps> = ({rule}) => {
                 <Keyword>{rule.keyword}</Keyword>: <span>{rule.name}</span>
             </Typography>
             <Description description={rule.description}/>
-            {rule.children.map((child, index) => {
+            {(rule.children || []).map((child, index) => {
                 if (child.background) {
                     return <Background key={index} background={child.background}/>
                 } else if (child.scenario) {

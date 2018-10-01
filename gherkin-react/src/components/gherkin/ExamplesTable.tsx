@@ -4,19 +4,19 @@ import {io} from "cucumber-messages";
 import ITableRow = io.cucumber.messages.ITableRow;
 
 interface IExamplesTableProps {
-    tableHeader: ITableRow
-    tableBody: ITableRow[]
+    tableHeader?: ITableRow | null
+    tableBody?: ITableRow[] | null
 }
 
-const ExamplesTable: React.SFC<IExamplesTableProps> = ({
-                                                           tableHeader,
-                                                           tableBody
-                                                       }) => {
+const ExamplesTable: React.SFC<IExamplesTableProps> = ({tableHeader, tableBody}) => {
+    if (!tableHeader) {
+        return null
+    }
     return (
         <Table>
             <TableHead>
                 <TableRow>
-                    {tableHeader.cells.map((cell, j) => (
+                    {(tableHeader.cells || []).map((cell, j) => (
                         <TableCell key={j}>
                             <pre>{cell.value}</pre>
                         </TableCell>
@@ -24,9 +24,9 @@ const ExamplesTable: React.SFC<IExamplesTableProps> = ({
                 </TableRow>
             </TableHead>
             <TableBody>
-                {tableBody.map((row, i) => (
+                {(tableBody || []).map((row, i) => (
                     <TableRow key={i}>
-                        {row.cells.map((cell, j) => (
+                        {(row.cells || []).map((cell, j) => (
                             <TableCell key={j}>
                                 <pre>{cell.value}</pre>
                             </TableCell>
