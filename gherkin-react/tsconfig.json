@@ -3,7 +3,7 @@
     "baseUrl": ".",
     "skipLibCheck": true,
     "outDir": "./dist",
-    "module": "esnext",
+    "module": "commonjs",
     "target": "es2015",
     "lib": ["es6", "dom"],
     "sourceMap": true,
@@ -11,16 +11,18 @@
     "jsx": "react",
     "moduleResolution": "node",
     "rootDir": "src",
-    "types": ["node"],
+    "types": ["node", "mocha"],
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "isolatedModules": true
   },
   "include": [
-    "./src/**/*"
+    "./src/**/*",
+    "node_modules/@types/mocha/index.d.ts"
   ]
 }
