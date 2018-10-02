@@ -13,9 +13,7 @@ describe("<Step />", () => {
             keyword: "Given ",
             text: "I have 10 cukes"
         }
-        console.log(step)
-
         const e = shallow(React.createElement(Step, {step}, null))
-        console.log(e.html())
+        console.log(e)
     })
 })
