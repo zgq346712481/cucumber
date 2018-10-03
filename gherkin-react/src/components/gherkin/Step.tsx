@@ -20,7 +20,6 @@ type StepClassKey = 'passed' | 'failed';
 const Step: React.SFC<IStepProps> = ({classes, step, result}) => {
   const status = result ? Status[result.status!].toString().toLowerCase() : undefined
   const className = classes && status && classes[status]
-  console.log("CLASSNAME", className)
   return (
     <li className={className}>
       <Typography>
@@ -41,4 +40,3 @@ export default withStyles((theme: Theme) => ({
   },
 }), {withTheme: true})(Step)
 
-//export default Step
