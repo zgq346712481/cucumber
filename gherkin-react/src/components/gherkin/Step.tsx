@@ -1,25 +1,44 @@
-import * as React from "react";
-import DataTable from "./DataTable";
-import {io} from "cucumber-messages";
-import Keyword from "./Keyword";
-import DocString from "./DocString";
-import IStep = io.cucumber.messages.IStep;
-import {Typography} from "@material-ui/core";
+import * as React from "react"
+import DataTable from "./DataTable"
+import {io} from "cucumber-messages"
+import Keyword from "./Keyword"
+import DocString from "./DocString"
+import {StandardProps, Theme, Typography, withStyles} from "@material-ui/core"
+import IStep = io.cucumber.messages.IStep
+import ITestResult = io.cucumber.messages.ITestResult
+import Status = io.cucumber.messages.Status
+import {red, green} from "@material-ui/core/colors"
 
-interface IStepProps {
-    step: IStep
+interface IStepProps extends StandardProps<React.HTMLAttributes<HTMLLIElement>, StepClassKey> {
+  step: IStep
+  result?: ITestResult
 }
 
-const Step: React.SFC<IStepProps> = ({step}) => {
-    return (
-        <li>
-            <Typography>
-                <Keyword>{step.keyword}</Keyword><span>{step.text}</span>
-            </Typography>
-            <DataTable dataTable={step.dataTable}/>
-            <DocString docString={step.docString}/>
-        </li>
-    )
+type StepClassKey = 'passed' | 'failed';
+
+
+const Step: React.SFC<IStepProps> = ({classes, step, result}) => {
+  const status = result ? Status[result.status!].toString().toLowerCase() : undefined
+  const className = classes && status && classes[status]
+  console.log("CLASSNAME", className)
+  return (
+    <li className={className}>
+      <Typography>
+        <Keyword>{step.keyword}</Keyword><span>{step.text}</span>
+      </Typography>
+      <DataTable dataTable={step.dataTable}/>
+      <DocString docString={step.docString}/>
+    </li>
+  )
 }
 
-export default Step
+export default withStyles((theme: Theme) => ({
+  failed: {
+    backgroundColor: red["100"],
+  },
+  passed: {
+    backgroundColor: green["100"],
+  },
+}), {withTheme: true})(Step)
+
+//export default Step
