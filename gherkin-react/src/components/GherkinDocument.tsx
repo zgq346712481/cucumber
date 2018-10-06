@@ -3,6 +3,7 @@ import styled from "styled-components"
 import {io} from "cucumber-messages"
 import Feature from "./gherkin/Feature";
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
+import ExampleMap from "./examplemap/ExampleMap";
 
 const GherkinDocumentWrapper = styled.section`
   color: #113654;
@@ -48,6 +49,7 @@ export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocume
     }
     return (
         <GherkinDocumentWrapper>
+            <ExampleMap />
             {gherkinDocument.feature ? (
                 <Feature feature={gherkinDocument.feature}/>
             ) : (
