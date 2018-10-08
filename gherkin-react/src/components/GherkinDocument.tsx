@@ -1,9 +1,11 @@
 import * as React from "react"
 import styled from "styled-components"
 import {io} from "cucumber-messages"
-import Feature from "./gherkin/Feature";
-import IGherkinDocument = io.cucumber.messages.IGherkinDocument;
-import ExampleMap from "./examplemap/ExampleMap";
+import Feature from "./gherkin/Feature"
+import ExampleMap from "./examplemap/ExampleMap"
+import IGherkinDocument = io.cucumber.messages.IGherkinDocument
+import IFeatureChild = io.cucumber.messages.IFeatureChild
+import IRule = io.cucumber.messages.IRule
 
 const GherkinDocumentWrapper = styled.section`
   color: #113654;
@@ -40,23 +42,27 @@ const GherkinDocumentWrapper = styled.section`
 `
 
 export interface IGherkinDocumentProps {
-    gherkinDocument?: IGherkinDocument | null
+  gherkinDocument?: IGherkinDocument | null
 }
 
 export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocument}) => {
-    if (!gherkinDocument) {
-        return <div>No gherkin doc</div>
-    }
-    return (
-        <GherkinDocumentWrapper>
-            <ExampleMap />
-            {gherkinDocument.feature ? (
-                <Feature feature={gherkinDocument.feature}/>
-            ) : (
-                <div>Empty Gherkin document :-(</div>
-            )}
-        </GherkinDocumentWrapper>
-    )
+  if (!gherkinDocument) {
+    return <div>No gherkin doc</div>
+  }
+  if (!gherkinDocument.feature) {
+    return <div>Empty Gherkin document :-(</div>
+  }
+  const rules = gherkinDocument
+    .feature
+    .children!
+    .filter((child: IFeatureChild) => child.rule)
+    .map((child) => child.rule) as IRule[]
+  return (
+    <GherkinDocumentWrapper>
+      <ExampleMap rules={rules}/>
+      <Feature feature={gherkinDocument.feature}/>
+    </GherkinDocumentWrapper>
+  )
 }
 
 
