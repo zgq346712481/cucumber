@@ -2,22 +2,38 @@ import * as React from "react"
 import {io} from "cucumber-messages"
 import ExampleCard from "./ExampleCard"
 import {Droppable} from 'react-beautiful-dnd'
-import RuleCard from "./RuleCard"
+import styled from "styled-components"
 import IRule = io.cucumber.messages.IRule
 import IRuleChild = io.cucumber.messages.IRuleChild
 
-interface IRuleColumnProps {
+const Container = styled.div`
+  padding: 0;
+  margin: 8px;
+  border: 1px solid lightgray;
+  border-radius: 2px;
+`
+const Title = styled.div`
+  margin: 0;
+  padding: 8px;
+`;
+const ExampleList = styled.div`
+  margin: 0;
+  padding: 8px;
+`
+
+
+interface IProps {
   rule: IRule
 }
 
-const RuleColumn: React.SFC<IRuleColumnProps> = ({rule}) => {
+const RuleColumn: React.SFC<IProps> = ({rule}) => {
   return (
-    <div>
-      <RuleCard rule={rule}/>
+    <Container>
+      <Title>{rule.name}</Title>
 
       <Droppable droppableId={rule.name!}>
-        {(provided) => <div
-          ref={provided.innerRef}
+        {(provided) => <ExampleList
+          innerRef={provided.innerRef}
           {...provided.droppableProps}
         >
           {rule.children!.map((child: IRuleChild, index: number) => {
@@ -27,9 +43,9 @@ const RuleColumn: React.SFC<IRuleColumnProps> = ({rule}) => {
             return <ExampleCard scenario={child.scenario} index={index}/>
           })}
           {provided.placeholder}
-        </div>}
+        </ExampleList>}
       </Droppable>
-    </div>
+    </Container>
   )
 }
 

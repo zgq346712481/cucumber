@@ -2,7 +2,6 @@ import * as React from 'react'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import {io} from "cucumber-messages"
 import RuleColumn from "./RuleColumn"
-import Grid from "@material-ui/core/Grid/Grid"
 import IRule = io.cucumber.messages.IRule
 
 interface IExampleMapProps {
@@ -30,13 +29,9 @@ export default class ExampleMap extends React.Component<IExampleMapProps, IExamp
   public render() {
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
-        <Grid container spacing={0}>
-          {this.state.rules.map((rule: IRule) => {
-            return <Grid item xs={3}>
-              <RuleColumn key={rule.name!} rule={rule}/>
-            </Grid>
-          })}
-        </Grid>
+        {this.state.rules.map((rule: IRule) => {
+          return <RuleColumn key={rule.name!} rule={rule}/>
+        })}
       </DragDropContext>
     )
   }
