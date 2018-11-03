@@ -40,7 +40,12 @@ Take a gander:
     
 Update messages:
 
+    # Lots of documents
     ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results ../gherkin/testdata/good/*.feature | base64 | pbcopy
+
+    # Just one, with rules
+    ../gherkin/go/bin/gherkin --no-source --no-pickles --fake-results testdata/rules.feature | base64 | pbcopy
+
     # Paste into `#messages` in `index.html`.
 
 ## Ideas

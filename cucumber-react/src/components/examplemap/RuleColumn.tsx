@@ -12,15 +12,16 @@ const Container = styled.div`
   border: 1px solid lightgray;
   border-radius: 2px;
 `
+
 const Title = styled.div`
-  margin: 0;
-  padding: 8px;
-`;
-const ExampleList = styled.div`
   margin: 0;
   padding: 8px;
 `
 
+const ExampleList = styled.div`
+  margin: 0;
+  padding: 8px;
+`
 
 interface IProps {
   rule: IRule
