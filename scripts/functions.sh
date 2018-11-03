@@ -258,6 +258,13 @@ function project_type()
   fi
 }
 
+function find_path()
+{
+  subrepo=$1
+  glob=$2
+  find "${subrepo}" -name "${glob}" | head -1
+}
+
 ################ MAVEN ################
 
 function maven_version()
@@ -267,10 +274,7 @@ function maven_version()
   next_version=$3
 
   pushd "${dir}"
-  xmlstarlet ed --inplace --ps -N pom="http://maven.apache.org/POM/4.0.0" \
-    --update "/pom:project/pom:version" \
-    --value "${version}" \
-    "pom.xml"
+  mvn versions:set -DnewVersion=${version} -DgenerateBackupPoms=false
   popd
 }
 

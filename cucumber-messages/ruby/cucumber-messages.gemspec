@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'cucumber-messages'
-  s.version     = '1.1.2'
+  s.version     = '2.1.1'
   s.authors     = ["Aslak Hellesøy"]
   s.description = "Protocol Buffer messages for Cucumber's inter-process communication"
   s.summary     = "cucumber-messages-#{s.version}"
@@ -35,8 +35,12 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'coveralls'
 
   s.rubygems_version = ">= 1.6.1"
-  s.files            = `git ls-files`.split("\n").reject {|path| path =~ /\.gitignore$/ }
-  s.test_files       = `git ls-files -- spec/*`.split("\n")
+  s.files            = Dir[
+    'README.md',
+    'LICENSE',
+    'lib/**/*'
+  ]
+  s.test_files       = Dir['spec/**/*']
   s.rdoc_options     = ["--charset=UTF-8"]
   s.require_path     = "lib"
 end
