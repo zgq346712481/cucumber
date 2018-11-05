@@ -106,13 +106,7 @@ export function createFeature(feature: IFeature, exampleMap: IExampleMap): IFeat
   return newFeature
 }
 
-export function moveExampleWithinSameRule(exampleMap: IExampleMap, sourceRuleId: string, sourceIndex: number, destinationIndex: number) {
-  const sourceRule: IExampleMapRule = exampleMap.rules[sourceRuleId]
-  const [exampleId] = sourceRule.exampleIds.splice(sourceIndex, 1)
-  sourceRule.exampleIds.splice(destinationIndex, 0, exampleId)
-}
-
-export function moveExampleToOtherRule(exampleMap: IExampleMap, sourceRuleId: string, destinationRuleId: string, sourceIndex: number, destinationIndex: number) {
+export function moveExample(exampleMap: IExampleMap, sourceRuleId: string, destinationRuleId: string, sourceIndex: number, destinationIndex: number) {
   const sourceRule: IExampleMapRule = exampleMap.rules[sourceRuleId]
   const destinationRule: IExampleMapRule = exampleMap.rules[destinationRuleId]
   const [exampleId] = sourceRule.exampleIds.splice(sourceIndex, 1)

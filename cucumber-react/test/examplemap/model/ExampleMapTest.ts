@@ -7,8 +7,8 @@ import {
   buildExampleMap,
   createFeature,
   featureRules,
-  IExampleMap, moveExampleToOtherRule,
-  moveExampleWithinSameRule,
+  IExampleMap,
+  moveExample,
   ruleScenarios
 } from '../../../src/examplemap/ExampleMap'
 import assert = require("assert")
@@ -74,7 +74,7 @@ describe("updateFeature", () => {
       })
 
       const newExampleMap = Automerge.change(exampleMap, 'Move card', (doc: IExampleMap) => {
-        moveExampleWithinSameRule(doc, '2', 0, 1)
+        moveExample(doc, '2', '2', 0, 1)
       })
 
       const newFeature = createFeature(feature, newExampleMap)
@@ -112,7 +112,7 @@ describe("updateFeature", () => {
       })
 
       const newExampleMap = Automerge.change(exampleMap, 'Move card', (doc: IExampleMap) => {
-        moveExampleToOtherRule(doc, '2', '6', 0, 1)
+        moveExample(doc, '2', '6', 0, 1)
       })
       console.log(JSON.stringify(newExampleMap, null, 2))
 
