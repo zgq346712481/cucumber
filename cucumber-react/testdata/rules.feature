@@ -3,32 +3,41 @@ Feature: Some rules
   Background:
     Given fb
 
-  Rule: A
-    The rule A description
+  Rule: R6
+    Description7
 
     Background:
-      Given ab
-
-    Example: Example A1
       Given a
 
-    Example: Example A2
+    Example: E12
       Given a
 
-    Example: Example A3
+    Example: E15
       Given a
 
-  Rule: B
-    The rule B description
+    Example: E18
+      Given a
 
-    Example: Example B1
+  Rule: R21
+    Description22
+
+    Example: E24
       Given b
 
-    Example: Example B2
+    Example: E27
       Given b
 
-    Example: Example B3
+    Example: E30
       Given b
 
-    Example: Example B4
+    Example: E33
       Given b
+
+  Rule: R36
+    Description37
+
+    Example: E39
+      Given c
+
+    Example: E42
+      Given c

@@ -1,15 +1,14 @@
 import * as React from 'react'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
-import {io} from "cucumber-messages"
 import RuleColumn from "./RuleColumn"
-import IRule = io.cucumber.messages.IRule
+import {IExampleMap, IExampleMapRule} from "../../examplemap/ExampleMap"
 
 interface IExampleMapProps {
-  rules: IRule[]
+  exampleMap: IExampleMap
 }
 
 interface IExampleMapState {
-  rules: IRule[]
+  exampleMap: IExampleMap
 }
 
 export default class ExampleMap extends React.Component<IExampleMapProps, IExampleMapState> {
@@ -18,19 +17,48 @@ export default class ExampleMap extends React.Component<IExampleMapProps, IExamp
     super(props)
 
     this.state = {
-      rules: this.props.rules,
+      exampleMap: this.props.exampleMap,
     }
   }
 
   private onDragEnd = (result: DropResult) => {
-    // no-op
+    const {destination, source} = result
+    if (!destination) {
+      // Dropped outside droppable
+      return
+    }
+    if (destination.droppableId === source.droppableId && destination.index === source.index) {
+      // Dropped in original location
+      return
+    }
+
+    const sourceRule: IExampleMapRule = this.state.exampleMap.rules[source.droppableId]
+    const newExampleIds = Array.from(sourceRule.exampleIds)
+    const [exampleId] = newExampleIds.splice(source.index, 1)
+    newExampleIds.splice(destination.index, 0, exampleId)
+
+    const newExampleMap: IExampleMap = {
+      ...this.state.exampleMap,
+      rules: {
+        ...this.state.exampleMap.rules,
+        [sourceRule.id]: {
+          ...sourceRule,
+          exampleIds: newExampleIds,
+        }
+      }
+    }
+
+    this.setState({
+      exampleMap: newExampleMap
+    })
   }
 
   public render() {
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
-        {this.state.rules.map((rule: IRule) => {
-          return <RuleColumn key={rule.name!} rule={rule}/>
+        {this.state.exampleMap.ruleIds.map((ruleId: string) => {
+          const rule = this.state.exampleMap.rules[ruleId] as IExampleMapRule
+          return <RuleColumn key={rule.id} rule={rule} examples={this.state.exampleMap.examples}/>
         })}
       </DragDropContext>
     )

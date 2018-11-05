@@ -1,10 +1,8 @@
 import * as React from "react"
-import {io} from "cucumber-messages"
 import ExampleCard from "./ExampleCard"
 import {Droppable} from 'react-beautiful-dnd'
 import styled from "styled-components"
-import IRule = io.cucumber.messages.IRule
-import IRuleChild = io.cucumber.messages.IRuleChild
+import {IExampleMapExample, IExampleMapRule} from '../../examplemap/ExampleMap'
 
 const Container = styled.div`
   padding: 0;
@@ -24,24 +22,23 @@ const ExampleList = styled.div`
 `
 
 interface IProps {
-  rule: IRule
+  rule: IExampleMapRule,
+  examples: { [id: string]: IExampleMapExample; }
 }
 
-const RuleColumn: React.SFC<IProps> = ({rule}) => {
+const RuleColumn: React.SFC<IProps> = ({rule, examples}) => {
   return (
     <Container>
-      <Title>{rule.name}</Title>
+      <Title>{rule.text}</Title>
 
-      <Droppable droppableId={rule.name!}>
+      <Droppable droppableId={rule.id}>
         {(provided) => <ExampleList
           innerRef={provided.innerRef}
           {...provided.droppableProps}
         >
-          {rule.children!.map((child: IRuleChild, index: number) => {
-            if (!child.scenario) {
-              return null
-            }
-            return <ExampleCard scenario={child.scenario} index={index}/>
+          {rule.exampleIds.map((exampleId: string, index: number) => {
+            const example = examples[exampleId]
+            return <ExampleCard key={exampleId} example={example} index={index}/>
           })}
           {provided.placeholder}
         </ExampleList>}

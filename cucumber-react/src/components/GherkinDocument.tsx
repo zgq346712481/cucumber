@@ -3,9 +3,8 @@ import styled from "styled-components"
 import {io} from "cucumber-messages"
 import Feature from "./gherkin/Feature"
 import ExampleMap from "./examplemap/ExampleMap"
+import {buildExampleMap} from "../examplemap/ExampleMap"
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument
-import IFeatureChild = io.cucumber.messages.IFeatureChild
-import IRule = io.cucumber.messages.IRule
 
 const GherkinDocumentWrapper = styled.section`
   color: #113654;
@@ -52,14 +51,12 @@ export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocume
   if (!gherkinDocument.feature) {
     return <div>Empty Gherkin document :-(</div>
   }
-  const rules = gherkinDocument
-    .feature
-    .children!
-    .filter((child: IFeatureChild) => child.rule)
-    .map((child) => child.rule) as IRule[]
+
+  const exampleMap = buildExampleMap(gherkinDocument.feature, {examples: {}, rules: {}, ruleIds: []})
+
   return (
     <GherkinDocumentWrapper>
-      <ExampleMap rules={rules}/>
+      <ExampleMap exampleMap={exampleMap}/>
       <Feature feature={gherkinDocument.feature}/>
     </GherkinDocumentWrapper>
   )

@@ -1,8 +1,7 @@
 import * as React from "react"
-import {io} from "cucumber-messages"
 import {Draggable} from 'react-beautiful-dnd'
 import styled from "styled-components"
-import IScenario = io.cucumber.messages.IScenario
+import {IExampleMapExample} from "../../examplemap/ExampleMap"
 
 const Container = styled.div`
   border: 1px solid lightgray;
@@ -13,19 +12,19 @@ const Container = styled.div`
 `
 
 interface IProps {
-  scenario: IScenario,
+  example: IExampleMapExample,
   index: number,
 }
 
-const ExampleCard: React.SFC<IProps> = ({scenario, index}) => {
+const ExampleCard: React.SFC<IProps> = ({example, index}) => {
   return (
-    <Draggable draggableId={scenario.name!} index={index}>
+    <Draggable draggableId={example.id} index={index}>
       {(provided) => <div
         {...provided.draggableProps}
         {...provided.dragHandleProps}
         ref={provided.innerRef}
       >
-        <Container>{scenario.name}</Container>
+        <Container>{example.text}</Container>
       </div>
       }
     </Draggable>
