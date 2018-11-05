@@ -1,4 +1,6 @@
 import * as React from 'react'
+// @ts-ignore
+import * as Automerge from 'automerge'
 import {DragDropContext, DropResult} from 'react-beautiful-dnd'
 import RuleColumn from "./RuleColumn"
 import {IExampleMap, IExampleMapRule} from "../../examplemap/ExampleMap"
@@ -32,21 +34,15 @@ export default class ExampleMap extends React.Component<IExampleMapProps, IExamp
       return
     }
 
-    const sourceRule: IExampleMapRule = this.state.exampleMap.rules[source.droppableId]
-    const newExampleIds = Array.from(sourceRule.exampleIds)
-    const [exampleId] = newExampleIds.splice(source.index, 1)
-    newExampleIds.splice(destination.index, 0, exampleId)
+    const newExampleMap = Automerge.change(this.state.exampleMap, 'Move Example', (exampleMap: IExampleMap) => {
+      const sourceRule: IExampleMapRule = this.state.exampleMap.rules[source.droppableId]
+      const newExampleIds = Array.from(sourceRule.exampleIds)
+      const [exampleId] = newExampleIds.splice(source.index, 1)
+      newExampleIds.splice(destination.index, 0, exampleId)
 
-    const newExampleMap: IExampleMap = {
-      ...this.state.exampleMap,
-      rules: {
-        ...this.state.exampleMap.rules,
-        [sourceRule.id]: {
-          ...sourceRule,
-          exampleIds: newExampleIds,
-        }
-      }
-    }
+      const rule = exampleMap.rules[sourceRule.id]
+      rule.exampleIds = newExampleIds
+    })
 
     this.setState({
       exampleMap: newExampleMap

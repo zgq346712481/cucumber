@@ -18,7 +18,7 @@ describe("buildExampleMap", () => {
         Example: E4
     `)
 
-    const exampleMap = Automerge.change(Automerge.init(), 'Initialize Example Map', (doc: any) => {
+    const exampleMap = Automerge.change(Automerge.init(), 'Initialize Example Map', (doc: IExampleMap) => {
       buildExampleMap(gherkinDocument.feature!, doc)
     })
     const expected: IExampleMap = {

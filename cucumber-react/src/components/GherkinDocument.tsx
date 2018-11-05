@@ -1,9 +1,11 @@
 import * as React from "react"
 import styled from "styled-components"
+// @ts-ignore
+import * as Automerge from 'automerge'
 import {io} from "cucumber-messages"
 import Feature from "./gherkin/Feature"
 import ExampleMap from "./examplemap/ExampleMap"
-import {buildExampleMap} from "../examplemap/ExampleMap"
+import {buildExampleMap, IExampleMap} from "../examplemap/ExampleMap"
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument
 
 const GherkinDocumentWrapper = styled.section`
@@ -52,7 +54,9 @@ export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocume
     return <div>Empty Gherkin document :-(</div>
   }
 
-  const exampleMap = buildExampleMap(gherkinDocument.feature, {examples: {}, rules: {}, ruleIds: []})
+  const exampleMap = Automerge.change(Automerge.init(), 'Initialize Example Map', (doc: IExampleMap) => {
+    buildExampleMap(gherkinDocument.feature!, doc)
+  })
 
   return (
     <GherkinDocumentWrapper>
