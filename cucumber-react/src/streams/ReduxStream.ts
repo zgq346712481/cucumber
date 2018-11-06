@@ -1,7 +1,7 @@
-import { Writable } from "stream"
-import { MiddlewareAPI } from "redux"
-import { ActionTypes, IAppDispatch } from "../actions"
-import { io } from "cucumber-messages"
+import {Writable} from "stream"
+import {MiddlewareAPI} from "redux"
+import {ActionTypes, IAppDispatch} from "../actions"
+import {io} from "cucumber-messages"
 import IWrapper = io.cucumber.messages.IWrapper
 
 /**
@@ -12,7 +12,7 @@ export default class extends Writable {
   private api: MiddlewareAPI<IAppDispatch>
 
   constructor(api: MiddlewareAPI<IAppDispatch>) {
-    super({ objectMode: true })
+    super({objectMode: true})
     this.api = api
   }
 

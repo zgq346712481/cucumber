@@ -110,3 +110,25 @@ The app could use the OS to send screen messages (autotest like)
 
 * Design a layout on paper (take pictures)
 * Write tests (with Enzyme)
+
+### Example Mapping
+
+Each Gherkin Document has two views that can be swapped between (using a tab?):
+
+- Text
+- ExampleMap
+
+The *ExampleMap* view renders the Gherkin Document as an Example Map. Cards can be dragged around
+to reorder elements, and cards can be added and removed.
+
+As the ExampleMap changes, so does the *Text* view. The underlying `GherkinDocument` is updated on the
+fly. The *ExampleMap* can be thought of as an *editor*.
+
+As soon as the `GherkinDocument` is edited, the *Text* view is marked as *dirty*, indicating that
+what's displayed is different from the original document (which originates from source control).
+
+The original document is still preserved, but the user now has the option to *save* the new document.
+The easiest way to do this is to just save it to disk (Electron App). Collaboration can happen
+via a central server.
+
+Alternatively, the document source can be copied and pasted. (Relies on gherkin-pretty).

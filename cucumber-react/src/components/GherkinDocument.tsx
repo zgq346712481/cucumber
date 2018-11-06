@@ -5,7 +5,7 @@ import * as Automerge from 'automerge'
 import {io} from "cucumber-messages"
 import Feature from "./gherkin/Feature"
 import ExampleMap from "./examplemap/ExampleMap"
-import {buildExampleMap, IExampleMap} from "../examplemap/ExampleMap"
+import {buildExampleMap, createFeature, IExampleMap} from "../examplemap/ExampleMap"
 import IGherkinDocument = io.cucumber.messages.IGherkinDocument
 
 const GherkinDocumentWrapper = styled.section`
@@ -58,9 +58,14 @@ export const GherkinDocument: React.SFC<IGherkinDocumentProps> = ({gherkinDocume
     buildExampleMap(gherkinDocument.feature!, doc)
   })
 
+  const exampleMapUpdated = (em: IExampleMap) => {
+    const feature = createFeature(gherkinDocument.feature!, em)
+    console.log("FEATURE", JSON.stringify(feature, null, 2))
+  }
+
   return (
     <GherkinDocumentWrapper>
-      <ExampleMap exampleMap={exampleMap}/>
+      <ExampleMap exampleMap={exampleMap} exampleMapUpdated={exampleMapUpdated}/>
       <Feature feature={gherkinDocument.feature}/>
     </GherkinDocumentWrapper>
   )

@@ -6,7 +6,8 @@ import RuleColumn from "./RuleColumn"
 import {IExampleMap, IExampleMapRule, moveExample,} from "../../examplemap/ExampleMap"
 
 interface IExampleMapProps {
-  exampleMap: IExampleMap
+  exampleMap: IExampleMap,
+  exampleMapUpdated: (exampleMap: IExampleMap) => void
 }
 
 interface IExampleMapState {
@@ -41,6 +42,8 @@ export default class ExampleMap extends React.Component<IExampleMapProps, IExamp
     this.setState({
       exampleMap: newExampleMap
     })
+
+    this.props.exampleMapUpdated(newExampleMap)
   }
 
   public render() {
