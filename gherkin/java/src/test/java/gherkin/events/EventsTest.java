@@ -1,12 +1,13 @@
 package gherkin.events;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EventsTest {
+
     @Test
     public void generates_events_for_english_by_default() {
         String data = "Feature: Hello\n  Scenario: World\n    Given hello";
@@ -26,4 +27,5 @@ public class EventsTest {
         assertEquals(GherkinDocumentEvent.class, events.get(1).getClass());
         assertEquals(PickleEvent.class, events.get(2).getClass());
     }
+
 }

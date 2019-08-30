@@ -5,12 +5,12 @@ import gherkin.deps.com.google.gson.Gson;
 import gherkin.deps.com.google.gson.JsonParser;
 import gherkin.pickles.Compiler;
 import gherkin.pickles.Pickle;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ParserTest {
 
