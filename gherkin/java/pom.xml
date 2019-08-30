@@ -58,6 +58,38 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
+                <executions>
+                    <execution>
+                        <id>java11</id>
+                        <phase>none</phase>
+                        <goals>
+                            <goal>compile</goal>
+                            <!-- <goal>testCompile</goal> -->
+                        </goals>
+                        <configuration>
+                            <release>11</release>
+                            <jdkToolchain>
+                                <version>11</version>
+                            </jdkToolchain>
+                            <compileSourceRoots>
+                                <compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
+                            </compileSourceRoots>
+                            <testCompileSourceRoots>
+                                <testCompileSourceRoot>${project.basedir}/src/test/java</testCompileSourceRoot>
+                                <testCompileSourceRoot>${project.basedir}/src/test/java11</testCompileSourceRoot>
+                                <compileSourceRoot>${project.basedir}/src/main/java</compileSourceRoot>
+                                <compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
+                            </testCompileSourceRoots>
+                            <multiReleaseOutput>true</multiReleaseOutput>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>2.8.2</version>
             </plugin>
 
             <plugin>
@@ -99,8 +131,18 @@
                         </manifest>
                         <manifestEntries>
                             <Automatic-Module-Name>${project.Automatic-Module-Name}</Automatic-Module-Name>
+                            <Multi-Release>true</Multi-Release>
                         </manifestEntries>
                     </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <tagNameFormat>v@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
 
@@ -112,10 +154,35 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.5.3</version>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.2</version>
                 <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
+                    <argLine>${project.surefire.argLine.jpms}</argLine>
+                    <excludes>
+                        <exclude>**/*IT.java</exclude>
+                    </excludes>
+                    <useFile>false</useFile>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <version>1.1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>${base.java.version}</version>
+                            <vendor>${toolchain.vendor}</vendor>
+                        </jdk>
+                    </toolchains>
                 </configuration>
             </plugin>
 
@@ -156,34 +223,45 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>build-helper-maven-plugin</artifactId>
-                        <version>3.0.0</version>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>add-source-java11</id>
-                                <phase>generate-sources</phase>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                                <configuration>
-                                    <sources>
-                                        <source>${project.basedir}/src/main/java11</source>
-                                    </sources>
-                                </configuration>
+                                <id>java11</id>
+                                <phase>compile</phase>
                             </execution>
                         </executions>
                     </plugin>
+                    <!-- <plugin> -->
+                        <!-- <groupId>org.codehaus.mojo</groupId> -->
+                        <!-- <artifactId>build-helper-maven-plugin</artifactId> -->
+                        <!-- <version>3.0.0</version> -->
+                        <!-- <executions> -->
+                            <!-- <execution> -->
+                                <!-- <id>add-source-java11</id> -->
+                                <!-- <phase>generate-sources</phase> -->
+                                <!-- <goals> -->
+                                    <!-- <goal>add-source</goal> -->
+                                <!-- </goals> -->
+                                <!-- <configuration> -->
+                                    <!-- <sources> -->
+                                        <!-- <source>${project.basedir}/src/main/java11</source> -->
+                                    <!-- </sources> -->
+                                <!-- </configuration> -->
+                            <!-- </execution> -->
+                        <!-- </executions> -->
+                    <!-- </plugin> -->
                 </plugins>
             </build>
             <properties>
                 <maven-bundle-plugin.version>4.0.0</maven-bundle-plugin.version>
-                <maven.compiler.release>11</maven.compiler.release>
-                <maven.compiler.source>11</maven.compiler.source>
-                <maven.compiler.target>11</maven.compiler.target>
+                <!-- <maven.compiler.release>11</maven.compiler.release> -->
+                <!-- <maven.compiler.source>11</maven.compiler.source> -->
+                <!-- <maven.compiler.target>11</maven.compiler.target> -->
                 <project.surefire.argLine.jpms>${project.surefire.argLine.jpms.global} ${project.surefire.argLine.jpms.module}</project.surefire.argLine.jpms>
             </properties>
         </profile>
+
         <profile>
             <id>release-sign-artifacts</id>
             <build>
@@ -229,5 +307,7 @@
             --add-opens org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
             --add-opens org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED</project.surefire.argLine.jpms.global>
         <project.surefire.argLine.jpms.module></project.surefire.argLine.jpms.module>
+        <toolchain.vendor>openjdk</toolchain.vendor>
+        <base.java.version>1.8</base.java.version>
     </properties>
 </project>
