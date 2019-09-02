@@ -94,35 +94,8 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.2</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M2</version>
-                <executions>
-                    <execution>
-                        <id>enforce-maven</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                        <configuration>
-                            <rules>
-                                <requireJavaVersion>
-                                    <version>[1.8,9),[11,)</version>
-                                </requireJavaVersion>
-                            </rules>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.1.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -150,19 +123,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>3.1.0</version>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <configuration>
-                    <argLine>${project.surefire.argLine.jpms}</argLine>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
-                    <useFile>false</useFile>
-                </configuration>
             </plugin>
 
             <plugin>
@@ -202,7 +162,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven-bundle-plugin.version}</version>
+                <version>4.2.1</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -214,54 +174,6 @@
     </build>
 
     <profiles>
-
-        <profile>
-            <id>java11</id>
-            <activation>
-                <jdk>[11,)</jdk>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>java11</id>
-                                <phase>compile</phase>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <!-- <plugin> -->
-                        <!-- <groupId>org.codehaus.mojo</groupId> -->
-                        <!-- <artifactId>build-helper-maven-plugin</artifactId> -->
-                        <!-- <version>3.0.0</version> -->
-                        <!-- <executions> -->
-                            <!-- <execution> -->
-                                <!-- <id>add-source-java11</id> -->
-                                <!-- <phase>generate-sources</phase> -->
-                                <!-- <goals> -->
-                                    <!-- <goal>add-source</goal> -->
-                                <!-- </goals> -->
-                                <!-- <configuration> -->
-                                    <!-- <sources> -->
-                                        <!-- <source>${project.basedir}/src/main/java11</source> -->
-                                    <!-- </sources> -->
-                                <!-- </configuration> -->
-                            <!-- </execution> -->
-                        <!-- </executions> -->
-                    <!-- </plugin> -->
-                </plugins>
-            </build>
-            <properties>
-                <maven-bundle-plugin.version>4.0.0</maven-bundle-plugin.version>
-                <!-- <maven.compiler.release>11</maven.compiler.release> -->
-                <!-- <maven.compiler.source>11</maven.compiler.source> -->
-                <!-- <maven.compiler.target>11</maven.compiler.target> -->
-                <project.surefire.argLine.jpms>${project.surefire.argLine.jpms.global} ${project.surefire.argLine.jpms.module}</project.surefire.argLine.jpms>
-            </properties>
-        </profile>
-
         <profile>
             <id>release-sign-artifacts</id>
             <build>
@@ -293,7 +205,6 @@
     </profiles>
 
     <properties>
-        <maven-bundle-plugin.version>3.5.1</maven-bundle-plugin.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.custom.encoding>UTF-8</project.custom.encoding>
@@ -301,6 +212,7 @@
         <project.build.outputEncoding>${project.custom.encoding}</project.build.outputEncoding>
         <project.reporting.outputEncoding>${project.custom.encoding}</project.reporting.outputEncoding>
         <project.Automatic-Module-Name>io.cucumber.gherkin</project.Automatic-Module-Name>
+
         <project.surefire.argLine.jpms></project.surefire.argLine.jpms>
         <project.surefire.argLine.jpms.global>--add-opens ${project.Automatic-Module-Name}/${project.Automatic-Module-Name}.tests=ALL-UNNAMED
             --add-opens ${project.Automatic-Module-Name}/${project.Automatic-Module-Name}.tests=org.junit.platform.commons

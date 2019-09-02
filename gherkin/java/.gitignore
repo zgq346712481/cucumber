@@ -1,6 +1,6 @@
-.idea/
-gherkin.iml
-target/
-acceptance/
+*.iml
 .built
 .compared
+.idea/
+acceptance/
+target/
