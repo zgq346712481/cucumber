@@ -61,10 +61,9 @@
                 <executions>
                     <execution>
                         <id>java11</id>
-                        <phase>none</phase>
+                        <phase>compile</phase>
                         <goals>
                             <goal>compile</goal>
-                            <!-- <goal>testCompile</goal> -->
                         </goals>
                         <configuration>
                             <release>11</release>
@@ -74,12 +73,6 @@
                             <compileSourceRoots>
                                 <compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
                             </compileSourceRoots>
-                            <testCompileSourceRoots>
-                                <testCompileSourceRoot>${project.basedir}/src/test/java</testCompileSourceRoot>
-                                <testCompileSourceRoot>${project.basedir}/src/test/java11</testCompileSourceRoot>
-                                <compileSourceRoot>${project.basedir}/src/main/java</compileSourceRoot>
-                                <compileSourceRoot>${project.basedir}/src/main/java11</compileSourceRoot>
-                            </testCompileSourceRoots>
                             <multiReleaseOutput>true</multiReleaseOutput>
                         </configuration>
                     </execution>
@@ -135,6 +128,13 @@
                             <goal>toolchain</goal>
                         </goals>
                     </execution>
+                    <!-- <execution> -->
+                        <!-- <id>tests</id> -->
+                        <!-- <phase>test</phase> -->
+                        <!-- <goals> -->
+                            <!-- <goal>toolchain</goal> -->
+                        <!-- </goals> -->
+                    <!-- </execution> -->
                 </executions>
                 <configuration>
                     <toolchains>
@@ -149,12 +149,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M3</version>
                 <configuration>
                     <argLine>${project.surefire.argLine.jpms}</argLine>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
                     <useFile>false</useFile>
                 </configuration>
             </plugin>
@@ -174,6 +171,16 @@
     </build>
 
     <profiles>
+        <profile>
+            <id>java11</id>
+            <activation>
+                <jdk>[11,)</jdk>
+            </activation>
+            <properties>
+                <base.java.version>11</base.java.version>
+            </properties>
+        </profile>
+
         <profile>
             <id>release-sign-artifacts</id>
             <build>
@@ -212,12 +219,13 @@
         <project.build.outputEncoding>${project.custom.encoding}</project.build.outputEncoding>
         <project.reporting.outputEncoding>${project.custom.encoding}</project.reporting.outputEncoding>
         <project.Automatic-Module-Name>io.cucumber.gherkin</project.Automatic-Module-Name>
-
         <project.surefire.argLine.jpms></project.surefire.argLine.jpms>
-        <project.surefire.argLine.jpms.global>--add-opens ${project.Automatic-Module-Name}/${project.Automatic-Module-Name}.tests=ALL-UNNAMED
+        <project.surefire.argLine.jpms.global>
+            --add-opens ${project.Automatic-Module-Name}/${project.Automatic-Module-Name}.tests=ALL-UNNAMED
             --add-opens ${project.Automatic-Module-Name}/${project.Automatic-Module-Name}.tests=org.junit.platform.commons
             --add-opens org.junit.platform.commons/org.junit.platform.commons.util=ALL-UNNAMED
-            --add-opens org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED</project.surefire.argLine.jpms.global>
+            --add-opens org.junit.platform.commons/org.junit.platform.commons.logging=ALL-UNNAMED
+        </project.surefire.argLine.jpms.global>
         <project.surefire.argLine.jpms.module></project.surefire.argLine.jpms.module>
         <toolchain.vendor>openjdk</toolchain.vendor>
         <base.java.version>1.8</base.java.version>
