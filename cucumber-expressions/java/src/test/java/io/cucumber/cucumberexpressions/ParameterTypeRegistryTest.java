@@ -42,17 +42,25 @@ public class ParameterTypeRegistryTest {
     @Test
     public void does_not_allow_more_than_one_preferential_parameter_type_for_each_regexp() {
 
-        registry.defineParameterType(new ParameterType<>("name", CAPITALISED_WORD, Name.class, Name::new, false, true));
-        registry.defineParameterType(new ParameterType<>("person", CAPITALISED_WORD, Person.class, Person::new, false, false));
+        registry.defineParameterType(new ParameterType<>("name", CAPITALISED_WORD, Name.class, new Transformer<Name>() {
+            @Override
+            public Name transform(String arg) {
+                return new Name(arg);
+            }
+        }, false, true));
+        registry.defineParameterType(new ParameterType<>("person", CAPITALISED_WORD, Person.class, new Transformer<Person>() {
+            @Override
+            public Person transform(String arg) {
+                return new Person(arg);
+            }
+        }, false, false));
 
-        final Executable testMethod = () -> registry.defineParameterType(new ParameterType<>(
-                "place",
-                CAPITALISED_WORD,
-                Place.class,
-                Place::new,
-                false,
-                true
-        ));
+        final Executable testMethod = () -> registry.defineParameterType(new ParameterType<>("place", CAPITALISED_WORD, Place.class, new Transformer<Place>() {
+            @Override
+            public Place transform(String arg) {
+                return new Place(arg);
+            }
+        }, false, true));
 
         final CucumberExpressionException thrownException = assertThrows(CucumberExpressionException.class, testMethod);
         assertThat("Unexpected message", thrownException.getMessage(), is(equalTo("There can only be one preferential parameter type per regexp. The regexp /[A-Z]+\\w+/ is used for two preferential parameter types, {name} and {place}")));
@@ -110,7 +118,12 @@ public class ParameterTypeRegistryTest {
     @Test
     public void does_not_allow_anonymous_parameter_type_to_be_registered() {
 
-        final Executable testMethod = () -> registry.defineParameterType(new ParameterType<>("", ".*", Object.class, (Transformer<Object>) arg -> arg));
+        final Executable testMethod = () -> registry.defineParameterType(new ParameterType<>("", ".*", Object.class, new Transformer<Object>() {
+            @Override
+            public Object transform(String arg) {
+                return arg;
+            }
+        }));
 
         final DuplicateTypeNameException thrownException = assertThrows(DuplicateTypeNameException.class, testMethod);
         assertThat("Unexpected message", thrownException.getMessage(), is(equalTo("The anonymous parameter type has already been defined")));

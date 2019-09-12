@@ -24,13 +24,12 @@ public class BuiltInParameterTransformerTest {
         Type abstractListOfE = ArrayList.class.getGenericSuperclass();
         final Executable testMethod = () -> objectMapper.transform("something", abstractListOfE);
 
-        String expected = "" +
-                "Can't transform 'something' to java.util.AbstractList<E>\n" +
-                "BuiltInParameterTransformer only supports a limited number of class types\n" +
-                "Consider using a different object mapper or register a parameter type for java.util.AbstractList<E>";
-
         final IllegalArgumentException thrownException = assertThrows(IllegalArgumentException.class, testMethod);
-        assertThat("Unexpected message", thrownException.getMessage(), is(equalTo(expected)));
+        assertThat("Unexpected message", thrownException.getMessage(), is(equalTo(
+                "Can't transform 'something' to java.util.AbstractList<E>\n" +
+                        "BuiltInParameterTransformer only supports a limited number of class types\n" +
+                        "Consider using a different object mapper or register a parameter type for java.util.AbstractList<E>"
+        )));
     }
 
     @Test
