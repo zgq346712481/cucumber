@@ -1,3 +1,3 @@
-module io.cucumber.tag.expressions {
+module io.cucumber.tagexpressions {
     exports io.cucumber.tagexpressions;
 }
