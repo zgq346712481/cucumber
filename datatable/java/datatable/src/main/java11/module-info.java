@@ -1,5 +1,5 @@
 module io.cucumber.datatable {
     exports io.cucumber.datatable;
-    requires io.cucumber.datatable.dependencies;
+    requires diffutils;
     requires org.apiguardian.api;
 }
