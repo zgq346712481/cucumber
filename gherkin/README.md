@@ -68,15 +68,18 @@ Alternatively, you can use the lower level parser and compiler. Some usage examp
 
 ```java
 // Java
-Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
-GherkinDocument gherkinDocument = parser.parse("Feature: ...");
-List<Pickle> pickles = new Compiler().compile(gherkinDocument)
+List<String> paths = singletonList("testdata/good/minimal.feature");
+boolean includeSource = false;
+boolean includeAst = true;
+boolean includePickles = true;
+Stream<Envelope> envelopeStream = Gherkin.fromPaths(paths, includeSource, includeAst, includePickles);
+Stream<Envelope> pickleStream = envelopeStream.filter(Envelope::hasPickle);
 ```
 
 ```csharp
 // C#
 var parser = new Parser();
-var gherkinDocument = parser.Parse("Feature: ...");
+var gherkinDocument = parser.Parse(@"Drive:\PathToGherkinDocument\document.feature");
 ```
 
 ```ruby

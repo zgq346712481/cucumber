@@ -6,6 +6,7 @@ default: .tested
 
 .tested: pom.xml $(JAVA_SOURCE_FILES) .deps
 	mvn install
+	./scripts/check-jar.sh
 	touch $@
 
 .deps:
@@ -15,6 +16,9 @@ update-dependencies:
 	mvn versions:force-releases
 	mvn versions:use-latest-versions -Dmaven.version.rules=file://$(shell pwd)/maven-versions-rules.xml
 .PHONY: update-dependencies
+
+pre-release: update-dependencies clean default
+.PHONY: pre-release
 
 update-version:
 ifdef NEW_VERSION
@@ -38,4 +42,5 @@ clean: clean-java
 
 clean-java:
 	rm -rf target .deps .tested
+	mvn clean
 .PHONY: clean-java
