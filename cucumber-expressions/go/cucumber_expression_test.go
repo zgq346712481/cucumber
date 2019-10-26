@@ -135,7 +135,7 @@ func TestCucumberExpression(t *testing.T) {
 	t.Run("matches escaped parenthesis", func(t *testing.T) {
 		require.Equal(
 			t,
-			MatchCucumberExpression(t, "three \\\\(exceptionally) {string} mice", `three (exceptionally) "blind" mice`),
+			MatchCucumberExpression(t, "three \\(exceptionally) {string} mice", `three (exceptionally) "blind" mice`),
 			[]interface{}{"blind"},
 		)
 	})
@@ -143,7 +143,7 @@ func TestCucumberExpression(t *testing.T) {
 	t.Run("matches escaped slash", func(t *testing.T) {
 		require.Equal(
 			t,
-			MatchCucumberExpression(t, "12\\\\/2020", `12/2020`),
+			MatchCucumberExpression(t, "12\\/2020", `12/2020`),
 			[]interface{}{},
 		)
 	})
@@ -241,7 +241,7 @@ func TestCucumberExpression(t *testing.T) {
 	t.Run("allows escaped optional parameters", func(t *testing.T) {
 		require.Equal(
 			t,
-			MatchCucumberExpression(t, "\\\\({int})", `(3)`),
+			MatchCucumberExpression(t, "\\({int})", `(3)`),
 			[]interface{}{3},
 		)
 	})
