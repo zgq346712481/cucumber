@@ -144,7 +144,7 @@ public final class CucumberExpression implements Expression {
                 parameterTypes.set(i, parameterType.deAnonymize(type, arg -> defaultTransformer.transform(arg, type)));
             }
         }
-        return Argument.build(treeRegexp, parameterTypes, text);
+        return Argument.build(treeRegexp, text, parameterTypes);
     }
 
     @Override
