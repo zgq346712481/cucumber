@@ -23,7 +23,6 @@
     "skipLibCheck": true
   },
   "include": [
-    "src/**/*",
-    "test/**/*"
+    "src/**/*"
   ]
 }
