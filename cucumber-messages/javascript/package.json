@@ -3,7 +3,7 @@
   "version": "8.0.0",
   "description": "Protocol Buffer messages for Cucumber's inter-process communication",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/api-rollup.d.ts",
   "repository": "git://github.com/cucumber/cucumber-messages-javascript.git",
   "author": "Cucumber Limited <cukes@googlegroups.com>",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "coverage": "nyc --reporter=html --reporter=text mocha",
     "pbjs": "pbjs --target static-module --wrap commonjs messages.proto --out src/cucumber-messages.js",
     "pbts": "pbts src/cucumber-messages.js > src/cucumber-messages.d.ts",
-    "build": "tsc && npm run pbjs && npm run pbts && copyfiles src/cucumber-messages.js src/cucumber-messages.d.ts dist -f",
+    "build": "tsc && npm run pbjs && npm run pbts && copyfiles src/cucumber-messages.js src/cucumber-messages.d.ts dist -f && api-extractor run --local",
     "prepublishOnly": "npm run build"
   },
   "files": [
@@ -26,6 +26,7 @@
     "uuid": "^3.3.3"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.7.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.12.16",
     "copyfiles": "^2.1.1",

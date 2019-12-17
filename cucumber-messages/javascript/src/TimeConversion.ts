@@ -3,28 +3,35 @@ import { messages } from './index'
 const MILLISECONDS_PER_SECOND = 1000
 const NANOSECONDS_PER_MILLISECOND = 1000000
 
-export function millisecondsSinceEpochToTimestamp(
+function millisecondsSinceEpochToTimestamp(
   millisecondsSinceEpoch: number
 ): messages.ITimestamp {
   return new messages.Timestamp(toSecondsAndNanos(millisecondsSinceEpoch))
 }
 
-export function millisecondsToDuration(
+function millisecondsToDuration(
   durationInMilliseconds: number
 ): messages.IDuration {
   return new messages.Duration(toSecondsAndNanos(durationInMilliseconds))
 }
 
-export function timestampToMillisecondsSinceEpoch(
+function timestampToMillisecondsSinceEpoch(
   timestamp: messages.ITimestamp
 ): number {
   const { nanos, seconds } = timestamp
   return toMillis(seconds, nanos)
 }
 
-export function durationToMilliseconds(duration: messages.IDuration) {
+function durationToMilliseconds(duration: messages.IDuration) {
   const { nanos, seconds } = duration
   return toMillis(seconds, nanos)
+}
+
+export default {
+  millisecondsSinceEpochToTimestamp,
+  millisecondsToDuration,
+  timestampToMillisecondsSinceEpoch,
+  durationToMilliseconds,
 }
 
 function toSecondsAndNanos(milliseconds: number) {
