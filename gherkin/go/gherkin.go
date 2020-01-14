@@ -3,7 +3,7 @@ package gherkin
 import (
 	"bufio"
 	"fmt"
-	"github.com/cucumber/cucumber-messages-go/v6"
+	"github.com/cucumber/messages-go/v9"
 	"io"
 	"strings"
 )
@@ -123,13 +123,13 @@ func (g *Line) StartsWith(prefix string) bool {
 	return strings.HasPrefix(g.TrimmedLineText, prefix)
 }
 
-func ParseGherkinDocument(in io.Reader) (gherkinDocument *messages.GherkinDocument, err error) {
-	return ParseGherkinDocumentForLanguage(in, DEFAULT_DIALECT)
+func ParseGherkinDocument(in io.Reader, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
+	return ParseGherkinDocumentForLanguage(in, DEFAULT_DIALECT, newId)
 }
 
-func ParseGherkinDocumentForLanguage(in io.Reader, language string) (gherkinDocument *messages.GherkinDocument, err error) {
+func ParseGherkinDocumentForLanguage(in io.Reader, language string, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
 
-	builder := NewAstBuilder()
+	builder := NewAstBuilder(newId)
 	parser := NewParser(builder)
 	parser.StopAtFirstError(false)
 	matcher := NewLanguageMatcher(GherkinDialectsBuildin(), language)

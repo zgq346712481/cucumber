@@ -1,52 +1,32 @@
 {
   "pickle": {
-    "id": "a52fc25d450d3ebef7452200369049dc8d554419",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 4
-      },
-      {
-        "column": 7,
-        "line": 9
-      }
+    "astNodeIds": [
+      "5",
+      "2"
     ],
+    "id": "15",
+    "language": "en",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 5
-          },
-          {
-            "column": 7,
-            "line": 9
-          }
+        "astNodeIds": [
+          "0",
+          "2"
         ],
+        "id": "14",
         "text": "y"
       }
     ],
     "tags": [
       {
-        "location": {
-          "column": 1,
-          "line": 1
-        },
+        "astNodeId": "13",
         "name": "@a"
       },
       {
-        "location": {
-          "column": 3,
-          "line": 3
-        },
+        "astNodeId": "3",
         "name": "@b"
       },
       {
-        "location": {
-          "column": 6,
-          "line": 3
-        },
+        "astNodeId": "4",
         "name": "@c"
       }
     ],
@@ -55,60 +35,37 @@
 }
 {
   "pickle": {
-    "id": "f302b2b954f7cbec1bfe1e10c07829d967af97af",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 12
-      },
-      {
-        "column": 7,
-        "line": 18
-      }
+    "astNodeIds": [
+      "12",
+      "8"
     ],
+    "id": "17",
+    "language": "en",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 13
-          },
-          {
-            "column": 7,
-            "line": 18
-          }
+        "astNodeIds": [
+          "6",
+          "8"
         ],
+        "id": "16",
         "text": "n"
       }
     ],
     "tags": [
       {
-        "location": {
-          "column": 1,
-          "line": 1
-        },
+        "astNodeId": "13",
         "name": "@a"
       },
       {
-        "location": {
-          "column": 3,
-          "line": 11
-        },
+        "astNodeId": "10",
         "name": "@d"
       },
       {
-        "location": {
-          "column": 6,
-          "line": 11
-        },
+        "astNodeId": "11",
         "name": "@e"
       },
       {
-        "location": {
-          "column": 5,
-          "line": 15
-        },
+        "astNodeId": "9",
         "name": "@f"
       }
     ],

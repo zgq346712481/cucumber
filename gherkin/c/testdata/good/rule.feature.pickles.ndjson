@@ -1,40 +1,31 @@
 {
   "pickle": {
-    "id": "510c41a18d76486dbb93f60368479febac14b5b2",
-    "language": "en",
-    "locations": [
-      {
-        "column": 5,
-        "line": 12
-      }
+    "astNodeIds": [
+      "3"
     ],
+    "id": "9",
+    "language": "en",
     "name": "Example A",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "6",
         "text": "fb"
       },
       {
-        "locations": [
-          {
-            "column": 13,
-            "line": 10
-          }
+        "astNodeIds": [
+          "1"
         ],
+        "id": "7",
         "text": "ab"
       },
       {
-        "locations": [
-          {
-            "column": 13,
-            "line": 13
-          }
+        "astNodeIds": [
+          "2"
         ],
+        "id": "8",
         "text": "a"
       }
     ],
@@ -43,32 +34,25 @@
 }
 {
   "pickle": {
-    "id": "70f2ab5c6070236e497e65c65606e15c1e24e528",
-    "language": "en",
-    "locations": [
-      {
-        "column": 5,
-        "line": 18
-      }
+    "astNodeIds": [
+      "5"
     ],
+    "id": "12",
+    "language": "en",
     "name": "Example B",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "10",
         "text": "fb"
       },
       {
-        "locations": [
-          {
-            "column": 13,
-            "line": 19
-          }
+        "astNodeIds": [
+          "4"
         ],
+        "id": "11",
         "text": "b"
       }
     ],

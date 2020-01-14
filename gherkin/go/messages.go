@@ -1,12 +1,9 @@
 package gherkin
 
 import (
-	"bufio"
 	"fmt"
-	"github.com/cucumber/cucumber-messages-go/v6"
+	"github.com/cucumber/messages-go/v9"
 	gio "github.com/gogo/protobuf/io"
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
 	"io"
 	"io/ioutil"
 	"math"
@@ -20,32 +17,16 @@ func Messages(
 	includeSource bool,
 	includeGherkinDocument bool,
 	includePickles bool,
-	outStream io.Writer,
-	json bool,
+	writer gio.WriteCloser,
+	newId func() string,
 ) ([]messages.Envelope, error) {
 	var result []messages.Envelope
 	var err error
 
 	handleMessage := func(result []messages.Envelope, message *messages.Envelope) ([]messages.Envelope, error) {
-		if outStream != nil {
-			if json {
-				ma := jsonpb.Marshaler{}
-				msgJson, err := ma.MarshalToString(message)
-				if err != nil {
-					return result, err
-				}
-				out := bufio.NewWriter(outStream)
-				out.WriteString(msgJson)
-				out.WriteString("\n")
-			} else {
-				bytes, err := proto.Marshal(message)
-				if err != nil {
-					return result, err
-				}
-				outStream.Write(proto.EncodeVarint(uint64(len(bytes))))
-				outStream.Write(bytes)
-			}
-
+		if writer != nil {
+			err = writer.WriteMsg(message)
+			return result, err
 		} else {
 			result = append(result, *message)
 		}
@@ -61,7 +42,7 @@ func Messages(
 				},
 			})
 		}
-		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), language)
+		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), language, newId)
 		if errs, ok := err.(parseErrors); ok {
 			// expected parse errors
 			for _, err := range errs {
@@ -84,7 +65,7 @@ func Messages(
 		}
 
 		if includePickles {
-			for _, pickle := range Pickles(*doc, source.Uri, source.Data) {
+			for _, pickle := range Pickles(*doc, source.Uri, newId) {
 				result, err = handleMessage(result, &messages.Envelope{
 					Message: &messages.Envelope_Pickle{
 						Pickle: pickle,
@@ -98,13 +79,13 @@ func Messages(
 	if len(paths) == 0 {
 		reader := gio.NewDelimitedReader(sourceStream, math.MaxInt32)
 		for {
-			wrapper := &messages.Envelope{}
-			err := reader.ReadMsg(wrapper)
+			envelope := &messages.Envelope{}
+			err := reader.ReadMsg(envelope)
 			if err == io.EOF {
 				break
 			}
 
-			switch t := wrapper.Message.(type) {
+			switch t := envelope.Message.(type) {
 			case *messages.Envelope_Source:
 				processSource(t.Source)
 			}
@@ -116,12 +97,9 @@ func Messages(
 				return result, fmt.Errorf("read feature file: %s - %+v", path, err)
 			}
 			source := &messages.Source{
-				Uri:  path,
-				Data: string(in),
-				Media: &messages.Media{
-					Encoding:    messages.Media_UTF8,
-					ContentType: "text/x.cucumber.gherkin+plain",
-				},
+				Uri:       path,
+				Data:      string(in),
+				MediaType: "text/x.cucumber.gherkin+plain",
 			}
 			processSource(source)
 		}
@@ -134,7 +112,9 @@ func (a *parseError) asAttachment(uri string) *messages.Envelope {
 	return &messages.Envelope{
 		Message: &messages.Envelope_Attachment{
 			Attachment: &messages.Attachment{
-				Data: a.Error(),
+				Body: &messages.Attachment_Text{
+					Text: a.Error(),
+				},
 				Source: &messages.SourceReference{
 					Uri: uri,
 					Location: &messages.Location{

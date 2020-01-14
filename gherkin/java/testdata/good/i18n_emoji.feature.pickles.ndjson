@@ -1,22 +1,17 @@
 {
   "pickle": {
-    "id": "7b92b7abfe3f99b1d60eb2d238adc1efd1354652",
-    "language": "em",
-    "locations": [
-      {
-        "column": 3,
-        "line": 4
-      }
+    "astNodeIds": [
+      "1"
     ],
+    "id": "3",
+    "language": "em",
     "name": "💃",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 6,
-            "line": 5
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "2",
         "text": "🎸"
       }
     ],

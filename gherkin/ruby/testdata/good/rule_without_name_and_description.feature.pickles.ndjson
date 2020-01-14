@@ -1,21 +1,16 @@
 {
   "pickle": {
-    "id": "fe69f807f6e2572656fa7fbf72e1fc57ee1f83a2",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 4
-      }
+    "astNodeIds": [
+      "1"
     ],
+    "id": "3",
+    "language": "en",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 5
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "2",
         "text": "text"
       }
     ],

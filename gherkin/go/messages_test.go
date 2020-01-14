@@ -2,8 +2,10 @@ package gherkin
 
 import (
 	"bytes"
-	"github.com/cucumber/cucumber-messages-go/v6"
+	"github.com/cucumber/messages-go/v9"
 	gio "github.com/gogo/protobuf/io"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -23,20 +25,17 @@ func TestMessagesWithStdin(t *testing.T) {
 	wrapper := &messages.Envelope{
 		Message: &messages.Envelope_Source{
 			Source: &messages.Source{
-				Uri:  "features/test.feature",
-				Data: gherkin,
-				Media: &messages.Media{
-					Encoding:    messages.Media_UTF8,
-					ContentType: "text/x.cucumber.gherkin+plain",
-				},
+				Uri:       "features/test.feature",
+				Data:      gherkin,
+				MediaType: "text/x.cucumber.gherkin+plain",
 			},
 		},
 	}
 
-	writer.WriteMsg(wrapper)
-	writer.WriteMsg(wrapper)
+	require.NoError(t, writer.WriteMsg(wrapper))
+	require.NoError(t, writer.WriteMsg(wrapper))
 
-	wrappers, err := Messages(
+	writtenMessages, err := Messages(
 		nil,
 		stdin,
 		"en",
@@ -44,12 +43,9 @@ func TestMessagesWithStdin(t *testing.T) {
 		true,
 		true,
 		nil,
-		false,
+		(&messages.Incrementing{}).NewId,
 	)
-	if err != nil {
-		t.Error(err)
-	}
-	if len(wrappers) != 8 {
-		t.Fatalf("%d != %d", len(wrappers), 8)
-	}
+	require.NoError(t, err)
+
+	assert.Equal(t, 8, len(writtenMessages), "Wrong number of messages")
 }

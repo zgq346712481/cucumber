@@ -12,7 +12,8 @@ options = {
   include_source: true,
   include_gherkin_document: true,
   include_pickles: true,
-  json: false
+  format: 'protobuf',
+  predictable_ids: false
 }
 
 OptionParser.new do |opts|
@@ -25,36 +26,22 @@ OptionParser.new do |opts|
   opts.on("--[no-]pickles", "Don't print pickle messages") do |v|
     options[:include_pickles] = v
   end
-  opts.on("--json", "Print messages as JSON") do |v|
-    options[:json] = v
+  opts.on("--format ndjson|protobuf", "Output format") do |v|
+    options[:format] = v
+  end
+  opts.on("--predictable-ids", "Generate incrementing ids rather than UUIDs") do |v|
+    options[:id_generator] = Cucumber::Messages::IdGenerator::Incrementing.new if v
   end
 end.parse!
 
 def process_messages(messages, options)
   messages.each do |message|
-    if options[:json]
-      json = message.class.encode_json(message)
-      ob = JSON.parse(json)
-      remove_empties(ob)
-      puts JSON.generate(ob)
-    else
+    if options[:format] == 'ndjson'
+      message.write_ndjson_to(STDOUT)
+    elsif options[:format] == 'protobuf'
       message.write_delimited_to(STDOUT)
-    end
-  end
-end
-
-def remove_empties(ob)
-  if Hash === ob
-    ob.each do |key, value|
-      if value == []
-        ob.delete(key)
-      else
-        remove_empties(value)
-      end
-    end
-  elsif Array === ob
-    ob.each do |value|
-      remove_empties(value)
+    else
+      raise "Unsupported format: #{options[:format]}"
     end
   end
 end
@@ -62,7 +49,7 @@ end
 gherkin_executable = ENV['GHERKIN_EXECUTABLE']
 if ARGV.empty?
   # Read protobuf from STDIN
-  messages = Cucumber::Messages::ProtobufIoEnumerator.call(STDIN)
+  messages = Cucumber::Messages::BinaryToMessageEnumerator.new(STDIN)
 elsif gherkin_executable
   # Read protobuf from STDIN
   messages = Gherkin::Stream::SubprocessMessageStream.new(

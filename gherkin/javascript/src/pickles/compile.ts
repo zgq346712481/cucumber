@@ -1,8 +1,11 @@
-import countSymbols from '../countSymbols'
-import { messages } from 'cucumber-messages'
+import { messages, IdGenerator } from '@cucumber/messages'
 import IGherkinDocument = messages.IGherkinDocument
 
-export default function compile(gherkinDocument: IGherkinDocument) {
+export default function compile(
+  gherkinDocument: IGherkinDocument,
+  uri: string,
+  newId: IdGenerator.NewId
+) {
   const pickles: messages.IPickle[] = []
 
   if (gherkinDocument.feature == null) {
@@ -12,34 +15,40 @@ export default function compile(gherkinDocument: IGherkinDocument) {
   const feature = gherkinDocument.feature
   const language = feature.language
   const featureTags = feature.tags
-  let backgroundSteps: messages.GherkinDocument.Feature.IStep[] = []
+  let featureBackgroundSteps: messages.GherkinDocument.Feature.IStep[] = []
 
   feature.children.forEach(stepsContainer => {
     if (stepsContainer.background) {
-      backgroundSteps = pickleSteps(stepsContainer.background)
+      featureBackgroundSteps = [].concat(stepsContainer.background.steps)
     } else if (stepsContainer.rule) {
       compileRule(
         featureTags,
-        backgroundSteps,
+        featureBackgroundSteps,
         stepsContainer.rule,
         language,
-        pickles
+        pickles,
+        uri,
+        newId
       )
     } else if (stepsContainer.scenario.examples.length === 0) {
       compileScenario(
         featureTags,
-        backgroundSteps,
+        featureBackgroundSteps,
         stepsContainer.scenario,
         language,
-        pickles
+        pickles,
+        uri,
+        newId
       )
     } else {
       compileScenarioOutline(
         featureTags,
-        backgroundSteps,
+        featureBackgroundSteps,
         stepsContainer.scenario,
         language,
-        pickles
+        pickles,
+        uri,
+        newId
       )
     }
   })
@@ -48,33 +57,39 @@ export default function compile(gherkinDocument: IGherkinDocument) {
 
 function compileRule(
   featureTags: messages.GherkinDocument.Feature.ITag[],
-  inheritedBackgroundSteps: messages.GherkinDocument.Feature.IStep[],
+  featureBackgroundSteps: messages.GherkinDocument.Feature.IStep[],
   rule: messages.GherkinDocument.Feature.FeatureChild.IRule,
   language: string,
-  pickles: messages.IPickle[]
+  pickles: messages.IPickle[],
+  uri: string,
+  newId: IdGenerator.NewId
 ) {
-  let backgroundSteps = [].concat(inheritedBackgroundSteps)
+  let ruleBackgroundSteps = [].concat(featureBackgroundSteps)
 
   rule.children.forEach(stepsContainer => {
     if (stepsContainer.background) {
-      backgroundSteps = backgroundSteps.concat(
-        pickleSteps(stepsContainer.background)
+      ruleBackgroundSteps = ruleBackgroundSteps.concat(
+        stepsContainer.background.steps
       )
     } else if (stepsContainer.scenario.examples.length === 0) {
       compileScenario(
         featureTags,
-        backgroundSteps,
+        ruleBackgroundSteps,
         stepsContainer.scenario,
         language,
-        pickles
+        pickles,
+        uri,
+        newId
       )
     } else {
       compileScenarioOutline(
         featureTags,
-        backgroundSteps,
+        ruleBackgroundSteps,
         stepsContainer.scenario,
         language,
-        pickles
+        pickles,
+        uri,
+        newId
       )
     }
   })
@@ -85,19 +100,26 @@ function compileScenario(
   backgroundSteps: messages.GherkinDocument.Feature.IStep[],
   scenario: messages.GherkinDocument.Feature.IScenario,
   language: string,
-  pickles: messages.IPickle[]
+  pickles: messages.IPickle[],
+  uri: string,
+  newId: IdGenerator.NewId
 ) {
-  const steps = scenario.steps.length === 0 ? [] : [].concat(backgroundSteps)
+  const steps =
+    scenario.steps.length === 0
+      ? []
+      : backgroundSteps.map(step => pickleStep(step, [], null, newId))
 
   const tags = [].concat(featureTags).concat(scenario.tags)
 
-  scenario.steps.forEach(step => steps.push(pickleStep(step)))
+  scenario.steps.forEach(step => steps.push(pickleStep(step, [], null, newId)))
 
-  const pickle = messages.Pickle.fromObject({
+  const pickle = messages.Pickle.create({
+    id: newId(),
+    uri,
+    astNodeIds: [scenario.id],
     tags: pickleTags(tags),
     name: scenario.name,
     language,
-    locations: [scenario.location],
     steps,
   })
   pickles.push(pickle)
@@ -108,51 +130,43 @@ function compileScenarioOutline(
   backgroundSteps: messages.GherkinDocument.Feature.IStep[],
   scenario: messages.GherkinDocument.Feature.IScenario,
   language: string,
-  pickles: messages.IPickle[]
+  pickles: messages.IPickle[],
+  uri: string,
+  newId: IdGenerator.NewId
 ) {
   scenario.examples
     .filter(e => e.tableHeader !== null)
     .forEach(examples => {
       const variableCells = examples.tableHeader.cells
-      examples.tableBody.forEach(values => {
-        const valueCells = values.cells
+      examples.tableBody.forEach(valuesRow => {
         const steps =
-          scenario.steps.length === 0 ? [] : [].concat(backgroundSteps)
+          scenario.steps.length === 0
+            ? []
+            : backgroundSteps.map(step => pickleStep(step, [], null, newId))
         const tags = []
           .concat(featureTags)
           .concat(scenario.tags)
           .concat(examples.tags)
 
         scenario.steps.forEach(scenarioOutlineStep => {
-          const stepText = interpolate(
-            scenarioOutlineStep.text,
-            variableCells,
-            valueCells
-          )
-          const args = createPickleArguments(
+          const step = pickleStep(
             scenarioOutlineStep,
             variableCells,
-            valueCells
+            valuesRow,
+            newId
           )
-          steps.push(
-            messages.Pickle.PickleStep.fromObject({
-              text: stepText,
-              argument: args,
-              locations: [
-                pickleStepLocation(scenarioOutlineStep),
-                values.location,
-              ],
-            })
-          )
+          steps.push(step)
         })
 
         pickles.push(
-          messages.Pickle.fromObject({
-            name: interpolate(scenario.name, variableCells, valueCells),
+          messages.Pickle.create({
+            id: newId(),
+            uri,
+            astNodeIds: [scenario.id, valuesRow.id],
+            name: interpolate(scenario.name, variableCells, valuesRow.cells),
             language,
             steps,
             tags: pickleTags(tags),
-            locations: [scenario.location, values.location],
           })
         )
       })
@@ -183,13 +197,12 @@ function createPickleArguments(
     }
   } else if (step.docString) {
     const argument = step.docString
-    const docString = messages.PickleStepArgument.PickleDocString.fromObject({
-      location: argument.location,
+    const docString = messages.PickleStepArgument.PickleDocString.create({
       content: interpolate(argument.content, variableCells, valueCells),
     })
-    if (argument.contentType) {
-      docString.contentType = interpolate(
-        argument.contentType,
+    if (argument.mediaType) {
+      docString.mediaType = interpolate(
+        argument.mediaType,
         variableCells,
         valueCells
       )
@@ -216,25 +229,23 @@ function interpolate(
   return name
 }
 
-function pickleSteps(
-  scenarioDefinition: messages.GherkinDocument.Feature.IScenario
+function pickleStep(
+  step: messages.GherkinDocument.Feature.IStep,
+  variableCells: messages.GherkinDocument.Feature.TableRow.ITableCell[],
+  valuesRow: messages.GherkinDocument.Feature.ITableRow | null,
+  newId: IdGenerator.NewId
 ) {
-  return scenarioDefinition.steps.map(pickleStep)
-}
+  const astNodeIds = [step.id]
+  if (valuesRow) {
+    astNodeIds.push(valuesRow.id)
+  }
+  const valueCells = valuesRow ? valuesRow.cells : []
 
-function pickleStep(step: messages.GherkinDocument.Feature.IStep) {
-  return messages.Pickle.PickleStep.fromObject({
-    text: step.text,
-    argument: createPickleArguments(step, [], []),
-    locations: [pickleStepLocation(step)],
-  })
-}
-
-function pickleStepLocation(step: messages.GherkinDocument.Feature.IStep) {
-  return messages.Location.fromObject({
-    line: step.location.line,
-    column:
-      step.location.column + (step.keyword ? countSymbols(step.keyword) : 0),
+  return messages.Pickle.PickleStep.create({
+    id: newId(),
+    text: interpolate(step.text, variableCells, valueCells),
+    argument: createPickleArguments(step, variableCells, valueCells),
+    astNodeIds,
   })
 }
 
@@ -243,8 +254,8 @@ function pickleTags(tags: messages.GherkinDocument.Feature.ITag[]) {
 }
 
 function pickleTag(tag: messages.GherkinDocument.Feature.ITag) {
-  return messages.Pickle.PickleTag.fromObject({
+  return messages.Pickle.PickleTag.create({
     name: tag.name,
-    location: tag.location,
+    astNodeId: tag.id,
   })
 }

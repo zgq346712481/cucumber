@@ -3,7 +3,8 @@ require 'gherkin/ast_node'
 
 module Gherkin
   class AstBuilder
-    def initialize
+    def initialize(id_generator)
+      @id_generator = id_generator
       reset
     end
 
@@ -57,7 +58,8 @@ module Gherkin
         token.matched_items.each do |tag_item|
           tags.push(Cucumber::Messages::GherkinDocument::Feature::Tag.new(
             location: get_location(token, tag_item.column),
-            name: tag_item.text
+            name: tag_item.text,
+            id: @id_generator.new_id
           ))
         end
       end
@@ -68,6 +70,7 @@ module Gherkin
     def get_table_rows(node)
       rows = node.get_tokens(:TableRow).map do |token|
         Cucumber::Messages::GherkinDocument::Feature::TableRow.new(
+          id: @id_generator.new_id,
           location: get_location(token, 0),
           cells: get_cells(token)
         )
@@ -117,10 +120,11 @@ module Gherkin
           text: step_line.matched_text,
           data_table: data_table,
           doc_string: doc_string,
+          id: @id_generator.new_id
         )
       when :DocString
         separator_token = node.get_tokens(:DocStringSeparator)[0]
-        content_type = separator_token.matched_text == '' ? nil : separator_token.matched_text
+        media_type = separator_token.matched_text == '' ? nil : separator_token.matched_text
         line_tokens = node.get_tokens(:Other)
         content = line_tokens.map { |t| t.matched_text }.join("\n")
 
@@ -128,7 +132,7 @@ module Gherkin
           location: get_location(separator_token, 0),
           content: content,
           delimiter: separator_token.matched_keyword,
-          content_type: content_type,
+          media_type: media_type,
         )
       when :DataTable
         rows = get_table_rows(node)
@@ -156,6 +160,7 @@ module Gherkin
         steps = get_steps(scenario_node)
         examples = scenario_node.get_items(:ExamplesDefinition)
         Cucumber::Messages::GherkinDocument::Feature::Scenario.new(
+          id: @id_generator.new_id,
           tags: tags,
           location: get_location(scenario_line, 0),
           keyword: scenario_line.matched_keyword,

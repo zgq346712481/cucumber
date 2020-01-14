@@ -1,17 +1,11 @@
 {
   "pickle": {
-    "id": "675e70f00cefc5525253465e09f88b6e379eae72",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 3
-      },
-      {
-        "column": 7,
-        "line": 18
-      }
+    "astNodeIds": [
+      "6",
+      "5"
     ],
+    "id": "8",
+    "language": "en",
     "name": "test",
     "steps": [
       {
@@ -21,17 +15,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 5
-                    },
                     "value": "type"
                   },
                   {
-                    "location": {
-                      "column": 20,
-                      "line": 5
-                    },
                     "value": "diameter"
                   }
                 ]
@@ -39,17 +25,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 6
-                    },
                     "value": "football"
                   },
                   {
-                    "location": {
-                      "column": 26,
-                      "line": 6
-                    },
                     "value": "69"
                   }
                 ]
@@ -57,17 +35,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 11,
-                      "line": 7
-                    },
                     "value": "pool"
                   },
                   {
-                    "location": {
-                      "column": 25,
-                      "line": 7
-                    },
                     "value": "5.6"
                   }
                 ]
@@ -75,16 +45,11 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          },
-          {
-            "column": 7,
-            "line": 18
-          }
+        "astNodeIds": [
+          "3",
+          "5"
         ],
+        "id": "7",
         "text": "a red ball with:"
       }
     ],

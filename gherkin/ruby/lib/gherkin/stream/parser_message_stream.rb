@@ -10,12 +10,18 @@ module Gherkin
         @paths = paths
         @sources = sources
         @options = options
-        @parser = Parser.new
-        @compiler = Pickles::Compiler.new
+
+        id_generator = options[:id_generator] || Cucumber::Messages::IdGenerator::UUID.new
+        @parser = Parser.new(AstBuilder.new(id_generator))
+        @compiler = Pickles::Compiler.new(id_generator)
       end
 
       def messages
+        enumerated = false
         Enumerator.new do |y|
+          raise DoubleIterationException, "Messages have already been enumerated" if enumerated
+          enumerated = true
+
           sources.each do |source|
             y.yield(Cucumber::Messages::Envelope.new(source: source)) if @options[:include_source]
             begin
@@ -23,7 +29,7 @@ module Gherkin
 
               if @options[:include_gherkin_document]
                 gherkin_document = build_gherkin_document(source)
-                y.yield(Cucumber::Messages::Envelope.new(gherkinDocument: gherkin_document))
+                y.yield(Cucumber::Messages::Envelope.new(gherkin_document: gherkin_document))
               end
               if @options[:include_pickles]
                 gherkin_document ||= build_gherkin_document(source)
@@ -53,7 +59,7 @@ module Gherkin
                 column: err.location[:column]
               )
             ),
-            data: err.message
+            text: err.message
           )
           y.yield(Cucumber::Messages::Envelope.new(attachment: attachment))
         end
@@ -65,10 +71,7 @@ module Gherkin
             source = Cucumber::Messages::Source.new(
               uri: path,
               data: File.open(path, 'r:UTF-8', &:read),
-              media: Cucumber::Messages::Media.new(
-                encoding: :UTF8,
-                content_type: 'text/x.cucumber.gherkin+plain'
-              )
+              media_type: 'text/x.cucumber.gherkin+plain'
             )
             y.yield(source)
           end

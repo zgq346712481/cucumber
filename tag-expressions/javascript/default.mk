@@ -2,13 +2,10 @@ SHELL := /usr/bin/env bash
 TYPESCRIPT_SOURCE_FILES = $(shell find src test -type f -name "*.ts" -o -name "*.tsx")
 PRIVATE = $(shell node -e "console.log(require('./package.json').private)")
 
-default: .tested .built
+default: .tested .built .linted
 .PHONY: default
 
 .deps: package-lock.json
-ifndef NEW_VERSION
-	if [ -f ".internal-dependencies" ]; then cat .internal-dependencies | xargs -n 1 scripts/npm-link; fi
-endif
 	touch $@
 
 .codegen: .deps
@@ -22,11 +19,13 @@ endif
 	TS_NODE_TRANSPILE_ONLY=1 npm run test
 	touch $@
 
-.linted: $(TYPESCRIPT_SOURCE_FILES)
+.linted: $(TYPESCRIPT_SOURCE_FILES) .built
 	npm run lint-fix
 	touch $@
 
-package-lock.json: package.json
+package-lock.json: package.json node_modules
+
+node_modules:
 	npm install
 	touch $@
 
@@ -34,7 +33,12 @@ update-dependencies:
 	npx npm-check-updates --upgrade
 .PHONY: update-dependencies
 
-pre-release: update-dependencies clean default
+remove-local-dependencies:
+	cat package.json | sed 's/"@cucumber\/\(.*\)": "file:..\/..\/.*"/"@cucumber\/\1": "^0.0.0"/' > package.json.tmp
+	mv package.json.tmp package.json
+.PHONY: remove-local-dependencies
+
+pre-release: remove-local-dependencies update-version update-dependencies clean default
 .PHONY: pre-release
 
 update-version:
@@ -48,19 +52,20 @@ endif
 
 publish: .codegen
 ifneq (true,$(PRIVATE))
-	npm publish
+	npm publish --access public
 else
 	@echo "Not publishing private npm module"
 endif
 .PHONY: publish
 
 post-release:
-	@echo "No post-release needed for javascript"
+	cat package.json | sed 's/"@cucumber\/\(.*\)": .*"/"@cucumber\/\1": "file:..\/..\/\1\/javascript"/' > package.json.tmp
+	mv package.json.tmp package.json
 .PHONY: post-release
 
 clean: clean-javascript
 .PHONY: clean
 
 clean-javascript:
-	rm -rf .deps .codegen .built .tested .linted package-lock.json node_modules coverage dist
+	rm -rf .deps .codegen .built .tested* .linted package-lock.json node_modules coverage dist acceptance
 .PHONY: clean-javascript

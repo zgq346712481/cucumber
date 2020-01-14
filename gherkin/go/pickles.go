@@ -1,41 +1,37 @@
 package gherkin
 
 import (
-	"crypto/sha1"
-	"encoding/binary"
-	"encoding/hex"
 	"fmt"
-	"github.com/cucumber/cucumber-messages-go/v6"
+	"github.com/cucumber/messages-go/v9"
 	"strings"
-	"unicode/utf8"
 )
 
-func Pickles(gherkinDocument messages.GherkinDocument, uri string, source string) []*messages.Pickle {
+func Pickles(gherkinDocument messages.GherkinDocument, uri string, newId func() string) []*messages.Pickle {
 	pickles := make([]*messages.Pickle, 0)
 	if gherkinDocument.Feature == nil {
 		return pickles
 	}
 	language := gherkinDocument.Feature.Language
 
-	pickles = compileFeature(pickles, *gherkinDocument.Feature, uri, language, source)
+	pickles = compileFeature(pickles, *gherkinDocument.Feature, uri, language, newId)
 	return pickles
 }
 
-func compileFeature(pickles []*messages.Pickle, feature messages.GherkinDocument_Feature, uri string, language string, source string) []*messages.Pickle {
-	backgroundSteps := make([]*messages.Pickle_PickleStep, 0)
+func compileFeature(pickles []*messages.Pickle, feature messages.GherkinDocument_Feature, uri string, language string, newId func() string) []*messages.Pickle {
+	featureBackgroundSteps := make([]*messages.GherkinDocument_Feature_Step, 0)
 	featureTags := feature.Tags
 	for _, child := range feature.Children {
 		switch t := child.Value.(type) {
 		case *messages.GherkinDocument_Feature_FeatureChild_Background:
-			backgroundSteps = append(backgroundSteps, pickleSteps(t.Background.Steps)...)
+			featureBackgroundSteps = append(featureBackgroundSteps, t.Background.Steps...)
 		case *messages.GherkinDocument_Feature_FeatureChild_Rule_:
-			pickles = compileRule(pickles, child.GetRule(), featureTags, backgroundSteps, uri, language, source)
+			pickles = compileRule(pickles, child.GetRule(), featureTags, featureBackgroundSteps, uri, language, newId)
 		case *messages.GherkinDocument_Feature_FeatureChild_Scenario:
 			scenario := t.Scenario
 			if len(scenario.GetExamples()) == 0 {
-				pickles = compileScenario(pickles, backgroundSteps, scenario, featureTags, uri, language, source)
+				pickles = compileScenario(pickles, featureBackgroundSteps, scenario, featureTags, uri, language, newId)
 			} else {
-				pickles = compileScenarioOutline(pickles, scenario, featureTags, backgroundSteps, uri, language, source)
+				pickles = compileScenarioOutline(pickles, scenario, featureTags, featureBackgroundSteps, uri, language, newId)
 			}
 		default:
 			panic(fmt.Sprintf("unexpected %T feature child", child))
@@ -44,20 +40,28 @@ func compileFeature(pickles []*messages.Pickle, feature messages.GherkinDocument
 	return pickles
 }
 
-func compileRule(pickles []*messages.Pickle, rule *messages.GherkinDocument_Feature_FeatureChild_Rule, tags []*messages.GherkinDocument_Feature_Tag, steps []*messages.Pickle_PickleStep, uri string, language string, source string) []*messages.Pickle {
-	backgroundSteps := make([]*messages.Pickle_PickleStep, 0)
-	backgroundSteps = append(backgroundSteps, steps...)
+func compileRule(
+	pickles []*messages.Pickle,
+	rule *messages.GherkinDocument_Feature_FeatureChild_Rule,
+	tags []*messages.GherkinDocument_Feature_Tag,
+	featureBackgroundSteps []*messages.GherkinDocument_Feature_Step,
+	uri string,
+	language string,
+	newId func() string,
+) []*messages.Pickle {
+	ruleBackgroundSteps := make([]*messages.GherkinDocument_Feature_Step, 0)
+	ruleBackgroundSteps = append(ruleBackgroundSteps, featureBackgroundSteps...)
 
 	for _, child := range rule.Children {
 		switch t := child.Value.(type) {
 		case *messages.GherkinDocument_Feature_FeatureChild_RuleChild_Background:
-			backgroundSteps = append(backgroundSteps, pickleSteps(t.Background.Steps)...)
+			ruleBackgroundSteps = append(ruleBackgroundSteps, t.Background.Steps...)
 		case *messages.GherkinDocument_Feature_FeatureChild_RuleChild_Scenario:
 			scenario := t.Scenario
 			if len(scenario.GetExamples()) == 0 {
-				pickles = compileScenario(pickles, backgroundSteps, scenario, tags, uri, language, source)
+				pickles = compileScenario(pickles, ruleBackgroundSteps, scenario, tags, uri, language, newId)
 			} else {
-				pickles = compileScenarioOutline(pickles, scenario, tags, backgroundSteps, uri, language, source)
+				pickles = compileScenarioOutline(pickles, scenario, tags, ruleBackgroundSteps, uri, language, newId)
 			}
 		default:
 			panic(fmt.Sprintf("unexpected %T feature child", child))
@@ -67,28 +71,40 @@ func compileRule(pickles []*messages.Pickle, rule *messages.GherkinDocument_Feat
 
 }
 
-func compileScenarioOutline(pickles []*messages.Pickle, scenario *messages.GherkinDocument_Feature_Scenario, featureTags []*messages.GherkinDocument_Feature_Tag, backgroundSteps []*messages.Pickle_PickleStep, uri string, language string, source string) []*messages.Pickle {
+func compileScenarioOutline(
+	pickles []*messages.Pickle,
+	scenario *messages.GherkinDocument_Feature_Scenario,
+	featureTags []*messages.GherkinDocument_Feature_Tag,
+	backgroundSteps []*messages.GherkinDocument_Feature_Step,
+	uri string,
+	language string,
+	newId func() string,
+) []*messages.Pickle {
 	for _, examples := range scenario.Examples {
 		if examples.TableHeader == nil {
 			continue
 		}
 		variableCells := examples.TableHeader.Cells
-		for _, values := range examples.TableBody {
-			valueCells := values.Cells
+		for _, valuesRow := range examples.TableBody {
+			valueCells := valuesRow.Cells
 			tags := pickleTags(append(featureTags, append(scenario.Tags, examples.Tags...)...))
 
-			pickleSteps := make([]*messages.Pickle_PickleStep, 0)
+			computedPickleSteps := make([]*messages.Pickle_PickleStep, 0)
+			pickleBackgroundSteps := make([]*messages.Pickle_PickleStep, 0)
 
-			// translate pickleSteps based on values
+			if len(scenario.Steps) > 0 {
+				pickleBackgroundSteps = pickleSteps(backgroundSteps, newId)
+			}
+
+			// translate computedPickleSteps based on valuesRow
 			for _, step := range scenario.Steps {
 				text := step.Text
 				for i, variableCell := range variableCells {
 					text = strings.Replace(text, "<"+variableCell.Value+">", valueCells[i].Value, -1)
 				}
 
-				pickleStep := pickleStep(step, variableCells, valueCells)
-				pickleStep.Locations = append(pickleStep.Locations, values.Location)
-				pickleSteps = append(pickleSteps, pickleStep)
+				pickleStep := pickleStep(step, variableCells, valuesRow, newId)
+				computedPickleSteps = append(computedPickleSteps, pickleStep)
 			}
 
 			// translate pickle name
@@ -97,73 +113,58 @@ func compileScenarioOutline(pickles []*messages.Pickle, scenario *messages.Gherk
 				name = strings.Replace(name, "<"+key.Value+">", valueCells[i].Value, -1)
 			}
 
-			if len(pickleSteps) > 0 {
-				pickleSteps = append(backgroundSteps, pickleSteps...)
+			if len(computedPickleSteps) > 0 {
+				computedPickleSteps = append(pickleBackgroundSteps, computedPickleSteps...)
 			}
 
-			locations := make([]*messages.Location, 0)
-			locations = append(locations, scenario.Location)
-			locations = append(locations, values.Location)
-
 			pickles = append(pickles, &messages.Pickle{
-				Id:        makeId(source, locations),
-				Uri:       uri,
-				Steps:     pickleSteps,
-				Tags:      tags,
-				Name:      name,
-				Language:  language,
-				Locations: locations,
+				Id:         newId(),
+				Uri:        uri,
+				Steps:      computedPickleSteps,
+				Tags:       tags,
+				Name:       name,
+				Language:   language,
+				AstNodeIds: []string{scenario.Id, valuesRow.Id},
 			})
 		}
 	}
 	return pickles
 }
 
-func makeId(source string, locations []*messages.Location) string {
-	hash := sha1.New()
-	hash.Write([]byte(source))
-	for _, location := range locations {
-		err := binary.Write(hash, binary.LittleEndian, location.Line)
-		if err != nil {
-			panic(err)
-		}
-		err = binary.Write(hash, binary.LittleEndian, location.Column)
-		if err != nil {
-			panic(err)
-		}
-	}
-	bs := hash.Sum(nil)
-	return hex.EncodeToString(bs)
-}
-
-func compileScenario(pickles []*messages.Pickle, backgroundSteps []*messages.Pickle_PickleStep, scenario *messages.GherkinDocument_Feature_Scenario, featureTags []*messages.GherkinDocument_Feature_Tag, uri string, language string, source string) []*messages.Pickle {
+func compileScenario(
+	pickles []*messages.Pickle,
+	backgroundSteps []*messages.GherkinDocument_Feature_Step,
+	scenario *messages.GherkinDocument_Feature_Scenario,
+	featureTags []*messages.GherkinDocument_Feature_Tag,
+	uri string,
+	language string,
+	newId func() string,
+) []*messages.Pickle {
 	steps := make([]*messages.Pickle_PickleStep, 0)
 	if len(scenario.Steps) > 0 {
-		steps = append(backgroundSteps, pickleSteps(scenario.Steps)...)
+		pickleBackgroundSteps := pickleSteps(backgroundSteps, newId)
+		steps = append(pickleBackgroundSteps, pickleSteps(scenario.Steps, newId)...)
 	}
 	tags := pickleTags(append(featureTags, scenario.Tags...))
-	locations := make([]*messages.Location, 0)
-	locations = append(locations, scenario.Location)
 	pickles = append(pickles, &messages.Pickle{
-		Id:        makeId(source, locations),
-		Uri:       uri,
-		Steps:     steps,
-		Tags:      tags,
-		Name:      scenario.Name,
-		Language:  language,
-		Locations: locations,
+		Id:         newId(),
+		Uri:        uri,
+		Steps:      steps,
+		Tags:       tags,
+		Name:       scenario.Name,
+		Language:   language,
+		AstNodeIds: []string{scenario.Id},
 	})
 	return pickles
 }
 
-func pickleDataTable(table *messages.GherkinDocument_Feature_Step_DataTable, variableCells, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) *messages.PickleStepArgument_PickleTable {
+func pickleDataTable(table *messages.GherkinDocument_Feature_Step_DataTable, variableCells []*messages.GherkinDocument_Feature_TableRow_TableCell, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) *messages.PickleStepArgument_PickleTable {
 	pickleTableRows := make([]*messages.PickleStepArgument_PickleTable_PickleTableRow, len(table.Rows))
 	for i, row := range table.Rows {
 		pickleTableCells := make([]*messages.PickleStepArgument_PickleTable_PickleTableRow_PickleTableCell, len(row.Cells))
 		for j, cell := range row.Cells {
 			pickleTableCells[j] = &messages.PickleStepArgument_PickleTable_PickleTableRow_PickleTableCell{
-				Location: cell.Location,
-				Value:    interpolate(cell.Value, variableCells, valueCells),
+				Value: interpolate(cell.Value, variableCells, valueCells),
 			}
 		}
 		pickleTableRows[i] = &messages.PickleStepArgument_PickleTable_PickleTableRow{Cells: pickleTableCells}
@@ -171,11 +172,10 @@ func pickleDataTable(table *messages.GherkinDocument_Feature_Step_DataTable, var
 	return &messages.PickleStepArgument_PickleTable{Rows: pickleTableRows}
 }
 
-func pickleDocString(docString *messages.GherkinDocument_Feature_Step_DocString, variableCells, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) *messages.PickleStepArgument_PickleDocString {
+func pickleDocString(docString *messages.GherkinDocument_Feature_Step_DocString, variableCells []*messages.GherkinDocument_Feature_TableRow_TableCell, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) *messages.PickleStepArgument_PickleDocString {
 	return &messages.PickleStepArgument_PickleDocString{
-		Location:    docString.Location,
-		ContentType: interpolate(docString.ContentType, variableCells, valueCells),
-		Content:     interpolate(docString.Content, variableCells, valueCells),
+		MediaType: interpolate(docString.MediaType, variableCells, valueCells),
+		Content:   interpolate(docString.Content, variableCells, valueCells),
 	}
 }
 
@@ -183,32 +183,40 @@ func pickleTags(tags []*messages.GherkinDocument_Feature_Tag) []*messages.Pickle
 	ptags := make([]*messages.Pickle_PickleTag, len(tags))
 	for i, tag := range tags {
 		ptags[i] = &messages.Pickle_PickleTag{
-			Location: tag.Location,
-			Name:     tag.Name,
+			Name:      tag.Name,
+			AstNodeId: tag.Id,
 		}
 	}
 	return ptags
 }
 
-func pickleSteps(steps []*messages.GherkinDocument_Feature_Step) []*messages.Pickle_PickleStep {
+func pickleSteps(steps []*messages.GherkinDocument_Feature_Step, newId func() string) []*messages.Pickle_PickleStep {
 	pickleSteps := make([]*messages.Pickle_PickleStep, len(steps))
 	for i, step := range steps {
-		pickleStep := pickleStep(step, nil, nil)
+		pickleStep := pickleStep(step, nil, nil, newId)
 		pickleSteps[i] = pickleStep
 	}
 	return pickleSteps
 }
 
-func pickleStep(step *messages.GherkinDocument_Feature_Step, variableCells, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) *messages.Pickle_PickleStep {
-	loc := &messages.Location{
-		Line:   uint32(step.Location.Line),
-		Column: step.Location.Column + uint32(utf8.RuneCountInString(step.Keyword)),
+func pickleStep(
+	step *messages.GherkinDocument_Feature_Step,
+	variableCells []*messages.GherkinDocument_Feature_TableRow_TableCell,
+	valuesRow *messages.GherkinDocument_Feature_TableRow,
+	newId func() string) *messages.Pickle_PickleStep {
+
+	var valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell
+	if valuesRow != nil {
+		valueCells = valuesRow.Cells
 	}
-	locations := make([]*messages.Location, 0)
-	locations = append(locations, loc)
+
 	pickleStep := &messages.Pickle_PickleStep{
-		Text:      interpolate(step.Text, variableCells, valueCells),
-		Locations: locations,
+		Id:         newId(),
+		Text:       interpolate(step.Text, variableCells, valueCells),
+		AstNodeIds: []string{step.Id},
+	}
+	if valuesRow != nil {
+		pickleStep.AstNodeIds = append(pickleStep.AstNodeIds, valuesRow.Id)
 	}
 	if step.GetDataTable() != nil {
 		pickleStep.Argument = &messages.PickleStepArgument{
@@ -227,7 +235,7 @@ func pickleStep(step *messages.GherkinDocument_Feature_Step, variableCells, valu
 	return pickleStep
 }
 
-func interpolate(s string, variableCells, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) string {
+func interpolate(s string, variableCells []*messages.GherkinDocument_Feature_TableRow_TableCell, valueCells []*messages.GherkinDocument_Feature_TableRow_TableCell) string {
 	if variableCells == nil || valueCells == nil {
 		return s
 	}

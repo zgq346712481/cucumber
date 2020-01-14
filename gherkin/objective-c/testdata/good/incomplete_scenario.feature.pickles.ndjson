@@ -1,13 +1,10 @@
 {
   "pickle": {
-    "id": "8751a5b127f6c155801f0c355136f0d15053f054",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 6
-      }
+    "astNodeIds": [
+      "1"
     ],
+    "id": "2",
+    "language": "en",
     "name": "no steps",
     "uri": "testdata/good/incomplete_scenario.feature"
   }

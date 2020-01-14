@@ -1,22 +1,17 @@
 {
   "pickle": {
-    "id": "f55a6d0c2f5a6567bc9d9cbcb7862be093d0a51d",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 5
-      }
+    "astNodeIds": [
+      "1"
     ],
+    "id": "3",
+    "language": "en",
     "name": "still pickles up",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 7,
-            "line": 6
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "2",
         "text": "a step"
       }
     ],

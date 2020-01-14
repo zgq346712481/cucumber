@@ -6,18 +6,21 @@ will print them as JSON (useful for testing/debugging)
 package main
 
 import (
-	"bufio"
 	b64 "encoding/base64"
 	"flag"
 	"fmt"
-	"github.com/cucumber/gherkin-go/v8"
+	"github.com/cucumber/gherkin-go/v9"
+	messages "github.com/cucumber/messages-go/v9"
+	fio "github.com/cucumber/messages-go/v9/io"
+	gio "github.com/gogo/protobuf/io"
 	"os"
 )
 
 var noSource = flag.Bool("no-source", false, "Skip gherkin source events")
 var noAst = flag.Bool("no-ast", false, "Skip gherkin AST events")
 var noPickles = flag.Bool("no-pickles", false, "Skip gherkin Pickle events")
-var printJson = flag.Bool("json", false, "Print messages as JSON instead of protobuf")
+var formatFlag = flag.String("format", "protobuf", "Output format")
+var predictableIds = flag.Bool("predictable-ids", false, "Generate incrementing ids rather than UUIDs")
 var versionFlag = flag.Bool("version", false, "print version")
 var dialectsFlag = flag.Bool("dialects", false, "print dialects as JSON")
 var defaultDialectFlag = flag.String("default-dialect", "en", "the default dialect")
@@ -39,10 +42,18 @@ func main() {
 		os.Exit(0)
 	}
 
+	var newId func() string
+	if *predictableIds {
+		newId = (&messages.Incrementing{}).NewId
+	} else {
+		newId = messages.UUID{}.NewId
+	}
+
 	paths := flag.Args()
 
-	stdout := bufio.NewWriter(os.Stdout)
-	defer stdout.Flush()
+	var writer = newWriter()
+
+	defer writer.Close()
 
 	_, err := gherkin.Messages(
 		paths,
@@ -51,11 +62,27 @@ func main() {
 		!*noSource,
 		!*noAst,
 		!*noPickles,
-		stdout,
-		*printJson,
+		writer,
+		newId,
 	)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "failed to parse Gherkin: %+v\n", err)
 		os.Exit(1)
 	}
+}
+
+func newWriter() gio.WriteCloser {
+	var reader gio.WriteCloser
+	switch *formatFlag {
+	case "protobuf":
+		reader = gio.NewDelimitedWriter(os.Stdout)
+	case "ndjson":
+		reader = fio.NewNdjsonWriter(os.Stdout)
+	default:
+		_, err := fmt.Fprintf(os.Stderr, "Unsupported format: %s\n", *formatFlag)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return reader
 }

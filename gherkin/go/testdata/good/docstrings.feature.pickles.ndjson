@@ -1,140 +1,95 @@
 {
   "pickle": {
-    "id": "7f6957a28baf5ecf2af10c7ebcbb2febb1719be4",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 3
-      }
+    "astNodeIds": [
+      "7"
     ],
+    "id": "15",
+    "language": "en",
     "name": "minimalistic",
     "steps": [
       {
         "argument": {
           "docString": {
-            "content": "first line (no indent)\n  second line (indented with two spaces)\n\nthird line was empty",
-            "location": {
-              "column": 7,
-              "line": 5
-            }
+            "content": "first line (no indent)\n  second line (indented with two spaces)\n\nthird line was empty"
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          }
+        "astNodeIds": [
+          "0"
         ],
+        "id": "8",
         "text": "a simple DocString"
       },
       {
         "argument": {
           "docString": {
             "content": "<foo>\n  <bar />\n</foo>",
-            "contentType": "xml",
-            "location": {
-              "column": 7,
-              "line": 12
-            }
+            "mediaType": "xml"
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 11
-          }
+        "astNodeIds": [
+          "1"
         ],
+        "id": "9",
         "text": "a DocString with content type"
       },
       {
         "argument": {
           "docString": {
-            "content": "wrongly indented line",
-            "location": {
-              "column": 7,
-              "line": 18
-            }
+            "content": "wrongly indented line"
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 17
-          }
+        "astNodeIds": [
+          "2"
         ],
+        "id": "10",
         "text": "a DocString with wrong indentation"
       },
       {
         "argument": {
           "docString": {
-            "content": "first line\nsecond line",
-            "location": {
-              "column": 7,
-              "line": 22
-            }
+            "content": "first line\nsecond line"
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 21
-          }
+        "astNodeIds": [
+          "3"
         ],
+        "id": "11",
         "text": "a DocString with alternative separator"
       },
       {
         "argument": {
           "docString": {
-            "content": "first line\n\"\"\"\nthird line",
-            "location": {
-              "column": 7,
-              "line": 27
-            }
+            "content": "first line\n\"\"\"\nthird line"
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 26
-          }
+        "astNodeIds": [
+          "4"
         ],
+        "id": "12",
         "text": "a DocString with normal separator inside"
       },
       {
         "argument": {
           "docString": {
-            "content": "first line\n```\nthird line",
-            "location": {
-              "column": 7,
-              "line": 33
-            }
+            "content": "first line\n```\nthird line"
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 32
-          }
+        "astNodeIds": [
+          "5"
         ],
+        "id": "13",
         "text": "a DocString with alternative separator inside"
       },
       {
         "argument": {
           "docString": {
-            "content": "first line\n\"\"\"\nthird line",
-            "location": {
-              "column": 7,
-              "line": 39
-            }
+            "content": "first line\n\"\"\"\nthird line"
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 38
-          }
+        "astNodeIds": [
+          "6"
         ],
+        "id": "14",
         "text": "a DocString with escaped separator inside"
       }
     ],

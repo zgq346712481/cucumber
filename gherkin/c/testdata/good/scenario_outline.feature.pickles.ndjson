@@ -1,30 +1,19 @@
 {
   "pickle": {
-    "id": "a64c9d5075b45f466b8fbcae2780a7caf506d74c",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 3
-      },
-      {
-        "column": 7,
-        "line": 8
-      }
+    "astNodeIds": [
+      "3",
+      "2"
     ],
+    "id": "5",
+    "language": "en",
     "name": "minimalistic",
     "steps": [
       {
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          },
-          {
-            "column": 7,
-            "line": 8
-          }
+        "astNodeIds": [
+          "0",
+          "2"
         ],
+        "id": "4",
         "text": "the minimalism"
       }
     ],

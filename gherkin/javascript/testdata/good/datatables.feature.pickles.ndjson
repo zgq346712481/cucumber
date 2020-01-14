@@ -1,13 +1,10 @@
 {
   "pickle": {
-    "id": "60d95df0cbf5ef34063e2fd47d342b289836bfae",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 3
-      }
+    "astNodeIds": [
+      "13"
     ],
+    "id": "19",
+    "language": "en",
     "name": "minimalistic",
     "steps": [
       {
@@ -17,17 +14,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 5
-                    },
                     "value": "foo"
                   },
                   {
-                    "location": {
-                      "column": 15,
-                      "line": 5
-                    },
                     "value": "bar"
                   }
                 ]
@@ -35,17 +24,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 6
-                    },
                     "value": "boz"
                   },
                   {
-                    "location": {
-                      "column": 15,
-                      "line": 6
-                    },
                     "value": "boo"
                   }
                 ]
@@ -53,12 +34,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 4
-          }
+        "astNodeIds": [
+          "2"
         ],
+        "id": "14",
         "text": "a simple data table"
       },
       {
@@ -68,10 +47,6 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 8
-                    },
                     "value": "foo"
                   }
                 ]
@@ -79,12 +54,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 7
-          }
+        "astNodeIds": [
+          "4"
         ],
+        "id": "15",
         "text": "a data table with a single cell"
       },
       {
@@ -94,24 +67,12 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 11,
-                      "line": 10
-                    },
                     "value": "foo"
                   },
                   {
-                    "location": {
-                      "column": 15,
-                      "line": 10
-                    },
                     "value": "bar"
                   },
                   {
-                    "location": {
-                      "column": 23,
-                      "line": 10
-                    },
                     "value": "boz"
                   }
                 ]
@@ -119,12 +80,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 9
-          }
+        "astNodeIds": [
+          "6"
         ],
+        "id": "16",
         "text": "a data table with different fromatting"
       },
       {
@@ -134,23 +93,10 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 8,
-                      "line": 12
-                    },
                     "value": "foo"
                   },
+                  {},
                   {
-                    "location": {
-                      "column": 12,
-                      "line": 12
-                    }
-                  },
-                  {
-                    "location": {
-                      "column": 13,
-                      "line": 12
-                    },
                     "value": "boz"
                   }
                 ]
@@ -158,12 +104,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 11
-          }
+        "astNodeIds": [
+          "8"
         ],
+        "id": "17",
         "text": "a data table with an empty cell"
       },
       {
@@ -173,17 +117,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 14
-                    },
                     "value": "foo"
                   },
                   {
-                    "location": {
-                      "column": 15,
-                      "line": 14
-                    },
                     "value": "bar"
                   }
                 ]
@@ -191,17 +127,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 16
-                    },
                     "value": "boz"
                   },
                   {
-                    "location": {
-                      "column": 16,
-                      "line": 16
-                    },
                     "value": "boo"
                   }
                 ]
@@ -209,17 +137,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 18
-                    },
                     "value": "boz2"
                   },
                   {
-                    "location": {
-                      "column": 16,
-                      "line": 18
-                    },
                     "value": "boo2"
                   }
                 ]
@@ -227,12 +147,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 9,
-            "line": 13
-          }
+        "astNodeIds": [
+          "12"
         ],
+        "id": "18",
         "text": "a data table with comments and newlines inside"
       }
     ],

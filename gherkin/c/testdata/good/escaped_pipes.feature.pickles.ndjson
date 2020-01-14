@@ -1,13 +1,10 @@
 {
   "pickle": {
-    "id": "c9c3da2dbae8c8494a077acd97b4917173ab971f",
-    "language": "en",
-    "locations": [
-      {
-        "column": 3,
-        "line": 5
-      }
+    "astNodeIds": [
+      "6"
     ],
+    "id": "9",
+    "language": "en",
     "name": "They are the future",
     "steps": [
       {
@@ -17,17 +14,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 7
-                    },
                     "value": "æ"
                   },
                   {
-                    "location": {
-                      "column": 13,
-                      "line": 7
-                    },
                     "value": "o"
                   }
                 ]
@@ -35,17 +24,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 8
-                    },
                     "value": "a"
                   },
                   {
-                    "location": {
-                      "column": 13,
-                      "line": 8
-                    },
                     "value": "ø"
                   }
                 ]
@@ -53,12 +34,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 6
-          }
+        "astNodeIds": [
+          "2"
         ],
+        "id": "7",
         "text": "they have arrived"
       },
       {
@@ -68,17 +47,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 10
-                    },
                     "value": "|æ\\n"
                   },
                   {
-                    "location": {
-                      "column": 22,
-                      "line": 10
-                    },
                     "value": "\\o\no\\"
                   }
                 ]
@@ -86,17 +57,9 @@
               {
                 "cells": [
                   {
-                    "location": {
-                      "column": 9,
-                      "line": 11
-                    },
                     "value": "\\|a\\\\n"
                   },
                   {
-                    "location": {
-                      "column": 22,
-                      "line": 11
-                    },
                     "value": "ø\\\nø\\"
                   }
                 ]
@@ -104,12 +67,10 @@
             ]
           }
         },
-        "locations": [
-          {
-            "column": 11,
-            "line": 9
-          }
+        "astNodeIds": [
+          "5"
         ],
+        "id": "8",
         "text": "they have arrived"
       }
     ],
