@@ -13,8 +13,7 @@ func TestCucumberExpressionTokenizer(t *testing.T) {
 	}
 
 	t.Run("empty string", func(t *testing.T) {
-		assertContains(t, "", []token{
-		})
+		assertContains(t, "", []token{})
 	})
 	t.Run("phrase", func(t *testing.T) {
 		assertContains(t, "three blind mice", []token{
