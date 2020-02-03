@@ -2,6 +2,7 @@ package messages
 
 import (
 	"bytes"
+	fio "github.com/cucumber/messages-go/v9/io"
 	gio "github.com/gogo/protobuf/io"
 	"github.com/stretchr/testify/require"
 	"math"
@@ -53,5 +54,32 @@ func TestMessages(t *testing.T) {
 		var decoded GherkinDocument_Feature_Step
 		r.ReadMsg(&decoded)
 		require.Equal(t, "Hello", decoded.GetDocString().Content)
+	})
+
+	t.Run("0 values are omitted for JSON", func(t *testing.T) {
+		//
+		duration := &Duration{
+			Seconds: 0,
+			Nanos:   123,
+		}
+
+		b := &bytes.Buffer{}
+		writer := fio.NewNdjsonWriter(b)
+
+		writer.WriteMsg(duration)
+		require.Equal(t, "{\"nanos\":123}\n", b.String())
+	})
+
+	t.Run("int64 values are marshalled to String in JSON", func(t *testing.T) {
+		//
+		duration := &Duration{
+			Seconds: 10,
+		}
+
+		b := &bytes.Buffer{}
+		writer := fio.NewNdjsonWriter(b)
+
+		writer.WriteMsg(duration)
+		require.Equal(t, "{\"seconds\":\"10\"}\n", b.String())
 	})
 }
