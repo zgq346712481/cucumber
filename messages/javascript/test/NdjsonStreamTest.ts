@@ -92,4 +92,30 @@ describe('NdjsonStream', () => {
       })
     )
   })
+
+  it('does not convert 0 values for uint64 as "0" string but omits them', cb => {
+    const stream = new MessageToNdjsonStream()
+    stream.on('data', (json: string) => {
+      const ob = JSON.parse(json)
+      assert.deepStrictEqual(ob, {
+        testRunStarted: {
+          timestamp: {
+            seconds: 0,
+            nanos: 123
+          },
+        },
+      })
+      cb()
+    })
+    stream.write(
+      messages.Envelope.create({
+        testRunStarted: messages.TestRunStarted.create({
+          timestamp: messages.Timestamp.create({
+            seconds: 0,
+            nanos: 123
+          })
+        }),
+      })
+    )
+  })
 })
