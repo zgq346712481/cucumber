@@ -100,7 +100,6 @@ describe('NdjsonStream', () => {
       assert.deepStrictEqual(ob, {
         testRunStarted: {
           timestamp: {
-            seconds: 0,
             nanos: 123
           },
         },

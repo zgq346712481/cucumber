@@ -37,6 +37,25 @@ module Cucumber
         expect(incoming_messages.to_a).to(eq(outgoing_messages))
       end
 
+      it "marshals int64 as strings" do
+        message = Cucumber::Messages::Envelope.new(
+          test_run_started: Cucumber::Messages::TestRunStarted.new(
+            timestamp: Cucumber::Messages::Timestamp.new(
+              seconds: 10,
+              nanos: 123
+            )
+          )
+        )
+
+        io = StringIO.new
+        message.write_ndjson_to(io)
+
+        io.rewind
+        json = io.read
+
+        expect(json).to eq('{"testRunStarted":{"timestamp":{"seconds":"10","nanos":123}}}'+"\n")
+      end
+
       def write_outgoing_messages(messages, out)
         messages.each do |message|
           message.write_ndjson_to(out)
