@@ -1,5 +1,5 @@
 import { IdGenerator, messages } from '@cucumber/messages'
-import { GherkinQuery } from '@cucumber/gherkin'
+import { Query } from '@cucumber/gherkin'
 import TestCase from './TestCase'
 import IStepDefinition from './IStepDefinition'
 import IHook from './IHook'
@@ -8,17 +8,32 @@ import HookTestStep from './HookTestStep'
 import ITestStep from './ITestStep'
 import IClock from './IClock'
 import { MakeErrorMessage } from './ErrorMessageGenerator'
+import EmptyPickleTestStep from './EmptyPickleTestStep'
 
 export default function makeTestCase(
   pickle: messages.IPickle,
   stepDefinitions: IStepDefinition[],
   beforeHooks: IHook[],
   afterHooks: IHook[],
-  gherkinQuery: GherkinQuery,
+  gherkinQuery: Query,
   newId: IdGenerator.NewId,
   clock: IClock,
   makeErrorMessage: MakeErrorMessage
 ): TestCase {
+  if (pickle.steps.length === 0) {
+    const id = newId()
+    const undefinedStep = new EmptyPickleTestStep(
+      id,
+      undefined,
+      true,
+      [],
+      [],
+      clock,
+      makeErrorMessage
+    )
+    return new TestCase(newId(), [undefinedStep], pickle.id, clock)
+  }
+
   const beforeHookSteps = makeHookSteps(
     pickle,
     beforeHooks,
@@ -62,7 +77,7 @@ function makeHookSteps(
   pickle: messages.IPickle,
   hooks: IHook[],
   alwaysExecute: boolean,
-  gherkinQuery: GherkinQuery,
+  gherkinQuery: Query,
   newId: IdGenerator.NewId,
   clock: IClock,
   makeErrorMessage: MakeErrorMessage

@@ -8,10 +8,8 @@ import React from 'react'
 import program from 'commander'
 import p from '../package.json'
 import { pipeline, Transform, TransformCallback } from 'stream'
-import { GherkinDocumentList } from '@cucumber/react'
+import { GherkinDocumentList, Wrapper } from '@cucumber/react'
 import { renderToString } from 'react-dom/server'
-import CucumberQuery from '@cucumber/query'
-import { GherkinQuery } from '@cucumber/gherkin'
 
 class CucumberHtmlStream extends Transform {
   private readonly envelopes: messages.IEnvelope[] = []
@@ -30,53 +28,59 @@ class CucumberHtmlStream extends Transform {
   }
 
   public _flush(callback: TransformCallback): void {
-    readFile(__dirname + '/../main.js', (err: Error, js: Buffer) => {
-      if (err) {
-        return callback(err)
-      }
+    readFile(
+      __dirname + '/../main.js',
+      { encoding: 'utf-8' },
+      (err: Error, js: string) => {
+        if (err) return callback(err)
 
-      const gherkinDocuments = this.envelopes
-        .filter(e => e.gherkinDocument)
-        .map(e => e.gherkinDocument)
-      const gherkinQuery = new GherkinQuery()
-      const cucumberQuery = new CucumberQuery(gherkinQuery)
+        readFile(
+          __dirname +
+            '/../../node_modules/@cucumber/react/dist/src/styles/cucumber-react.css',
+          { encoding: 'utf-8' },
+          (err: Error, css: string) => {
+            if (err) return callback(err)
 
-      for (const envelope of this.envelopes) {
-        gherkinQuery.update(envelope)
-        cucumberQuery.update(envelope)
-      }
-
-      this.push(`<!DOCTYPE html>
+            this.push(`<!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Cucumber</title>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <style>
+${css}
+    </style>
   </head>
   <body>
     <div id="content">
 `)
-      this.push(
-        renderToString(
-          <GherkinDocumentList
-            gherkinDocuments={gherkinDocuments}
-            cucumberQuery={cucumberQuery}
-          />
-        )
-      )
-      this.push(`
+            this.push(
+              renderToString(
+                <Wrapper envelopes={this.envelopes} btoa={nodejsBtoa}>
+                  <GherkinDocumentList />
+                </Wrapper>
+              )
+            )
+            this.push(`
     </div>
     <script>
       window.CUCUMBER_MESSAGES = ${JSON.stringify(this.envelopes)}
     </script>
     <script>
-${js.toString('utf8')}
+${js}
     </script>
   </body>
 </html>
 `)
-      callback()
-    })
+            callback()
+          }
+        )
+      }
+    )
   }
+}
+
+function nodejsBtoa(data: string): string {
+  return Buffer.from(data).toString('base64')
 }
 
 program.version(p.version)

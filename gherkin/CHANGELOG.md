@@ -19,6 +19,50 @@ This document is formatted according to the principles of [Keep A CHANGELOG](htt
 
 ### Fixed
 
+## [11.0.0] - 2020-03-02
+
+### Changed
+
+* [JavaScript] Renamed `GherkinQuery` to `Query` 
+
+### Removed
+
+* [JavaScript] Removed `StrictMap` and `StrictArrayMultiMap`
+
+### Fixed
+
+* Update Indonesian Gherkin Language 
+  ([#872](https://github.com/cucumber/cucumber/pull/872)
+   [#KniveX])
+
+## [10.0.0] - 2020-02-13
+
+### Changed
+
+* Upgrade to messages v10.0.1
+
+### Fixed
+ * [Java/JavaScript/Go/Ruby] Fix parsing of commented tags
+     ([880](https://github.com/cucumber/cucumber/pull/880),
+      [721](https://github.com/cucumber/cucumber/pull/721)
+      [mpkorstanje])
+* [JavaScript] `Gherkin#fromPaths` emits an error if a path can't be read (for example if it is a directory)
+* [Java/JavaScript/Ruby/Go]  Escape triple backticks in alternative docstring
+  ([#889](https://github.com/cucumber/cucumber/pull/889)
+   [mpkorstanje])
+  
+## [9.2.0] - 2020-01-22
+
+### Added
+
+* [JavaScript] Add `getGherkinDocuments(): messages.IGherkinDocument[]`
+* [JavaScript] Add `getPickleStepIds(uri: string, lineNumber: number): string[]``
+
+### Changed
+
+* [JavaScript] Change signature of `getPickleIds(uri: string, lineNumber?: number): string[]` - `lineNumber` is optional
+* [JavaScript] `getPickleIds` only operates on pickles, and not on pickle steps
+
 ## [9.1.0] - 2020-01-10
 
 ### Added
@@ -48,6 +92,10 @@ This document is formatted according to the principles of [Keep A CHANGELOG](htt
 
 ### Fixed
 
+* Do not trim leading newlines
+  ([#891](https://github.com/cucumber/cucumber/pull/891)
+   [mpkorstanje])
+   
 * PickleStep have unique IDs when generated from a `Background` section
   ([#800](https://github.com/cucumber/cucumber/pull/800)
    [vincent-psarga])
@@ -637,7 +685,10 @@ to Gherkin 2.
 * First release
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/gherkin/v9.1.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/gherkin/v11.0.0...master
+[11.0.0]:     https://github.com/cucumber/cucumber/compare/gherkin/v10.0.0...gherkin/v11.0.0
+[10.0.0]:     https://github.com/cucumber/cucumber/compare/gherkin/v9.2.0...gherkin/v10.0.0
+[9.2.0]:     https://github.com/cucumber/cucumber/compare/gherkin/v9.1.0...gherkin/v9.2.0
 [9.1.0]:     https://github.com/cucumber/cucumber/compare/gherkin/v9.0.0...gherkin/v9.1.0
 [9.0.0]:     https://github.com/cucumber/cucumber/compare/gherkin/v8.2.1...gherkin/v9.0.0
 [8.2.1]:     https://github.com/cucumber/cucumber/compare/gherkin/v8.2.0...gherkin/v8.2.1
@@ -686,6 +737,7 @@ to Gherkin 2.
 [jmezach]:          https://github.com/jmezach
 [joscha]:           https://github.com/joscha
 [koterpillar]:      https://github.com/koterpillar
+[KniveX]:           https://github.com/KniveX
 [l3pp4rd]:          https://github.com/l3pp4rd
 [LiohAu]:           https://github.com/LiohAu
 [mattwynne]:        https://github.com/mattwynne
@@ -695,6 +747,7 @@ to Gherkin 2.
 [merrua]:           https://github.com/merrua
 [milhcbt]:          https://github.com/milhcbt
 [moreau-nicolas]:   https://github.com/moreau-nicolas
+[mpkorstanje]:      https://github.com/mpkorstanje
 [nalekberov]:       https://github.com/nalekberov
 [nixel2007]:        https://github.com/nixel2007
 [nikolovski]:       https://github.com/nikolovski

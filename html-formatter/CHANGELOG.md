@@ -17,6 +17,39 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Fixed
 
+## [4.1.0] - 2020-03-02
+
+### Added
+
+* Embed CSS in generated HTML
+  ([#911](https://github.com/cucumber/cucumber/pull/911)
+   [aslakhellesoy]
+   [vincent-psarga])
+
+## [4.0.0] - 2020-02-15
+
+### Changed
+
+* Upgrade `@cucumber/react` to `4.0.0`
+
+## [3.2.3] - 2020-01-22
+
+### Changed
+
+* Upgrade `@cucumber/react` to `3.3.0`
+
+## [3.2.2] - 2020-01-15
+
+### Fixed
+
+* Nothing changed, just tagged a new release to trigger docker build
+
+## [3.2.1] - 2020-01-14
+
+### Fixed
+
+* Nothing changed, just tagged a new release to trigger docker build
+
 ## [3.2.0] - 2020-01-10
 
 ### Changed
@@ -87,8 +120,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/html-formatter/v3.2.0...master
-[3.2.0]:      https://github.com/cucumber/cucumber/compare/html-formatter/v3.1.0...html-formatter/v3.2.0
+[Unreleased]: https://github.com/cucumber/cucumber/compare/formatter/v4.1.0...master
+[4.1.0]:      https://github.com/cucumber/cucumber/compare/formatter/v4.0.0...formatter/v4.1.0
+[4.0.0]:      https://github.com/cucumber/cucumber/compare/formatter/v3.2.3...formatter/v4.0.0
+[3.2.3]:      https://github.com/cucumber/cucumber/compare/formatter/v3.2.2...formatter/v3.2.3
+[3.2.2]:      https://github.com/cucumber/cucumber/compare/formatter/v3.2.1...formatter/v3.2.2
+[3.2.1]:      https://github.com/cucumber/cucumber/compare/formatter/v3.2.0...formatter/v3.2.1
+[3.2.0]:      https://github.com/cucumber/cucumber/compare/html-formatter/v3.1.0...formatter/v3.2.0
 [3.1.0]:      https://github.com/cucumber/cucumber/compare/html-formatter/v3.0.0...html-formatter/v3.1.0
 [3.0.0]:      https://github.com/cucumber/cucumber/compare/html-formatter/v2.0.3...html-formatter/v3.0.0
 [2.0.3]:      https://github.com/cucumber/cucumber/compare/html-formatter/v2.0.2...html-formatter/v2.0.3
@@ -102,3 +140,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 <!-- Contributors in alphabetical order -->
 [aslakhellesoy]:    https://github.com/aslakhellesoy
+[vincent-psarga]:   https://github.com/vincent-psarga

@@ -1,6 +1,6 @@
 import Gherkin from './Gherkin'
 import IGherkinOptions from './IGherkinOptions'
-import GherkinQuery from './GherkinQuery'
+import Query from './Query'
 
 export default Gherkin
-export { IGherkinOptions, GherkinQuery }
+export { IGherkinOptions, Query }

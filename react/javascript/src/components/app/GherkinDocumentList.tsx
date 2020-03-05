@@ -8,55 +8,68 @@ import {
   AccordionItemHeading,
   AccordionItemPanel,
 } from 'react-accessible-accordion'
-import CucumberQueryContext from '../../CucumberQueryContext'
-import CucumberQuery from '@cucumber/query'
 import UriContext from '../../UriContext'
-import statusColor from '../gherkin/statusColor'
+import GherkinQueryContext from '../../GherkinQueryContext'
+import CucumberQueryContext from '../../CucumberQueryContext'
+import StatusIcon from '../gherkin/StatusIcon'
 
-interface IProps {
-  gherkinDocuments: messages.IGherkinDocument[]
-  cucumberQuery: CucumberQuery
-}
+const GherkinDocumentList: React.FunctionComponent = () => {
+  const gherkinQuery = React.useContext(GherkinQueryContext)
+  const cucumberQuery = React.useContext(CucumberQueryContext)
 
-const GherkinDocumentList: React.FunctionComponent<IProps> = ({
-  gherkinDocuments,
-  cucumberQuery,
-}) => {
+  const entries: Array<[
+    string,
+    messages.TestStepResult.Status
+  ]> = gherkinQuery.getGherkinDocuments().map(gherkinDocument => {
+    const gherkinDocumentStatus = gherkinDocument.feature
+      ? cucumberQuery.getWorstTestStepResult(
+          cucumberQuery.getPickleTestStepResults(
+            gherkinQuery.getPickleIds(gherkinDocument.uri)
+          )
+        ).status
+      : messages.TestStepResult.Status.UNDEFINED
+    return [gherkinDocument.uri, gherkinDocumentStatus]
+  })
+  const gherkinDocumentStatusByUri = new Map(entries)
+
+  // Pre-expand any document that is *not* passed - assuming this is what people want to look at first
+  const preExpanded = gherkinQuery
+    .getGherkinDocuments()
+    .filter(
+      doc =>
+        gherkinDocumentStatusByUri.get(doc.uri) !==
+        messages.TestStepResult.Status.PASSED
+    )
+    .map(doc => doc.uri)
   return (
     <div className="gherkin-document-list">
-      <CucumberQueryContext.Provider value={cucumberQuery}>
-        <Accordion allowMultipleExpanded={false} allowZeroExpanded={true}>
-          {gherkinDocuments.map(gherkinDocument => {
-            const testResults = cucumberQuery.getDocumentResults(
-              gherkinDocument.uri
-            )
-            const status =
-              testResults.length > 0
-                ? testResults[0].status
-                : messages.TestResult.Status.UNKNOWN
+      <Accordion
+        allowMultipleExpanded={true}
+        allowZeroExpanded={true}
+        preExpanded={preExpanded}
+      >
+        {gherkinQuery.getGherkinDocuments().map(doc => {
+          const gherkinDocumentStatus = gherkinDocumentStatusByUri.get(doc.uri)
 
-            return (
-              <AccordionItem
-                key={gherkinDocument.uri}
-                uuid={gherkinDocument.uri}
-              >
-                <AccordionItemHeading>
-                  <AccordionItemButton
-                    style={{ backgroundColor: statusColor(status).hex() }}
-                  >
-                    {gherkinDocument.uri}
-                  </AccordionItemButton>
-                </AccordionItemHeading>
-                <AccordionItemPanel>
-                  <UriContext.Provider value={gherkinDocument.uri}>
-                    <GherkinDocument gherkinDocument={gherkinDocument} />
-                  </UriContext.Provider>
-                </AccordionItemPanel>
-              </AccordionItem>
-            )
-          })}
-        </Accordion>
-      </CucumberQueryContext.Provider>
+          return (
+            <AccordionItem key={doc.uri} uuid={doc.uri}>
+              <AccordionItemHeading>
+                <AccordionItemButton>
+                  <span className="text_status_icon_container">
+                    <StatusIcon status={gherkinDocumentStatus} />
+                  </span>
+                  <span>{doc.uri}</span>
+                </AccordionItemButton>
+              </AccordionItemHeading>
+              <AccordionItemPanel>
+                <UriContext.Provider value={doc.uri}>
+                  <GherkinDocument gherkinDocument={doc} />
+                </UriContext.Provider>
+              </AccordionItemPanel>
+            </AccordionItem>
+          )
+        })}
+      </Accordion>
     </div>
   )
 }

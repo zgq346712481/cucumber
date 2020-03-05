@@ -49,9 +49,11 @@ describe('TestStep', () => {
       const testStepFinished = await execute(testStep)
 
       assert.strictEqual(
-        testStepFinished.testResult.status,
-        messages.TestResult.Status.UNDEFINED
+        testStepFinished.testStepResult.status,
+        messages.TestStepResult.Status.UNDEFINED
       )
+      assert.notEqual(testStepFinished.testStepResult.duration, null)
+
       assert.strictEqual(testStepFinished.testStepId, testStep.id)
     })
 
@@ -69,13 +71,15 @@ describe('TestStep', () => {
 
       const testStepFinished = await execute(testStep)
       assert.strictEqual(
-        testStepFinished.testResult.status,
-        messages.TestResult.Status.AMBIGUOUS
+        testStepFinished.testStepResult.status,
+        messages.TestStepResult.Status.AMBIGUOUS
       )
+      assert.notEqual(testStepFinished.testStepResult.duration, null)
+
       assert.strictEqual(testStepFinished.testStepId, testStep.id)
     })
 
-    it('returns a TestResult object with the status', async () => {
+    it('returns a TestStepResult object with the status', async () => {
       const testStep = makePickleTestStep(
         'some-test-step-id',
         messages.Pickle.PickleStep.create({
@@ -92,7 +96,10 @@ describe('TestStep', () => {
         () => null,
         'some-testCaseStartedId'
       )
-      assert.strictEqual(result.status, messages.TestResult.Status.UNDEFINED)
+      assert.strictEqual(
+        result.status,
+        messages.TestStepResult.Status.UNDEFINED
+      )
     })
 
     it('computes the execution duration', async () => {
@@ -109,7 +116,7 @@ describe('TestStep', () => {
       )
       await testStep.execute(world, message => emitted.push(message), 'some-id')
       const result = emitted.find(m => m.testStepFinished).testStepFinished
-        .testResult
+        .testStepResult
 
       assert.strictEqual(result.duration.seconds, 0)
     })
@@ -130,8 +137,8 @@ describe('TestStep', () => {
         const testStepFinished = await execute(testStep)
 
         assert.strictEqual(
-          testStepFinished.testResult.status,
-          messages.TestResult.Status.PASSED
+          testStepFinished.testStepResult.status,
+          messages.TestStepResult.Status.PASSED
         )
         assert.strictEqual(testStepFinished.testStepId, testStep.id)
       })
@@ -150,8 +157,8 @@ describe('TestStep', () => {
         const testStepFinished = await execute(testStep)
 
         assert.strictEqual(
-          testStepFinished.testResult.status,
-          messages.TestResult.Status.PENDING
+          testStepFinished.testStepResult.status,
+          messages.TestStepResult.Status.PENDING
         )
         assert.strictEqual(testStepFinished.testStepId, testStep.id)
       })
@@ -174,8 +181,8 @@ describe('TestStep', () => {
 
         const testStepFinished = await execute(testStep)
         assert.strictEqual(
-          testStepFinished.testResult.status,
-          messages.TestResult.Status.FAILED
+          testStepFinished.testStepResult.status,
+          messages.TestStepResult.Status.FAILED
         )
         assert.strictEqual(testStepFinished.testStepId, testStep.id)
       })
@@ -198,10 +205,14 @@ describe('TestStep', () => {
 
         const testStepFinished = await execute(testStep)
         assert.ok(
-          testStepFinished.testResult.message.includes('Something went wrong')
+          testStepFinished.testStepResult.message.includes(
+            'Something went wrong'
+          )
         )
         assert.ok(
-          testStepFinished.testResult.message.includes('at some.feature:123')
+          testStepFinished.testStepResult.message.includes(
+            'at some.feature:123'
+          )
         )
       })
 
@@ -237,10 +248,67 @@ describe('TestStep', () => {
 
         const testStepFinished = await execute(testStep)
         assert.ok(
-          testStepFinished.testResult.message.includes('error from hello')
+          testStepFinished.testStepResult.message.includes('error from hello')
         )
         assert.strictEqual(testStepFinished.testStepId, testStep.id)
       })
+    })
+  })
+
+  describe('#skip', () => {
+    let testStep: ITestStep
+    let receivedMessages: messages.IEnvelope[]
+
+    beforeEach(() => {
+      testStep = makePickleTestStep(
+        'some-test-step-id',
+        messages.Pickle.PickleStep.create({
+          text: 'an undefined step',
+        }),
+        [],
+        ['some.feature:123'],
+        new IncrementClock(),
+        withSourceFramesOnlyStackTrace()
+      )
+
+      receivedMessages = []
+    })
+
+    it('emits a TestStepStarted message', () => {
+      testStep.skip(
+        message => receivedMessages.push(message),
+        'test-case-started-id'
+      )
+
+      const testStepStarted = receivedMessages.find(m => m.testStepStarted)
+        .testStepStarted
+      assert.strictEqual(testStepStarted.testStepId, testStep.id)
+    })
+
+    it('emits a TestStepFinished message with a duration of 0', () => {
+      testStep.skip(
+        message => receivedMessages.push(message),
+        'test-case-started-id'
+      )
+
+      const testStepFinished = receivedMessages.find(m => m.testStepFinished)
+        .testStepFinished
+      assert.strictEqual(testStepFinished.testStepResult.duration.seconds, 0)
+      assert.strictEqual(testStepFinished.testStepResult.duration.nanos, 0)
+    })
+
+    it('emits a TestStepFinished message with a result SKIPPED', () => {
+      testStep.skip(
+        message => receivedMessages.push(message),
+        'test-case-started-id'
+      )
+
+      const testStepFinished = receivedMessages.find(m => m.testStepFinished)
+        .testStepFinished
+      assert.strictEqual(
+        testStepFinished.testStepResult.status,
+        messages.TestStepResult.Status.SKIPPED
+      )
     })
   })
 })

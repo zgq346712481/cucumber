@@ -23,7 +23,7 @@ type CucumberExpression struct {
 	parameterTypeRegistry *ParameterTypeRegistry
 }
 
-func NewCucumberExpression(expression string, parameterTypeRegistry *ParameterTypeRegistry) (*CucumberExpression, error) {
+func NewCucumberExpression(expression string, parameterTypeRegistry *ParameterTypeRegistry) (Expression, error) {
 	result := &CucumberExpression{source: expression, parameterTypeRegistry: parameterTypeRegistry}
 
 	ast, err := parse(expression)

@@ -1,2 +1,3 @@
-MAKEFILES = $(wildcard */Makefile)
+LANGUAGES ?= go ruby
+
 include default.mk
