@@ -30,10 +30,9 @@ final class CucumberExpression implements Expression {
         this.parameterTypeRegistry = parameterTypeRegistry;
 
         AstBuilder builder = new AstBuilder();
-        //TODO: TokenScanner needs a better name
-        TokenScanner tokensScanner = new TokenScanner(expression);
+        Iterable<Token> tokens = new CucumberExpressionTokenizer().tokenize(expression);
         CucumberExpressionParser<AstNode> parser = new CucumberExpressionParser<>(builder);
-        AstNode ast = parser.parse(tokensScanner);
+        AstNode ast = parser.parse(tokens);
         String pattern = rewriteToRegex(ast);
         treeRegexp = new TreeRegexp(pattern);
     }
