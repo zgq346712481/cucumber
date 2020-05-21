@@ -1,0 +1,20 @@
+﻿
+﻿[
+	Tokens -> #Word,#Separator,#Slash,#LParen,#RParen,#LCurl,#RCurl
+	ClassName -> CucumberExpressionsParser
+	Namespace -> Cucumber
+	SimpleTokenMatcher -> true
+	MaxCollectedError -> 1
+]
+
+
+CucumberExpression! := (Separator | Parameter | Alternation)*
+Separator! := #Separator
+// for limiting the necessary lookaheads, 'Alternation' is generated even for single words or word-optional combinations
+// the one-branch alternations are flattened out in the AST builder
+Alternation! := Alternate (#Slash Alternate)*
+// to allow parameters inside alternatetion and checking it as an error in a later stage, the 'Alternate' rule has to be extended with '| Parameter'
+Alternate! [->#Word]:= (Optional | Text)+
+Text! := #Word
+Optional! := #LParen (#Word | #Separator)+ #RParen
+Parameter! := #LCurl #Word? #RCurl

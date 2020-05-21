@@ -1,16 +1,14 @@
 package io.cucumber.cucumberexpressions;
 
-import io.cucumber.cucumberexpressions.Ast.AstNode;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.PARAMETER_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.TEXT_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.PARAMETER_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.TEXT_NODE;
 import static java.util.stream.Collectors.joining;
 
 @API(status = API.Status.STABLE)
@@ -31,8 +29,11 @@ final class CucumberExpression implements Expression {
         this.source = expression;
         this.parameterTypeRegistry = parameterTypeRegistry;
 
-        CucumberExpressionParser parser = new CucumberExpressionParser();
-        AstNode ast = parser.parse(expression);
+        AstBuilder builder = new AstBuilder();
+        //TODO: TokenScanner needs a better name
+        TokenScanner tokensScanner = new TokenScanner(expression);
+        CucumberExpressionParser<AstNode> parser = new CucumberExpressionParser<>(builder);
+        AstNode ast = parser.parse(tokensScanner);
         String pattern = rewriteToRegex(ast);
         treeRegexp = new TreeRegexp(pattern);
     }

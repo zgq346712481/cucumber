@@ -1,28 +1,12 @@
 package io.cucumber.cucumberexpressions;
 
-import io.cucumber.cucumberexpressions.Ast.Token;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ALTERNATION;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ALTERNATION_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_OPTIONAL;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_OPTIONAL_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_PARAMETER;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_PARAMETER_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.END_OPTIONAL;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.END_OPTIONAL_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.END_PARAMETER;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.END_PARAMETER_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ESCAPE;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ESCAPE_ESCAPED;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.TEXT;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.WHITE_SPACE;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.WHITE_SPACE_ESCAPED;
+
 
 final class CucumberExpressionTokenizer {
 
@@ -31,7 +15,6 @@ final class CucumberExpressionTokenizer {
     }
 
     private static final List<Tokenizer> tokenizers = Arrays.asList(
-            tokenizePattern(WHITE_SPACE_ESCAPED, Pattern.compile("\\\\\\s")),
             tokenizePattern(WHITE_SPACE, Pattern.compile("\\s+")),
 
             tokenizeString(BEGIN_OPTIONAL_ESCAPED, "\\("),

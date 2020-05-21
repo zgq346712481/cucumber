@@ -1,28 +1,27 @@
 package io.cucumber.cucumberexpressions;
 
-import io.cucumber.cucumberexpressions.Ast.AstNode;
-import io.cucumber.cucumberexpressions.Ast.Token;
+import io.cucumber.cucumberexpressions.CucumberExpressionParser.Builder;
 import org.junit.jupiter.api.Test;
 
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.ALTERNATION_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.ALTERNATIVE_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.EXPRESSION_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.OPTIONAL_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.PARAMETER_NODE;
-import static io.cucumber.cucumberexpressions.Ast.AstNode.Type.TEXT_NODE;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ALTERNATION;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_OPTIONAL;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.BEGIN_PARAMETER;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.END_OPTIONAL;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.ESCAPE;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.TEXT;
-import static io.cucumber.cucumberexpressions.Ast.Token.Type.WHITE_SPACE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.ALTERNATION_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.ALTERNATIVE_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.EXPRESSION_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.OPTIONAL_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.PARAMETER_NODE;
+import static io.cucumber.cucumberexpressions.AstNode.Type.TEXT_NODE;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.ALTERNATION;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_OPTIONAL;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_PARAMETER;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.END_OPTIONAL;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.TEXT;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.WHITE_SPACE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 class CucumberExpressionParserTest {
 
-    private final CucumberExpressionParser parser = new CucumberExpressionParser();
+    private final Builder<AstNode> builder = new AstBuilder();
+    private final CucumberExpressionParser<AstNode> parser = new CucumberExpressionParser<>(builder);
 
     @Test
     void emptyString() {
@@ -94,7 +93,7 @@ class CucumberExpressionParserTest {
     void slash() {
         assertThat(astOf("\\"), equalTo(
                 new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("\\", ESCAPE))
+                        new AstNode(TEXT_NODE, new Token("\\", TEXT))
                 )
         ));
     }
@@ -337,7 +336,7 @@ class CucumberExpressionParserTest {
     }
 
     private AstNode astOf(String expression) {
-        return parser.parse(expression);
+        return parser.parse(new TokenScanner(expression));
     }
 
 }
