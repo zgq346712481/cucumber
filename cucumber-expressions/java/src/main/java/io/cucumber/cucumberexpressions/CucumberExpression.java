@@ -5,9 +5,7 @@ import org.apiguardian.api.API;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -135,6 +133,11 @@ final class CucumberExpression implements Expression {
 
     @Override
     public List<Argument<?>> match(String text, Type... typeHints) {
+        final Group group = treeRegexp.match(text);
+        if (group == null) {
+            return null;
+        }
+
         List<ParameterType<?>> parameterTypes = new ArrayList<>(this.parameterTypes);
         for (int i = 0; i < parameterTypes.size(); i++) {
             ParameterType<?> parameterType = parameterTypes.get(i);
@@ -144,7 +147,8 @@ final class CucumberExpression implements Expression {
                 parameterTypes.set(i, parameterType.deAnonymize(type, arg -> defaultTransformer.transform(arg, type)));
             }
         }
-        return Argument.build(treeRegexp, text, parameterTypes);
+
+        return Argument.build(group, treeRegexp, parameterTypes);
     }
 
     @Override

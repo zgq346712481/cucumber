@@ -3,6 +3,7 @@ import { ArrayMultimap } from '@teppeis/multimaps'
 
 export default class Query {
   private readonly gherkinDocuments: messages.IGherkinDocument[] = []
+  private readonly pickles: messages.IPickle[] = []
   private readonly locationByAstNodeId = new Map<string, messages.ILocation>()
   private readonly gherkinStepById = new Map<
     string,
@@ -10,12 +11,12 @@ export default class Query {
   >()
   private readonly pickleIdsMapByUri = new Map<
     string,
-    ArrayMultimap<number, string>
+    ArrayMultimap<string, string>
   >()
-  private readonly pickleStepIdsMapByUri = new Map<
-    string,
-    ArrayMultimap<number, string>
-  >()
+
+  private readonly pickleIdsByAstNodeId = new Map<string, string[]>()
+
+  private readonly pickleStepIdsByAstNodeId = new Map<string, string[]>()
 
   /**
    * Gets the location (line and column) of an AST node.
@@ -25,8 +26,12 @@ export default class Query {
     return this.locationByAstNodeId.get(astNodeId)
   }
 
-  public getGherkinDocuments(): messages.IGherkinDocument[] {
+  public getGherkinDocuments(): ReadonlyArray<messages.IGherkinDocument> {
     return this.gherkinDocuments
+  }
+
+  public getPickles(): ReadonlyArray<messages.IGherkinDocument> {
+    return this.pickles
   }
 
   /**
@@ -34,29 +39,25 @@ export default class Query {
    * @param uri - the URI of the document
    * @param lineNumber - optionally restrict results to a particular line number
    */
-  public getPickleIds(uri: string, lineNumber?: number): string[] {
-    const pickleIdsByLineNumber = this.pickleIdsMapByUri.get(uri)
-    return lineNumber === undefined
-      ? Array.from(new Set(pickleIdsByLineNumber.values()))
-      : pickleIdsByLineNumber.get(lineNumber)
+  public getPickleIds(uri: string, astNodeId?: string): ReadonlyArray<string> {
+    const pickleIdsByAstNodeId = this.pickleIdsMapByUri.get(uri)
+    return astNodeId === undefined
+      ? Array.from(new Set(pickleIdsByAstNodeId.values()))
+      : pickleIdsByAstNodeId.get(astNodeId)
   }
 
-  public getPickleStepIds(uri: string, lineNumber: number): string[] {
-    const pickleStepIdsByLineNumber = this.pickleStepIdsMapByUri.get(uri)
-    return pickleStepIdsByLineNumber.get(lineNumber)
+  public getPickleStepIds(astNodeId: string): ReadonlyArray<string> {
+    return this.pickleStepIdsByAstNodeId.get(astNodeId) || []
   }
 
   public update(message: messages.IEnvelope): Query {
     if (message.gherkinDocument) {
       this.gherkinDocuments.push(message.gherkinDocument)
+
       if (message.gherkinDocument.feature) {
         this.pickleIdsMapByUri.set(
           message.gherkinDocument.uri,
-          new ArrayMultimap<number, string>()
-        )
-        this.pickleStepIdsMapByUri.set(
-          message.gherkinDocument.uri,
-          new ArrayMultimap<number, string>()
+          new ArrayMultimap<string, string>()
         )
 
         for (const featureChild of message.gherkinDocument.feature.children) {
@@ -122,26 +123,29 @@ export default class Query {
 
   private updatePickle(pickle: messages.IPickle) {
     const pickleIdsByLineNumber = this.pickleIdsMapByUri.get(pickle.uri)
-    const pickleLineNumbers = pickle.astNodeIds.map(
-      astNodeId => this.locationByAstNodeId.get(astNodeId).line
-    )
-    for (const pickleLineNumber of pickleLineNumbers) {
-      // if (!pickleIdsByLineNumber.has(pickleLineNumber)) {
-      pickleIdsByLineNumber.put(pickleLineNumber, pickle.id)
-      // }
+
+    for (const astNodeId of pickle.astNodeIds) {
+      pickleIdsByLineNumber.put(astNodeId, pickle.id)
     }
     this.updatePickleSteps(pickle)
+    this.pickles.push(pickle)
+
+    for (const astNodeId of pickle.astNodeIds) {
+      if (!this.pickleIdsByAstNodeId.has(astNodeId)) {
+        this.pickleIdsByAstNodeId.set(astNodeId, [])
+      }
+      this.pickleIdsByAstNodeId.get(astNodeId).push(pickle.id)
+    }
   }
 
   private updatePickleSteps(pickle: messages.IPickle) {
-    const pickleStepIdsByLineNumber = this.pickleStepIdsMapByUri.get(pickle.uri)
     const pickleSteps = pickle.steps
     for (const pickleStep of pickleSteps) {
-      const stepLineNumbers = pickleStep.astNodeIds.map(
-        astNodeId => this.locationByAstNodeId.get(astNodeId).line
-      )
-      for (const stepLineNumber of stepLineNumbers) {
-        pickleStepIdsByLineNumber.put(stepLineNumber, pickleStep.id)
+      for (const astNodeId of pickleStep.astNodeIds) {
+        if (!this.pickleStepIdsByAstNodeId.has(astNodeId)) {
+          this.pickleStepIdsByAstNodeId.set(astNodeId, [])
+        }
+        this.pickleStepIdsByAstNodeId.get(astNodeId).push(pickleStep.id)
       }
     }
   }
