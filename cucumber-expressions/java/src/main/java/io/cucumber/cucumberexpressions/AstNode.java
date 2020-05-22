@@ -1,5 +1,7 @@
 package io.cucumber.cucumberexpressions;
 
+import io.cucumber.cucumberexpressions.CucumberExpressionParser.RuleType;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -8,42 +10,33 @@ import static java.util.stream.Collectors.joining;
 
 final class AstNode {
 
-    private final Type type;
+    private final RuleType type;
     private final List<AstNode> nodes;
     private final Token token;
 
-    AstNode(Type type, Token token) {
+    AstNode(RuleType type, Token token) {
         this(type, null, token);
     }
 
-    AstNode(Type type, AstNode... nodes) {
+    AstNode(RuleType type, AstNode... nodes) {
         this(type, asList(nodes));
     }
 
-    AstNode(Type type, List<AstNode> nodes) {
+    AstNode(RuleType type, List<AstNode> nodes) {
         this(type, nodes, null);
     }
 
-    private AstNode(Type type, List<AstNode> nodes, Token token) {
+    private AstNode(RuleType type, List<AstNode> nodes, Token token) {
         this.type = type;
         this.nodes = nodes;
         this.token = token;
-    }
-
-    enum Type {
-        TEXT_NODE,
-        OPTIONAL_NODE,
-        ALTERNATION_NODE,
-        ALTERNATIVE_NODE,
-        PARAMETER_NODE,
-        EXPRESSION_NODE
     }
 
     List<AstNode> getNodes() {
         return nodes;
     }
 
-    Type getType() {
+    RuleType getType() {
         return type;
     }
 

@@ -46,10 +46,11 @@ class CucumberExpressionParser<T> {
         CucumberExpression, // CucumberExpression! := (Separator | Parameter | Alternation)*
         Separator, // Separator! := #WHITE_SPACE
         Alternation, // Alternation! := Alternate (#ALTERNATION Alternate)*
-        Alternate, // Alternate! [-&gt;#TEXT] := (Optional | Text)+
-        Text, // Text! := #TEXT
-        Optional, // Optional! := #BEGIN_OPTIONAL (#TEXT | #WHITE_SPACE)* #END_OPTIONAL
-        Parameter, // Parameter! := #BEGIN_PARAMETER (#TEXT | #WHITE_SPACE)* #END_PARAMETER
+        Alternate, // Alternate! [-&gt;#TEXT] := (Optional | Parameter | AlternateText)+
+        AlternateText, // AlternateText! := #TEXT
+        Optional, // Optional! := #BEGIN_OPTIONAL (Text)* #END_OPTIONAL
+        Parameter, // Parameter! := #BEGIN_PARAMETER (Text)* #END_PARAMETER
+        Text, // Text! := (#TEXT | #WHITE_SPACE)
         ;
 
         static RuleType cast(TokenType tokenType) {
@@ -288,6 +289,33 @@ class CucumberExpressionParser<T> {
             case 10:
                 newState = matchTokenAt_10(token, context);
                 break;
+            case 11:
+                newState = matchTokenAt_11(token, context);
+                break;
+            case 12:
+                newState = matchTokenAt_12(token, context);
+                break;
+            case 13:
+                newState = matchTokenAt_13(token, context);
+                break;
+            case 14:
+                newState = matchTokenAt_14(token, context);
+                break;
+            case 15:
+                newState = matchTokenAt_15(token, context);
+                break;
+            case 16:
+                newState = matchTokenAt_16(token, context);
+                break;
+            case 17:
+                newState = matchTokenAt_17(token, context);
+                break;
+            case 18:
+                newState = matchTokenAt_18(token, context);
+                break;
+            case 19:
+                newState = matchTokenAt_19(token, context);
+                break;
             default:
                 throw new IllegalStateException("Unknown state: " + state);
         }
@@ -300,7 +328,7 @@ class CucumberExpressionParser<T> {
         if (match_EOF(context, token))
         {
                 build(context, token);
-            return 11;
+            return 20;
         }
         if (match_WHITE_SPACE(context, token))
         {
@@ -310,9 +338,20 @@ class CucumberExpressionParser<T> {
         }
         if (match_BEGIN_PARAMETER(context, token))
         {
+            if (lookahead_0(context, token))
+            {
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Parameter);
                 build(context, token);
             return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
         }
         if (match_BEGIN_OPTIONAL(context, token))
         {
@@ -320,15 +359,15 @@ class CucumberExpressionParser<T> {
                 startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Optional);
                 build(context, token);
-            return 4;
+            return 5;
         }
         if (match_TEXT(context, token))
         {
                 startRule(context, RuleType.Alternation);
                 startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
+                startRule(context, RuleType.AlternateText);
                 build(context, token);
-            return 6;
+            return 11;
         }
         
         final String stateComment = "State: 0 - Start";
@@ -352,7 +391,7 @@ class CucumberExpressionParser<T> {
         {
                 endRule(context, RuleType.Separator);
                 build(context, token);
-            return 11;
+            return 20;
         }
         if (match_WHITE_SPACE(context, token))
         {
@@ -363,10 +402,22 @@ class CucumberExpressionParser<T> {
         }
         if (match_BEGIN_PARAMETER(context, token))
         {
+            if (lookahead_0(context, token))
+            {
                 endRule(context, RuleType.Separator);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Parameter);
                 build(context, token);
             return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Separator);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
         }
         if (match_BEGIN_OPTIONAL(context, token))
         {
@@ -375,16 +426,16 @@ class CucumberExpressionParser<T> {
                 startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Optional);
                 build(context, token);
-            return 4;
+            return 5;
         }
         if (match_TEXT(context, token))
         {
                 endRule(context, RuleType.Separator);
                 startRule(context, RuleType.Alternation);
                 startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
+                startRule(context, RuleType.AlternateText);
                 build(context, token);
-            return 6;
+            return 11;
         }
         
         final String stateComment = "State: 1 - CucumberExpression:0>__alt0:0>Separator:0>#WHITE_SPACE:0";
@@ -402,25 +453,27 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:1>Parameter:0>#BEGIN_PARAMETER:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:0>#BEGIN_PARAMETER:0
     private int matchTokenAt_2(Token token, ParserContext context) {
         if (match_TEXT(context, token))
         {
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 2;
+            return 3;
         }
         if (match_WHITE_SPACE(context, token))
         {
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 2;
+            return 3;
         }
         if (match_END_PARAMETER(context, token))
         {
                 build(context, token);
-            return 3;
+            return 4;
         }
         
-        final String stateComment = "State: 2 - CucumberExpression:0>__alt0:1>Parameter:0>#BEGIN_PARAMETER:0";
+        final String stateComment = "State: 2 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:0>#BEGIN_PARAMETER:0";
         token.detach();
         List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
         ParserException error = token.isEOF()
@@ -435,50 +488,32 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:1>Parameter:2>#END_PARAMETER:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0
     private int matchTokenAt_3(Token token, ParserContext context) {
-        if (match_EOF(context, token))
+        if (match_TEXT(context, token))
         {
-                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 11;
+            return 3;
         }
         if (match_WHITE_SPACE(context, token))
         {
-                endRule(context, RuleType.Parameter);
-                startRule(context, RuleType.Separator);
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 1;
+            return 3;
         }
-        if (match_BEGIN_PARAMETER(context, token))
+        if (match_END_PARAMETER(context, token))
         {
-                endRule(context, RuleType.Parameter);
-                startRule(context, RuleType.Parameter);
-                build(context, token);
-            return 2;
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-                endRule(context, RuleType.Parameter);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Optional);
+                endRule(context, RuleType.Text);
                 build(context, token);
             return 4;
         }
-        if (match_TEXT(context, token))
-        {
-                endRule(context, RuleType.Parameter);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 6;
-        }
         
-        final String stateComment = "State: 3 - CucumberExpression:0>__alt0:1>Parameter:2>#END_PARAMETER:0";
+        final String stateComment = "State: 3 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0";
         token.detach();
-        List<String> expectedTokens = asList("#EOF", "#WHITE_SPACE", "#BEGIN_PARAMETER", "#BEGIN_OPTIONAL", "#TEXT");
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -491,27 +526,117 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:2>#END_PARAMETER:0
     private int matchTokenAt_4(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
         if (match_TEXT(context, token))
         {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.AlternateText);
                 build(context, token);
-            return 4;
+            return 11;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
         }
         if (match_WHITE_SPACE(context, token))
         {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
                 build(context, token);
-            return 4;
-        }
-        if (match_END_OPTIONAL(context, token))
-        {
-                build(context, token);
-            return 5;
+            return 1;
         }
         
-        final String stateComment = "State: 4 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0";
+        final String stateComment = "State: 4 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:1>Parameter:2>#END_PARAMETER:0";
         token.detach();
-        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -524,93 +649,29 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0
     private int matchTokenAt_5(Token token, ParserContext context) {
-        if (match_EOF(context, token))
-        {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                build(context, token);
-            return 11;
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
         if (match_TEXT(context, token))
         {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
                 startRule(context, RuleType.Text);
                 build(context, token);
             return 6;
-            }
-        }
-        if (match_TEXT(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 6;
-            }
-        }
-        if (match_ALTERNATION(context, token))
-        {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                build(context, token);
-            return 7;
         }
         if (match_WHITE_SPACE(context, token))
         {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Separator);
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 1;
+            return 6;
         }
-        if (match_BEGIN_PARAMETER(context, token))
+        if (match_END_OPTIONAL(context, token))
         {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Parameter);
                 build(context, token);
-            return 2;
+            return 7;
         }
         
-        final String stateComment = "State: 5 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0";
+        final String stateComment = "State: 5 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0";
         token.detach();
-        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#TEXT", "#ALTERNATION", "#WHITE_SPACE", "#BEGIN_PARAMETER");
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -623,93 +684,32 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:1>Text:0>#TEXT:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:1>__grp3:0>Text:0>__alt5:0>#TEXT:0
     private int matchTokenAt_6(Token token, ParserContext context) {
-        if (match_EOF(context, token))
-        {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                build(context, token);
-            return 11;
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
         if (match_TEXT(context, token))
         {
-            if (lookahead_0(context, token))
-            {
                 endRule(context, RuleType.Text);
                 startRule(context, RuleType.Text);
                 build(context, token);
             return 6;
-            }
-        }
-        if (match_TEXT(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 6;
-            }
-        }
-        if (match_ALTERNATION(context, token))
-        {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                build(context, token);
-            return 7;
         }
         if (match_WHITE_SPACE(context, token))
         {
                 endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Separator);
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 1;
+            return 6;
         }
-        if (match_BEGIN_PARAMETER(context, token))
+        if (match_END_OPTIONAL(context, token))
         {
                 endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Parameter);
                 build(context, token);
-            return 2;
+            return 7;
         }
         
-        final String stateComment = "State: 6 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:1>Text:0>#TEXT:0";
+        final String stateComment = "State: 6 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:1>__grp3:0>Text:0>__alt5:0>#TEXT:0";
         token.detach();
-        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#TEXT", "#ALTERNATION", "#WHITE_SPACE", "#BEGIN_PARAMETER");
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -722,26 +722,117 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:0>#ALTERNATION:0
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:2>#END_OPTIONAL:0
     private int matchTokenAt_7(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
         if (match_BEGIN_OPTIONAL(context, token))
         {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
                 startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
                 build(context, token);
             return 8;
         }
         if (match_TEXT(context, token))
         {
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.AlternateText);
                 build(context, token);
-            return 10;
+            return 11;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
+                build(context, token);
+            return 1;
         }
         
-        final String stateComment = "State: 7 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:0>#ALTERNATION:0";
+        final String stateComment = "State: 7 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:1>__alt2:0>Optional:2>#END_OPTIONAL:0";
         token.detach();
-        List<String> expectedTokens = asList("#BEGIN_OPTIONAL", "#TEXT");
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -754,27 +845,29 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0
+    // CucumberExpression:0>__alt0:1>Parameter:0>#BEGIN_PARAMETER:0
     private int matchTokenAt_8(Token token, ParserContext context) {
         if (match_TEXT(context, token))
         {
-                build(context, token);
-            return 8;
-        }
-        if (match_WHITE_SPACE(context, token))
-        {
-                build(context, token);
-            return 8;
-        }
-        if (match_END_OPTIONAL(context, token))
-        {
+                startRule(context, RuleType.Text);
                 build(context, token);
             return 9;
         }
+        if (match_WHITE_SPACE(context, token))
+        {
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 9;
+        }
+        if (match_END_PARAMETER(context, token))
+        {
+                build(context, token);
+            return 10;
+        }
         
-        final String stateComment = "State: 8 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0";
+        final String stateComment = "State: 8 - CucumberExpression:0>__alt0:1>Parameter:0>#BEGIN_PARAMETER:0";
         token.detach();
-        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -787,93 +880,32 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0
+    // CucumberExpression:0>__alt0:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0
     private int matchTokenAt_9(Token token, ParserContext context) {
-        if (match_EOF(context, token))
-        {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                build(context, token);
-            return 11;
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 8;
-            }
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
         if (match_TEXT(context, token))
         {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Text);
                 startRule(context, RuleType.Text);
                 build(context, token);
-            return 10;
-            }
-        }
-        if (match_TEXT(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 6;
-            }
-        }
-        if (match_ALTERNATION(context, token))
-        {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                build(context, token);
-            return 7;
+            return 9;
         }
         if (match_WHITE_SPACE(context, token))
         {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Separator);
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
                 build(context, token);
-            return 1;
+            return 9;
         }
-        if (match_BEGIN_PARAMETER(context, token))
+        if (match_END_PARAMETER(context, token))
         {
-                endRule(context, RuleType.Optional);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Text);
                 build(context, token);
-            return 2;
+            return 10;
         }
         
-        final String stateComment = "State: 9 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0";
+        final String stateComment = "State: 9 - CucumberExpression:0>__alt0:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0";
         token.detach();
-        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#TEXT", "#ALTERNATION", "#WHITE_SPACE", "#BEGIN_PARAMETER");
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -886,93 +918,62 @@ class CucumberExpressionParser<T> {
     }
 
 
-    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Text:0>#TEXT:0
+    // CucumberExpression:0>__alt0:1>Parameter:2>#END_PARAMETER:0
     private int matchTokenAt_10(Token token, ParserContext context) {
         if (match_EOF(context, token))
         {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
+                endRule(context, RuleType.Parameter);
                 build(context, token);
-            return 11;
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 8;
-            }
-        }
-        if (match_BEGIN_OPTIONAL(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Optional);
-                build(context, token);
-            return 4;
-            }
-        }
-        if (match_TEXT(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 10;
-            }
-        }
-        if (match_TEXT(context, token))
-        {
-            if (lookahead_0(context, token))
-            {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternation);
-                startRule(context, RuleType.Alternate);
-                startRule(context, RuleType.Text);
-                build(context, token);
-            return 6;
-            }
-        }
-        if (match_ALTERNATION(context, token))
-        {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                build(context, token);
-            return 7;
+            return 20;
         }
         if (match_WHITE_SPACE(context, token))
         {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
+                endRule(context, RuleType.Parameter);
                 startRule(context, RuleType.Separator);
                 build(context, token);
             return 1;
         }
         if (match_BEGIN_PARAMETER(context, token))
         {
-                endRule(context, RuleType.Text);
-                endRule(context, RuleType.Alternate);
-                endRule(context, RuleType.Alternation);
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
                 startRule(context, RuleType.Parameter);
                 build(context, token);
             return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+        }
+        if (match_TEXT(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
         }
         
-        final String stateComment = "State: 10 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Text:0>#TEXT:0";
+        final String stateComment = "State: 10 - CucumberExpression:0>__alt0:1>Parameter:2>#END_PARAMETER:0";
         token.detach();
-        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#TEXT", "#ALTERNATION", "#WHITE_SPACE", "#BEGIN_PARAMETER");
+        List<String> expectedTokens = asList("#EOF", "#WHITE_SPACE", "#BEGIN_PARAMETER", "#BEGIN_OPTIONAL", "#TEXT");
         ParserException error = token.isEOF()
                 ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
                 : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
@@ -981,6 +982,683 @@ class CucumberExpressionParser<T> {
 
         addError(context, error);
         return 10;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:2>AlternateText:0>#TEXT:0
+    private int matchTokenAt_11(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
+                build(context, token);
+            return 1;
+        }
+        
+        final String stateComment = "State: 11 - CucumberExpression:0>__alt0:2>Alternation:0>Alternate:0>__alt2:2>AlternateText:0>#TEXT:0";
+        token.detach();
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 11;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:0>#ALTERNATION:0
+    private int matchTokenAt_12(Token token, ParserContext context) {
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 13;
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 16;
+        }
+        if (match_TEXT(context, token))
+        {
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 19;
+        }
+        
+        final String stateComment = "State: 12 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:0>#ALTERNATION:0";
+        token.detach();
+        List<String> expectedTokens = asList("#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 12;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0
+    private int matchTokenAt_13(Token token, ParserContext context) {
+        if (match_TEXT(context, token))
+        {
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 14;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 14;
+        }
+        if (match_END_OPTIONAL(context, token))
+        {
+                build(context, token);
+            return 15;
+        }
+        
+        final String stateComment = "State: 13 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:0>#BEGIN_OPTIONAL:0";
+        token.detach();
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 13;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:1>__grp3:0>Text:0>__alt5:0>#TEXT:0
+    private int matchTokenAt_14(Token token, ParserContext context) {
+        if (match_TEXT(context, token))
+        {
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 14;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 14;
+        }
+        if (match_END_OPTIONAL(context, token))
+        {
+                endRule(context, RuleType.Text);
+                build(context, token);
+            return 15;
+        }
+        
+        final String stateComment = "State: 14 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:1>__grp3:0>Text:0>__alt5:0>#TEXT:0";
+        token.detach();
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_OPTIONAL");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 14;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0
+    private int matchTokenAt_15(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 13;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 16;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 19;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.Optional);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
+                build(context, token);
+            return 1;
+        }
+        
+        final String stateComment = "State: 15 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:0>__alt2:0>Optional:2>#END_OPTIONAL:0";
+        token.detach();
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 15;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:0>#BEGIN_PARAMETER:0
+    private int matchTokenAt_16(Token token, ParserContext context) {
+        if (match_TEXT(context, token))
+        {
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 17;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 17;
+        }
+        if (match_END_PARAMETER(context, token))
+        {
+                build(context, token);
+            return 18;
+        }
+        
+        final String stateComment = "State: 16 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:0>#BEGIN_PARAMETER:0";
+        token.detach();
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 16;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0
+    private int matchTokenAt_17(Token token, ParserContext context) {
+        if (match_TEXT(context, token))
+        {
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 17;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.Text);
+                startRule(context, RuleType.Text);
+                build(context, token);
+            return 17;
+        }
+        if (match_END_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Text);
+                build(context, token);
+            return 18;
+        }
+        
+        final String stateComment = "State: 17 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:1>__grp4:0>Text:0>__alt5:0>#TEXT:0";
+        token.detach();
+        List<String> expectedTokens = asList("#TEXT", "#WHITE_SPACE", "#END_PARAMETER");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 17;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:2>#END_PARAMETER:0
+    private int matchTokenAt_18(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 13;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 16;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 19;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.Parameter);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
+                build(context, token);
+            return 1;
+        }
+        
+        final String stateComment = "State: 18 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:1>Parameter:2>#END_PARAMETER:0";
+        token.detach();
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 18;
+
+    }
+
+
+    // CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:2>AlternateText:0>#TEXT:0
+    private int matchTokenAt_19(Token token, ParserContext context) {
+        if (match_EOF(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                build(context, token);
+            return 20;
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 13;
+            }
+        }
+        if (match_BEGIN_OPTIONAL(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Optional);
+                build(context, token);
+            return 5;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 16;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 2;
+            }
+        }
+        if (match_BEGIN_PARAMETER(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Parameter);
+                build(context, token);
+            return 8;
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 19;
+            }
+        }
+        if (match_TEXT(context, token))
+        {
+            if (lookahead_0(context, token))
+            {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Alternate);
+                startRule(context, RuleType.AlternateText);
+                build(context, token);
+            return 11;
+            }
+        }
+        if (match_ALTERNATION(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                build(context, token);
+            return 12;
+        }
+        if (match_WHITE_SPACE(context, token))
+        {
+                endRule(context, RuleType.AlternateText);
+                endRule(context, RuleType.Alternate);
+                endRule(context, RuleType.Alternation);
+                startRule(context, RuleType.Separator);
+                build(context, token);
+            return 1;
+        }
+        
+        final String stateComment = "State: 19 - CucumberExpression:0>__alt0:2>Alternation:1>__grp1:1>Alternate:1>__alt2:2>AlternateText:0>#TEXT:0";
+        token.detach();
+        List<String> expectedTokens = asList("#EOF", "#BEGIN_OPTIONAL", "#BEGIN_PARAMETER", "#TEXT", "#ALTERNATION", "#WHITE_SPACE");
+        ParserException error = token.isEOF()
+                ? new ParserException.UnexpectedEOFException(token, expectedTokens, stateComment)
+                : new ParserException.UnexpectedTokenException(token, expectedTokens, stateComment);
+        if (stopAtFirstError)
+            throw error;
+
+        addError(context, error);
+        return 19;
 
     }
 
@@ -1034,7 +1712,7 @@ class CucumberExpressionParser<T> {
         void reset();
     }
 
-    class SimpleTokenMatcher implements TokenMatcher {
+    private static class SimpleTokenMatcher implements TokenMatcher {
 
         @Override
         public void reset() {

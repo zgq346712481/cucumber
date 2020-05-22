@@ -1,5 +1,6 @@
 package io.cucumber.cucumberexpressions;
 
+import io.cucumber.cucumberexpressions.CucumberExpressionParser.RuleType;
 import org.apiguardian.api.API;
 
 import java.lang.reflect.Type;
@@ -7,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import static io.cucumber.cucumberexpressions.AstNode.Type.PARAMETER_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.TEXT_NODE;
 import static java.util.stream.Collectors.joining;
 
 @API(status = API.Status.STABLE)
@@ -39,17 +38,17 @@ final class CucumberExpression implements Expression {
 
     private String rewriteToRegex(AstNode node) {
         switch (node.getType()) {
-            case TEXT_NODE:
+            case Text:
                 return escapeRegex(node.getText());
-            case OPTIONAL_NODE:
+            case Optional:
                 return rewriteOptional(node);
-            case ALTERNATION_NODE:
+            case Alternation:
                 return rewriteAlternation(node);
-            case ALTERNATIVE_NODE:
+            case Alternate:
                 return rewriteAlternative(node);
-            case PARAMETER_NODE:
+            case Parameter:
                 return rewriteParameter(node);
-            case EXPRESSION_NODE:
+            case CucumberExpression:
                 return rewriteExpression(node);
             default:
                 throw new IllegalArgumentException(node.getType().name());
@@ -116,7 +115,7 @@ final class CucumberExpression implements Expression {
         boolean hasTextNode = node.getNodes()
                 .stream()
                 .map(AstNode::getType)
-                .anyMatch(type -> type == TEXT_NODE);
+                .anyMatch(type -> type == RuleType.Text);
         if (!hasTextNode) {
             throw new CucumberExpressionException(message + source);
         }
@@ -125,7 +124,7 @@ final class CucumberExpression implements Expression {
     private void assertNoParameters(AstNode node, String message) {
         boolean hasParameter = node.getNodes().stream()
                 .map(AstNode::getType)
-                .anyMatch(type -> type == PARAMETER_NODE);
+                .anyMatch(type -> type == RuleType.Parameter);
         if (hasParameter) {
             throw new CucumberExpressionException(message + source);
         }

@@ -1,15 +1,9 @@
 package io.cucumber.cucumberexpressions;
 
 import io.cucumber.cucumberexpressions.CucumberExpressionParser.Builder;
+import io.cucumber.cucumberexpressions.CucumberExpressionParser.RuleType;
 import org.junit.jupiter.api.Test;
 
-import static io.cucumber.cucumberexpressions.AstNode.Type.ALTERNATION_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.ALTERNATIVE_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.EXPRESSION_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.OPTIONAL_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.PARAMETER_NODE;
-import static io.cucumber.cucumberexpressions.AstNode.Type.TEXT_NODE;
-import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.ALTERNATION;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_OPTIONAL;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_PARAMETER;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.END_OPTIONAL;
@@ -26,19 +20,15 @@ class CucumberExpressionParserTest {
     @Test
     void emptyString() {
         assertThat(astOf(""), equalTo(
-                new AstNode(EXPRESSION_NODE)
+                new AstNode(RuleType.CucumberExpression)
         ));
     }
 
     @Test
     void phrase() {
         assertThat(astOf("three blind mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three blind mice", TEXT))
                 )
         ));
     }
@@ -46,9 +36,9 @@ class CucumberExpressionParserTest {
     @Test
     void optional() {
         assertThat(astOf("(blind)"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(OPTIONAL_NODE,
-                                new AstNode(TEXT_NODE, new Token("blind", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Optional,
+                                new AstNode(RuleType.Text, new Token("blind", TEXT))
                         )
                 )
         ));
@@ -57,9 +47,9 @@ class CucumberExpressionParserTest {
     @Test
     void parameter() {
         assertThat(astOf("{string}"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(PARAMETER_NODE,
-                                new AstNode(TEXT_NODE, new Token("string", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Parameter,
+                                new AstNode(RuleType.Text, new Token("string", TEXT))
                         )
                 )
         ));
@@ -68,8 +58,8 @@ class CucumberExpressionParserTest {
     @Test
     void anonymousParameter() {
         assertThat(astOf("{}"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(PARAMETER_NODE)
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Parameter)
                 )
         ));
     }
@@ -77,14 +67,23 @@ class CucumberExpressionParserTest {
     @Test
     void optionalPhrase() {
         assertThat(astOf("three (blind) mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(OPTIONAL_NODE,
-                                new AstNode(TEXT_NODE, new Token("blind", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
+                        new AstNode(RuleType.Optional,
+                                new AstNode(RuleType.Text, new Token("blind", TEXT))
                         ),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                        new AstNode(RuleType.Text, new Token(" mice", TEXT))
+                )
+        ));
+    }
+
+    @Test
+    void optionalWithSpace() {
+        assertThat(astOf("(blind mice)"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Optional,
+                                new AstNode(RuleType.Text, new Token("blind mice", TEXT))
+                        )
                 )
         ));
     }
@@ -92,8 +91,8 @@ class CucumberExpressionParserTest {
     @Test
     void slash() {
         assertThat(astOf("\\"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("\\", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("\\", TEXT))
                 )
         ));
     }
@@ -101,8 +100,8 @@ class CucumberExpressionParserTest {
     @Test
     void openingBrace() {
         assertThat(astOf("{"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("{", BEGIN_PARAMETER))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("{", BEGIN_PARAMETER))
                 )
         ));
     }
@@ -110,9 +109,9 @@ class CucumberExpressionParserTest {
     @Test
     void unfinishedParameter() {
         assertThat(astOf("{string"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("{", BEGIN_PARAMETER)),
-                        new AstNode(TEXT_NODE, new Token("string", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("{", BEGIN_PARAMETER)),
+                        new AstNode(RuleType.Text, new Token("string", TEXT))
                 )
         ));
     }
@@ -120,8 +119,8 @@ class CucumberExpressionParserTest {
     @Test
     void openingParenthesis() {
         assertThat(astOf("("), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("(", BEGIN_OPTIONAL))
                 )
         ));
     }
@@ -129,53 +128,39 @@ class CucumberExpressionParserTest {
     @Test
     void escapedOpeningParenthesis() {
         assertThat(astOf("\\("), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("(", TEXT))
                 )
         ));
     }
 
     @Test
     void escapedOptional() {
-        assertThat(astOf("\\(blind)"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL)),
-                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(")", END_OPTIONAL))
+        assertThat(astOf("\\(blind\\)"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("(blind)", TEXT))
                 )
         ));
     }
 
     @Test
     void escapedOptionalPhrase() {
-        assertThat(astOf("three \\(blind) mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL)),
-                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(")", END_OPTIONAL)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+        assertThat(astOf("three \\(blind\\) mice"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three (blind) mice", TEXT))
                 )
         ));
     }
 
     @Test
     void escapedOptionalFollowedByOptional() {
-        assertThat(astOf("three \\((very) blind) mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL)),
-                        new AstNode(OPTIONAL_NODE,
-                                new AstNode(TEXT_NODE, new Token("very", TEXT))
+        assertThat(astOf("three \\((very) blind\\) mice"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three (", TEXT)),
+                        new AstNode(RuleType.Optional,
+                                new AstNode(RuleType.Text, new Token("very", TEXT))
                         ),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(")", END_OPTIONAL)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                        new AstNode(RuleType.Text, new Token(" blind) mice", TEXT))
                 )
         ));
     }
@@ -183,18 +168,12 @@ class CucumberExpressionParserTest {
     @Test
     void optionalContainingEscapedOptional() {
         assertThat(astOf("three ((very\\) blind) mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(OPTIONAL_NODE,
-                                new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL)),
-                                new AstNode(TEXT_NODE, new Token("very", TEXT)),
-                                new AstNode(TEXT_NODE, new Token(")", END_OPTIONAL)),
-                                new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                new AstNode(TEXT_NODE, new Token("blind", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
+                        new AstNode(RuleType.Optional,
+                                new AstNode(RuleType.Text, new Token("(very) blind", TEXT))
                         ),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                        new AstNode(RuleType.Text, new Token(" mice", TEXT))
                 )
         ));
     }
@@ -203,13 +182,13 @@ class CucumberExpressionParserTest {
     @Test
     void alternation() {
         assertThat(astOf("mice/rats"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("mice", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("rats", TEXT)))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("rats", TEXT)))
                         )
                 )
         ));
@@ -218,10 +197,8 @@ class CucumberExpressionParserTest {
     @Test
     void escapedAlternation() {
         assertThat(astOf("mice\\/rats"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT)),
-                        new AstNode(TEXT_NODE, new Token("/", ALTERNATION)),
-                        new AstNode(TEXT_NODE, new Token("rats", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("mice/rats", TEXT))
                 )
         ));
     }
@@ -230,19 +207,17 @@ class CucumberExpressionParserTest {
     @Test
     void alternationPhrase() {
         assertThat(astOf("three hungry/blind mice"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("hungry", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("hungry", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("blind", TEXT))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("blind", TEXT))
                                 )
                         ),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                        new AstNode(RuleType.Text, new Token(" mice", TEXT))
                 )
         ));
     }
@@ -250,19 +225,13 @@ class CucumberExpressionParserTest {
     @Test
     void alternationWithWhiteSpace() {
         assertThat(astOf("\\ three\\ hungry/blind\\ mice\\ "), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("hungry", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token(" three hungry", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("mice", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("blind mice ", TEXT))
                                 )
                         )
 
@@ -273,18 +242,18 @@ class CucumberExpressionParserTest {
     @Test
     void alternationWithUnusedEndOptional() {
         assertThat(astOf("three )blind\\ mice/rats"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token(")", END_OPTIONAL)),
-                                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three", TEXT)),
+                        new AstNode(RuleType.Text, new Token(" ", WHITE_SPACE)),
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token(")", END_OPTIONAL)),
+                                        new AstNode(RuleType.Text, new Token("blind", TEXT)),
+                                        new AstNode(RuleType.Text, new Token(" ", WHITE_SPACE)),
+                                        new AstNode(RuleType.Text, new Token("mice", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("rats", TEXT))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("rats", TEXT))
                                 )
                         )
                 )
@@ -294,18 +263,18 @@ class CucumberExpressionParserTest {
     @Test
     void alternationWithUnusedStartOptional() {
         assertThat(astOf("three blind\\ mice/rats("), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("mice", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three", TEXT)),
+                        new AstNode(RuleType.Text, new Token(" ", WHITE_SPACE)),
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("blind", TEXT)),
+                                        new AstNode(RuleType.Text, new Token(" ", WHITE_SPACE)),
+                                        new AstNode(RuleType.Text, new Token("mice", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("rats", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token("(", BEGIN_OPTIONAL))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("rats", TEXT)),
+                                        new AstNode(RuleType.Text, new Token("(", BEGIN_OPTIONAL))
                                 )
                         )
                 )
@@ -315,19 +284,36 @@ class CucumberExpressionParserTest {
     @Test
     void alternationFollowedByOptional() {
         assertThat(astOf("three blind\\ rat/cat(s)"), equalTo(
-                new AstNode(EXPRESSION_NODE,
-                        new AstNode(TEXT_NODE, new Token("three", TEXT)),
-                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                        new AstNode(ALTERNATION_NODE,
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("blind", TEXT)),
-                                        new AstNode(TEXT_NODE, new Token(" ", WHITE_SPACE)),
-                                        new AstNode(TEXT_NODE, new Token("rat", TEXT))
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("blind rat", TEXT))
                                 ),
-                                new AstNode(ALTERNATIVE_NODE,
-                                        new AstNode(TEXT_NODE, new Token("cat", TEXT)),
-                                        new AstNode(OPTIONAL_NODE,
-                                                new AstNode(TEXT_NODE, new Token("s", TEXT))
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("cat", TEXT)),
+                                        new AstNode(RuleType.Optional,
+                                                new AstNode(RuleType.Text, new Token("s", TEXT))
+                                        )
+                                )
+                        )
+                )
+        ));
+    }
+
+    @Test
+    void alternationFollowedByOptionalVariation() {
+        assertThat(astOf("(three )rats/(some )cats"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("blind rat", TEXT))
+                                ),
+                                new AstNode(RuleType.Alternate,
+                                        new AstNode(RuleType.Text, new Token("cat", TEXT)),
+                                        new AstNode(RuleType.Optional,
+                                                new AstNode(RuleType.Text, new Token("s", TEXT))
                                         )
                                 )
                         )
@@ -336,7 +322,7 @@ class CucumberExpressionParserTest {
     }
 
     private AstNode astOf(String expression) {
-        return parser.parse(new TokenScanner(expression));
+        return parser.parse(new CucumberExpressionTokenizer().tokenize(expression));
     }
 
 }

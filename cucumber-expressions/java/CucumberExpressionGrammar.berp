@@ -8,13 +8,11 @@
 ]
 
 
-CucumberExpression! := (Separator | Parameter | Alternation)*
+CucumberExpression! := (Separator | Parameter | Alternation )*
 Separator! := #WHITE_SPACE
-// for limiting the necessary lookaheads, 'Alternation' is generated even for single words or word-optional combinations
-// the one-branch alternations are flattened out in the AST builder
 Alternation! := Alternate (#ALTERNATION Alternate)*
-// to allow parameters inside alternatetion and checking it as an error in a later stage, the 'Alternate' rule has to be extended with '| Parameter'
-Alternate! [->#TEXT]:= (Optional | Text)+
-Text! := #TEXT
-Optional! := #BEGIN_OPTIONAL (#TEXT | #WHITE_SPACE)* #END_OPTIONAL
-Parameter! := #BEGIN_PARAMETER (#TEXT | #WHITE_SPACE)* #END_PARAMETER
+Alternate! [->#TEXT | #ALTERNATION] := (Optional | Parameter | AlternateText )+
+AlternateText! := #TEXT
+Optional! := #BEGIN_OPTIONAL (Text)* #END_OPTIONAL
+Parameter! := #BEGIN_PARAMETER (Text)* #END_PARAMETER
+Text! := (#TEXT | #WHITE_SPACE)

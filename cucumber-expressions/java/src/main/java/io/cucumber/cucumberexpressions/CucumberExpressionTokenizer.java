@@ -2,27 +2,92 @@ package io.cucumber.cucumberexpressions;
 
 import io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator.OfInt;
 
 final class CucumberExpressionTokenizer {
 
-    List<Token> tokenize(String expression) {
-        //TODO: More efficient plz.
-        return expression.codePoints().mapToObj(
-                codePoint -> {
-                    //TODO: Java 11 allows us to use Character.codePointOf()
-                    StringBuilder builder = new StringBuilder();
-                    builder.appendCodePoint(codePoint);
-                    return new Token(builder.toString(), tokenTypeOf(codePoint));
+    Iterable<Token> tokenize(String expression) {
+        return () -> new Iterator<Token>() {
+            final OfInt codePoints = expression.codePoints().iterator();
+            StringBuilder buffer = new StringBuilder();
+            TokenType previousTokenType = null;
+            TokenType currentTokenType = null;
+            boolean treatAsText = false;
+
+            @Override
+            public boolean hasNext() {
+                return previousTokenType != TokenType.EOF;
+            }
+
+            @Override
+            public Token next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
                 }
-        ).collect(Collectors.toList());
+
+                while (codePoints.hasNext()) {
+                    int current = codePoints.nextInt();
+                    if (current == '\\') {
+                        treatAsText = true;
+                        continue;
+                    }
+                    currentTokenType = tokenTypeOf(current, treatAsText);
+                    treatAsText = false;
+
+                    if (previousTokenType != null
+                            && (currentTokenType != previousTokenType
+                            || (currentTokenType != TokenType.WHITE_SPACE && currentTokenType != TokenType.TEXT))) {
+                        Token t = new Token(buffer.toString(), previousTokenType);
+                        buffer = new StringBuilder();
+                        buffer.appendCodePoint(current);
+                        previousTokenType = currentTokenType;
+                        return t;
+                    }
+                    buffer.appendCodePoint(current);
+                    previousTokenType = currentTokenType;
+                }
+
+                if (buffer.length() > 0) {
+                    Token t = new Token(buffer.toString(), previousTokenType);
+                    buffer = new StringBuilder();
+                    currentTokenType = TokenType.EOF;
+                    return t;
+                }
+
+                currentTokenType = null;
+                previousTokenType = TokenType.EOF;
+                Token t = new Token(buffer.toString(), previousTokenType);
+                buffer = new StringBuilder();
+                return t;
+            }
+        };
+
     }
 
-    private TokenType tokenTypeOf(Integer c) {
-        sw
+    private TokenType tokenTypeOf(Integer c, boolean treatAsText) {
+        if (treatAsText) {
+            return TokenType.TEXT;
+        }
 
-        return null;
+        if (Character.isWhitespace(c)) {
+            return TokenType.WHITE_SPACE;
+        }
+
+        switch (c) {
+            case (int) '/':
+                return TokenType.ALTERNATION;
+            case (int) '{':
+                return TokenType.BEGIN_PARAMETER;
+            case (int) '}':
+                return TokenType.END_PARAMETER;
+            case (int) '(':
+                return TokenType.BEGIN_OPTIONAL;
+            case (int) ')':
+                return TokenType.END_OPTIONAL;
+        }
+        return TokenType.TEXT;
     }
 
 }

@@ -39,14 +39,14 @@ public class CucumberExpressionGeneratorTest {
     @Test
     public void generates_expression_with_escaped_left_parenthesis() {
         assertExpression(
-                "\\(iii)", Collections.<String>emptyList(),
+                "\\(iii\\)", Collections.<String>emptyList(),
                 "(iii)");
     }
 
     @Test
     public void generates_expression_with_escaped_left_curly_brace() {
         assertExpression(
-                "\\{iii}", Collections.<String>emptyList(),
+                "\\{iii\\}", Collections.<String>emptyList(),
                 "{iii}");
     }
 

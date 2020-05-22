@@ -1,18 +1,20 @@
 package io.cucumber.cucumberexpressions;
 
-
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.ALTERNATION;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_OPTIONAL;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.BEGIN_PARAMETER;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.END_OPTIONAL;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.END_PARAMETER;
+import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.EOF;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.TEXT;
 import static io.cucumber.cucumberexpressions.CucumberExpressionParser.TokenType.WHITE_SPACE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
 
 class CucumberExpressionTokenizerTest {
 
@@ -20,117 +22,152 @@ class CucumberExpressionTokenizerTest {
 
     @Test
     void emptyString() {
-        assertThat(tokenizer.tokenize(""), empty());
+        assertThat(tokensFrom(""), contains(
+                new Token("", EOF)
+        ));
     }
 
     @Test
     void phrase() {
-        assertThat(tokenizer.tokenize("three blind mice"), contains(
+        assertThat(tokensFrom("three blind mice"), contains(
                 new Token("three", TEXT),
                 new Token(" ", WHITE_SPACE),
                 new Token("blind", TEXT),
                 new Token(" ", WHITE_SPACE),
-                new Token("mice", TEXT)
+                new Token("mice", TEXT),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void optional() {
-        assertThat(tokenizer.tokenize("(blind)"), contains(
+        assertThat(tokensFrom("(blind)"), contains(
                 new Token("(", BEGIN_OPTIONAL),
                 new Token("blind", TEXT),
-                new Token(")", END_OPTIONAL)
+                new Token(")", END_OPTIONAL),
+                new Token("", EOF)
+        ));
+    }
+
+   @Test
+    void repeatedBeginOptional() {
+        assertThat(tokensFrom("(("), contains(
+                new Token("(", BEGIN_OPTIONAL),
+                new Token("(", BEGIN_OPTIONAL),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void escapedOptional() {
-        assertThat(tokenizer.tokenize("\\(blind\\)"), contains(
-                new Token("\\(", TEXT),
-                new Token("blind", TEXT),
-                new Token("\\)", TEXT)
+        assertThat(tokensFrom("\\(blind\\)"), contains(
+                new Token("(blind)", TEXT),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void optionalPhrase() {
-        assertThat(tokenizer.tokenize("three (blind) mice"), contains(
+        assertThat(tokensFrom("three (blind) mice"), contains(
                 new Token("three", TEXT),
                 new Token(" ", WHITE_SPACE),
                 new Token("(", BEGIN_OPTIONAL),
                 new Token("blind", TEXT),
                 new Token(")", END_OPTIONAL),
                 new Token(" ", WHITE_SPACE),
-                new Token("mice", TEXT)
+                new Token("mice", TEXT),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void parameter() {
-        assertThat(tokenizer.tokenize("{string}"), contains(
+        assertThat(tokensFrom("{string}"), contains(
                 new Token("{", BEGIN_PARAMETER),
                 new Token("string", TEXT),
-                new Token("}", END_PARAMETER)
+                new Token("}", END_PARAMETER),
+                new Token("", EOF)
         ));
     }
 
     @Test
-    void EscapedParameter() {
-        assertThat(tokenizer.tokenize("\\{string\\}"), contains(
-                new Token("\\{", TEXT),
-                new Token("string", TEXT),
-                new Token("\\}", TEXT)
+    void repeatedBeginParameter() {
+        assertThat(tokensFrom("{{"), contains(
+                new Token("{", BEGIN_PARAMETER),
+                new Token("{", BEGIN_PARAMETER),
+                new Token("", EOF)
+        ));
+    }
+
+    @Test
+    void escapedParameter() {
+        assertThat(tokensFrom("\\{string\\}"), contains(
+                new Token("{string}", TEXT),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void parameterPhrase() {
-        assertThat(tokenizer.tokenize("three {string} mice"), contains(
+        assertThat(tokensFrom("three {string} mice"), contains(
                 new Token("three", TEXT),
                 new Token(" ", WHITE_SPACE),
                 new Token("{", BEGIN_PARAMETER),
                 new Token("string", TEXT),
                 new Token("}", END_PARAMETER),
                 new Token(" ", WHITE_SPACE),
-                new Token("mice", TEXT)
+                new Token("mice", TEXT),
+                new Token("", EOF)
         ));
     }
 
-
     @Test
     void alternation() {
-        assertThat(tokenizer.tokenize("blind/cripple"), contains(
+        assertThat(tokensFrom("blind/cripple"), contains(
                 new Token("blind", TEXT),
                 new Token("/", ALTERNATION),
-                new Token("cripple", TEXT)
+                new Token("cripple", TEXT),
+                new Token("", EOF)
+        ));
+    }
+
+    @Test
+    void repeatedAlternation() {
+        assertThat(tokensFrom("//"), contains(
+                new Token("/", ALTERNATION),
+                new Token("/", ALTERNATION),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void escapedAlternation() {
-        assertThat(tokenizer.tokenize("blind\\ and\\ famished\\/cripple mice"), contains(
-                new Token("blind", TEXT),
-                new Token("\\ ", TEXT),
-                new Token("and", TEXT),
-                new Token("\\ ", TEXT),
-                new Token("famished", TEXT),
-                new Token("\\/", TEXT),
-                new Token("cripple", TEXT),
+        assertThat(tokensFrom("blind\\ and\\ famished\\/cripple mice"), contains(
+                new Token("blind and famished/cripple", TEXT),
                 new Token(" ", WHITE_SPACE),
-                new Token("mice", TEXT)
+                new Token("mice", TEXT),
+                new Token("", EOF)
         ));
     }
 
     @Test
     void alternationPhrase() {
-        assertThat(tokenizer.tokenize("three blind/cripple mice"), contains(
+        assertThat(tokensFrom("three blind/cripple mice"), contains(
                 new Token("three", TEXT),
                 new Token(" ", WHITE_SPACE),
                 new Token("blind", TEXT),
                 new Token("/", ALTERNATION),
                 new Token("cripple", TEXT),
                 new Token(" ", WHITE_SPACE),
-                new Token("mice", TEXT)
+                new Token("mice", TEXT),
+                new Token("", EOF)
         ));
     }
+
+    private List<Token> tokensFrom(String s) {
+        List<Token> tokens = new ArrayList<>();
+        tokenizer.tokenize(s).forEach(tokens::add);
+        return tokens;
+    }
+
 }

@@ -300,7 +300,7 @@ class @Model.ParserClassName<T> {
 @if(Model.SimpleTokenMatcher)
 {
 <text>
-    class SimpleTokenMatcher implements TokenMatcher {
+    private static class SimpleTokenMatcher implements TokenMatcher {
 
         @("@Override")
         public void reset() {
