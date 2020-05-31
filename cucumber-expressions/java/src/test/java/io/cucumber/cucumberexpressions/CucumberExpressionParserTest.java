@@ -167,7 +167,7 @@ class CucumberExpressionParserTest {
 
     @Test
     void optionalContainingEscapedOptional() {
-        assertThat(astOf("three ((very\\) blind) mice"), equalTo(
+        assertThat(astOf("three (\\(very\\) blind) mice"), equalTo(
                 new AstNode(RuleType.CucumberExpression,
                         new AstNode(RuleType.Text, new Token("three ", TEXT)),
                         new AstNode(RuleType.Optional,
@@ -177,7 +177,6 @@ class CucumberExpressionParserTest {
                 )
         ));
     }
-
 
     @Test
     void alternation() {
@@ -195,6 +194,19 @@ class CucumberExpressionParserTest {
     }
 
     @Test
+    void emptyAlternative() {
+        assertThat(astOf("a//b"), equalTo(
+                new AstNode(RuleType.CucumberExpression,
+                        new AstNode(RuleType.Alternation,
+                                new AstNode(RuleType.Alternate),
+                                new AstNode(RuleType.Alternate),
+                                new AstNode(RuleType.Alternate)
+                        )
+                )
+        ));
+    }
+
+    @Test
     void escapedAlternation() {
         assertThat(astOf("mice\\/rats"), equalTo(
                 new AstNode(RuleType.CucumberExpression,
@@ -202,7 +214,6 @@ class CucumberExpressionParserTest {
                 )
         ));
     }
-
 
     @Test
     void alternationPhrase() {
@@ -302,19 +313,21 @@ class CucumberExpressionParserTest {
     }
 
     @Test
-    void alternationFollowedByOptionalVariation() {
+    void alternationAlternativeWithLeadingOptional() {
         assertThat(astOf("(three )rats/(some )cats"), equalTo(
                 new AstNode(RuleType.CucumberExpression,
-                        new AstNode(RuleType.Text, new Token("three ", TEXT)),
                         new AstNode(RuleType.Alternation,
                                 new AstNode(RuleType.Alternate,
-                                        new AstNode(RuleType.Text, new Token("blind rat", TEXT))
+                                        new AstNode(RuleType.Optional,
+                                                new AstNode(RuleType.Text, new Token("three ", TEXT))
+                                        ),
+                                        new AstNode(RuleType.Text, new Token("rats", TEXT))
                                 ),
                                 new AstNode(RuleType.Alternate,
-                                        new AstNode(RuleType.Text, new Token("cat", TEXT)),
                                         new AstNode(RuleType.Optional,
-                                                new AstNode(RuleType.Text, new Token("s", TEXT))
-                                        )
+                                                new AstNode(RuleType.Text, new Token("some ", TEXT))
+                                        ),
+                                        new AstNode(RuleType.Text, new Token("cats", TEXT))
                                 )
                         )
                 )

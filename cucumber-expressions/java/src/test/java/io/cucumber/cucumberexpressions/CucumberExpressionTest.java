@@ -231,7 +231,7 @@ public class CucumberExpressionTest {
 
     @Test
     public void allows_escaped_optional_parameter_types() {
-        assertEquals(singletonList(3), match("\\({int})", "(3)"));
+        assertEquals(singletonList(3), match("\\({int}\\)", "(3)"));
     }
 
     @Test
