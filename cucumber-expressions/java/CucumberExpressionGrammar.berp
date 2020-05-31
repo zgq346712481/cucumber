@@ -11,7 +11,7 @@
 CucumberExpression! := (Separator | Parameter | Alternation )*
 Separator! := #WHITE_SPACE
 Alternation! := Alternate (#ALTERNATION Alternate)*
-Alternate! [->#TEXT | #ALTERNATION] := (Optional | Parameter | AlternateText )+
+Alternate! [->] := (Optional | Parameter | AlternateText )+
 AlternateText! := #TEXT
 Optional! := #BEGIN_OPTIONAL (Text)* #END_OPTIONAL
 Parameter! := #BEGIN_PARAMETER (Text)* #END_PARAMETER

@@ -46,7 +46,7 @@ class CucumberExpressionParser<T> {
         CucumberExpression, // CucumberExpression! := (Separator | Parameter | Alternation)*
         Separator, // Separator! := #WHITE_SPACE
         Alternation, // Alternation! := Alternate (#ALTERNATION Alternate)*
-        Alternate, // Alternate! [-&gt;#TEXT] := (Optional | Parameter | AlternateText)+
+        Alternate, // Alternate! [-&gt;#EOF|#TEXT|#WHITE_SPACE|#ALTERNATION|#BEGIN_OPTIONAL|#END_OPTIONAL|#BEGIN_PARAMETER|#END_PARAMETER|#Other] := (Optional | Parameter | AlternateText)+
         AlternateText, // AlternateText! := #TEXT
         Optional, // Optional! := #BEGIN_OPTIONAL (Text)* #END_OPTIONAL
         Parameter, // Parameter! := #BEGIN_PARAMETER (Text)* #END_PARAMETER
@@ -1676,7 +1676,15 @@ class CucumberExpressionParser<T> {
             queue.add(token);
 
             if (false
+                || match_EOF(context, token)
                 || match_TEXT(context, token)
+                || match_WHITE_SPACE(context, token)
+                || match_ALTERNATION(context, token)
+                || match_BEGIN_OPTIONAL(context, token)
+                || match_END_OPTIONAL(context, token)
+                || match_BEGIN_PARAMETER(context, token)
+                || match_END_PARAMETER(context, token)
+                || match_Other(context, token)
             )
             {
                 match = true;

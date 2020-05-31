@@ -57,13 +57,13 @@ clobber: clean
 .PHONY: clobber
 
 Gherkin/GHParser.h: gherkin.berp gherkin-objective-c-header.razor
-	mono  /var/lib/berp/1.1.1/tools/net471/Berp.exe -g gherkin.berp -t gherkin-objective-c-header.razor -o $@
+	mono  /var/lib/berp/1.2.0/tools/net471/Berp.exe -g gherkin.berp -t gherkin-objective-c-header.razor -o $@
 	# Remove BOM
 	awk 'NR==1{sub(/^\xef\xbb\xbf/,"")}{print}' < $@ > $@.nobom
 	mv $@.nobom $@
 
 Gherkin/GHParser.m: gherkin.berp gherkin-objective-c-implementation.razor
-	mono  /var/lib/berp/1.1.1/tools/net471/Berp.exe -g gherkin.berp -t gherkin-objective-c-implementation.razor -o $@
+	mono  /var/lib/berp/1.2.0/tools/net471/Berp.exe -g gherkin.berp -t gherkin-objective-c-implementation.razor -o $@
 	# Remove BOM
 	awk 'NR==1{sub(/^\xef\xbb\xbf/,"")}{print}' < $@ > $@.nobom
 	mv $@.nobom $@

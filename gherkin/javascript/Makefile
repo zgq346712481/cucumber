@@ -13,7 +13,7 @@ ERRORS       = $(patsubst testdata/%.feature,acceptance/testdata/%.feature.error
 .codegen: src/Parser.ts
 
 src/Parser.ts: gherkin.berp gherkin-javascript.razor
-	mono  /var/lib/berp/1.1.1/tools/net471/Berp.exe -g gherkin.berp -t gherkin-javascript.razor -o $@
+	mono  /var/lib/berp/1.2.0/tools/net471/Berp.exe -g gherkin.berp -t gherkin-javascript.razor -o $@
 	# Remove BOM
 	awk 'NR==1{sub(/^\xef\xbb\xbf/,"")}{print}' < $@ > $@.nobom
 	mv $@.nobom $@

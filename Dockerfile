@@ -139,10 +139,11 @@ RUN curl -SL --output dotnet.tar.gz https://dotnetcli.azureedge.net/dotnet/Sdk/$
 RUN dotnet help
 
 # Install Berp
-RUN wget https://www.nuget.org/api/v2/package/Berp/1.1.1 \
+ENV BERP_VERSION 1.2.0
+RUN wget https://www.nuget.org/api/v2/package/Berp/$BERP_VERSION \
     && mkdir -p /var/lib/berp \
-    && unzip 1.1.1 -d /var/lib/berp/1.1.1 \
-    && rm 1.1.1
+    && unzip $BERP_VERSION -d /var/lib/berp/$BERP_VERSION \
+    && rm $BERP_VERSION
 
 # Install JS
 ## Install yarn withouth node

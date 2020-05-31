@@ -47,7 +47,7 @@ clobber: clean
 .PHONY: clobber
 
 Gherkin/Parser.cs: gherkin.berp gherkin-csharp.razor
-	mono  /var/lib/berp/1.1.1/tools/net471/Berp.exe -g gherkin.berp -t gherkin-csharp.razor -o $@
+	mono  /var/lib/berp/1.2.0/tools/net471/Berp.exe -g gherkin.berp -t gherkin-csharp.razor -o $@
 
 .sln_built_debug: Gherkin/Parser.cs $(CS_FILES) Gherkin/gherkin-languages.json
 	echo "Building on $(UNAME)"
