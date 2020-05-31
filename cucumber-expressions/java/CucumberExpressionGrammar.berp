@@ -10,9 +10,9 @@
 
 CucumberExpression! := (Separator | Parameter | Alternation )*
 Separator! := #WHITE_SPACE
-Alternation! := Alternate (#ALTERNATION Alternate)*
+Alternation! [->] := Alternate (#ALTERNATION Alternate)*
 Alternate! [->] := (Optional | Parameter | AlternateText )+
-AlternateText! := #TEXT
+AlternateText! := #TEXT*
 Optional! := #BEGIN_OPTIONAL (Text)* #END_OPTIONAL
 Parameter! := #BEGIN_PARAMETER (Text)* #END_PARAMETER
 Text! := (#TEXT | #WHITE_SPACE)

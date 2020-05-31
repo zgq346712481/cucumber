@@ -17,6 +17,7 @@ final class AstBuilder implements CucumberExpressionParser.Builder<AstNode> {
 
     @Override
     public void build(Token token) {
+        System.out.println("Token: " + token.text);
         if (preserveTokens.contains(token.tokenType)) {
             this.token = token;
         }
@@ -24,6 +25,7 @@ final class AstBuilder implements CucumberExpressionParser.Builder<AstNode> {
 
     @Override
     public void startRule(RuleType ruleType) {
+        System.out.println("Start rule: " + ruleType);
         stack.push(new ArrayList<>());
         if (ruleType == RuleType.CucumberExpression) {
             stack.push(new ArrayList<>());
@@ -32,6 +34,7 @@ final class AstBuilder implements CucumberExpressionParser.Builder<AstNode> {
 
     @Override
     public void endRule(RuleType ruleType) {
+        System.out.println("End rule: " + ruleType);
         List<AstNode> nodes = stack.pop();
 
         if (ruleType == RuleType.Alternation) {
