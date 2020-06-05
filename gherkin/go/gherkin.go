@@ -3,9 +3,11 @@ package gherkin
 import (
 	"bufio"
 	"fmt"
-	"github.com/cucumber/messages-go/v12"
 	"io"
+	"regexp"
 	"strings"
+
+	"github.com/cucumber/messages-go/v12"
 )
 
 type Parser interface {
@@ -95,7 +97,14 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 	if err == nil {
 		t.line += 1
 		str := t.s.Text()
-		line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
+		re := regexp.MustCompile("\\s*#include\\s+(.*)")
+		matches := re.FindStringSubmatch(str)
+		if len(matches) == 0 {
+			line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
+		} else {
+			w := "      | what |"
+			line = &Line{w, t.line, strings.TrimLeft(w, " \t"), atEof}
+		}
 	}
 	return
 }
