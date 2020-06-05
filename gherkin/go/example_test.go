@@ -29,7 +29,7 @@ func ExampleParseGherkinDocument() {
 `
 	r := strings.NewReader(input)
 
-	gherkinDocument, err := ParseGherkinDocument(r, (&messages.Incrementing{}).NewId)
+	gherkinDocument, err := ParseGherkinDocument(r, "somedir", (&messages.Incrementing{}).NewId)
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err)
 		return
@@ -74,7 +74,7 @@ func ExampleParseGherkinDocument_multiple() {
 	input1 := `Feature: Test`
 	r1 := strings.NewReader(input1)
 
-	err1 := parser.Parse(NewScanner(r1), matcher)
+	err1 := parser.Parse(NewScanner(r1, "somedir"), matcher)
 	if err1 != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err1)
 		return
@@ -90,7 +90,7 @@ func ExampleParseGherkinDocument_multiple() {
 	input2 := `Feature: Test2`
 	r2 := strings.NewReader(input2)
 
-	err2 := parser.Parse(NewScanner(r2), matcher)
+	err2 := parser.Parse(NewScanner(r2, "somedir"), matcher)
 	if err2 != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err2)
 		return
@@ -127,7 +127,7 @@ Feature: Foo
       unclosed docstring`
 	r1 := strings.NewReader(input1)
 
-	err1 := parser.Parse(NewScanner(r1), matcher)
+	err1 := parser.Parse(NewScanner(r1, "somedir"), matcher)
 	if err1 != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err1)
 	}
@@ -141,7 +141,7 @@ Feature: Foo
       """`
 	r2 := strings.NewReader(input2)
 
-	err2 := parser.Parse(NewScanner(r2), matcher)
+	err2 := parser.Parse(NewScanner(r2, "somedir"), matcher)
 	if err2 != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err2)
 		return
@@ -178,7 +178,7 @@ func ExampleParseGherkinDocument_dialect() {
 	input := "Egenskap: i18n support"
 	r := strings.NewReader(input)
 
-	gherkinDocument, err := ParseGherkinDocumentForLanguage(r, "no", (&messages.Incrementing{}).NewId)
+	gherkinDocument, err := ParseGherkinDocumentForLanguage(r, "somedir", "no", (&messages.Incrementing{}).NewId)
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err)
 		return

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"path"
 	"regexp"
 	"strings"
 
@@ -75,10 +76,11 @@ func (p *parser) StopAtFirstError(b bool) {
 	p.stopAtFirstError = b
 }
 
-func NewScanner(r io.Reader) Scanner {
+func NewScanner(r io.Reader, fileDir string) Scanner {
 	return &scanner{
-		s:    bufio.NewScanner(r),
-		line: 0,
+		s:       bufio.NewScanner(r),
+		fileDir: fileDir,
+		line:    0,
 	}
 }
 
@@ -86,6 +88,7 @@ type scanner struct {
 	s             *bufio.Scanner
 	line          int
 	includedLines []string
+	fileDir       string
 }
 
 func (t *scanner) Scan() (line *Line, atEof bool, err error) {
@@ -113,7 +116,7 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 		if len(matches) == 0 {
 			line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
 		} else {
-			filename := "testdata/good/" + matches[1]
+			filename := path.Join(t.fileDir, matches[1])
 			data, err := ioutil.ReadFile(filename)
 			if err != nil {
 				return nil, false, err
@@ -150,18 +153,18 @@ func (g *Line) StartsWith(prefix string) bool {
 	return strings.HasPrefix(g.TrimmedLineText, prefix)
 }
 
-func ParseGherkinDocument(in io.Reader, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
-	return ParseGherkinDocumentForLanguage(in, DEFAULT_DIALECT, newId)
+func ParseGherkinDocument(in io.Reader, fileDir string, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
+	return ParseGherkinDocumentForLanguage(in, fileDir, DEFAULT_DIALECT, newId)
 }
 
-func ParseGherkinDocumentForLanguage(in io.Reader, language string, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
+func ParseGherkinDocumentForLanguage(in io.Reader, fileDir string, language string, newId func() string) (gherkinDocument *messages.GherkinDocument, err error) {
 
 	builder := NewAstBuilder(newId)
 	parser := NewParser(builder)
 	parser.StopAtFirstError(false)
 	matcher := NewLanguageMatcher(GherkinDialectsBuildin(), language)
 
-	scanner := NewScanner(in)
+	scanner := NewScanner(in, fileDir)
 
 	err = parser.Parse(scanner, matcher)
 

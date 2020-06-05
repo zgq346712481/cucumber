@@ -20,7 +20,7 @@ func ExampleCompilePickles() {
 `
 	r := strings.NewReader(input)
 
-	gherkinDocument, err := ParseGherkinDocument(r, (&messages.Incrementing{}).NewId)
+	gherkinDocument, err := ParseGherkinDocument(r, "somedir", (&messages.Incrementing{}).NewId)
 	if err != nil {
 		fmt.Fprintf(os.Stdout, "%s\n", err)
 		return

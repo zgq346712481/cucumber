@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"strings"
 
 	"github.com/cucumber/gherkin-go/v13"
@@ -11,29 +12,23 @@ import (
 
 func main() {
 
-	var readers []io.Reader
-	if len(os.Args) <= 1 {
-		readers = append(readers, os.Stdin)
-	} else {
-		for i := range os.Args[1:] {
-			file, err := os.Open(os.Args[i+1])
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error: %s\n", err)
-				os.Exit(1)
-				return
-			}
-			defer file.Close()
-			readers = append(readers, file)
-		}
-	}
-
-	for i := range readers {
-		err := GenerateTokens(readers[i], os.Stdout)
+	for i := range os.Args[1:] {
+		filePath := os.Args[i+1]
+		file, err := os.Open(filePath)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
 			os.Exit(1)
 			return
 		}
+		fileDir := path.Dir(filePath)
+		err = GenerateTokens(file, fileDir, os.Stdout)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %s\n", err)
+			os.Exit(1)
+			return
+		}
+
+		defer file.Close()
 	}
 }
 
@@ -72,14 +67,14 @@ func (t *tokenGenerator) EndRule(r gherkin.RuleType) (bool, error) {
 func (t *tokenGenerator) Reset() {
 }
 
-func GenerateTokens(in io.Reader, out io.Writer) error {
+func GenerateTokens(in io.Reader, fileDir string, out io.Writer) error {
 
 	builder := &tokenGenerator{out}
 	parser := gherkin.NewParser(builder)
 	parser.StopAtFirstError(true)
 	matcher := gherkin.NewMatcher(gherkin.GherkinDialectsBuildin())
 
-	scanner := gherkin.NewScanner(in)
+	scanner := gherkin.NewScanner(in, fileDir)
 
 	return parser.Parse(scanner, matcher)
 }

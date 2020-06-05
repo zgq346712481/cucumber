@@ -42,7 +42,7 @@ func Messages(
 				},
 			})
 		}
-		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), language, newId)
+		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), source.Uri, language, newId)
 		if errs, ok := err.(parseErrors); ok {
 			// expected parse errors
 			for _, err := range errs {

@@ -14,7 +14,7 @@ func ExampleGenerateTokens() {
 `
 	reader := strings.NewReader(input)
 	writer := os.Stdout
-	GenerateTokens(reader, writer)
+	GenerateTokens(reader, "somedir", writer)
 
 	// Output:
 	// (1:1)FeatureLine:Feature/Minimal/

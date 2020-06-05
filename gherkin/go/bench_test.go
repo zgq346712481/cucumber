@@ -53,14 +53,14 @@ func Benchmark_NewParserMatcherScanner(b *testing.B) { //benchmark function star
 		noopbuilder := new(noopBuilder)
 		_ = NewParser(noopbuilder)
 		_ = NewMatcher(GherkinDialectsBuildin())
-		_ = NewScanner(strings.NewReader(benchmarkGherkinText))
+		_ = NewScanner(strings.NewReader(benchmarkGherkinText), "somedir")
 	}
 }
 
 func Benchmark_ParseGherkinDocument(b *testing.B) { //benchmark function starts with "Benchmark" and takes a pointer to type testing.B
 	for i := 0; i < b.N; i++ { // use b.N for looping
 		r := strings.NewReader(benchmarkGherkinText)
-		_, err := ParseGherkinDocument(r, (&messages.Incrementing{}).NewId)
+		_, err := ParseGherkinDocument(r, "somedir", (&messages.Incrementing{}).NewId)
 		if err != nil {
 			b.FailNow()
 		}
@@ -92,7 +92,7 @@ func Benchmark_ParseWithoutBuilder(b *testing.B) { //benchmark function starts w
 	b.StartTimer()
 	for i := 0; i < b.N; i++ { // use b.N for looping
 		in := strings.NewReader(benchmarkGherkinText)
-		scanner := NewScanner(in)
+		scanner := NewScanner(in, "somedir")
 		err := parser.Parse(scanner, matcher)
 		if err != nil {
 			b.FailNow()
