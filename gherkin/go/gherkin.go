@@ -82,11 +82,19 @@ func NewScanner(r io.Reader) Scanner {
 }
 
 type scanner struct {
-	s    *bufio.Scanner
-	line int
+	s             *bufio.Scanner
+	line          int
+	includedLines []string
 }
 
 func (t *scanner) Scan() (line *Line, atEof bool, err error) {
+	if len(t.includedLines) > 0 {
+		firstLine := t.includedLines[0]
+		line = &Line{firstLine, t.line, strings.TrimLeft(firstLine, " \t"), atEof}
+		t.includedLines = []string{}
+
+		return
+	}
 	scanning := t.s.Scan()
 	if !scanning {
 		err = t.s.Err()
@@ -102,8 +110,10 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 		if len(matches) == 0 {
 			line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
 		} else {
-			w := "      | what |"
-			line = &Line{w, t.line, strings.TrimLeft(w, " \t"), atEof}
+			firstLine := "      | what |"
+			secondLine := "      | minimalism |"
+			line = &Line{firstLine, t.line, strings.TrimLeft(firstLine, " \t"), atEof}
+			t.includedLines = []string{secondLine}
 		}
 	}
 	return

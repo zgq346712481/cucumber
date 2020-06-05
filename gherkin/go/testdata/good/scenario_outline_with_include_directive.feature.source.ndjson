@@ -1,7 +1,7 @@
 {
   "source": {
-    "data": "Feature: Minimal Scenario Outline\n\n  Scenario: minimalistic\n    Given the <what>\n\n    Examples:\n      | what       |\n      | minimalism |\n",
+    "data": "Feature: Minimal Scenario Outline\n\n  Scenario: minimalistic\n    Given the <what>\n\n    Examples:\n      #include scenario_outline_with_include_directive.csv\n",
     "mediaType": "text/x.cucumber.gherkin+plain",
-    "uri": "testdata/good/scenario_outline.feature"
+    "uri": "testdata/good/scenario_outline_with_include_directive.feature"
   }
 }
