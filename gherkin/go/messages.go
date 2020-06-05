@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
+	"path"
 	"strings"
 )
 
@@ -42,7 +43,8 @@ func Messages(
 				},
 			})
 		}
-		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), source.Uri, language, newId)
+		fileDir := path.Dir(source.Uri)
+		doc, err := ParseGherkinDocumentForLanguage(strings.NewReader(source.Data), fileDir, language, newId)
 		if errs, ok := err.(parseErrors); ok {
 			// expected parse errors
 			for _, err := range errs {
@@ -87,7 +89,10 @@ func Messages(
 
 			switch t := envelope.Message.(type) {
 			case *messages.Envelope_Source:
-				processSource(t.Source)
+				err = processSource(t.Source)
+				if err != nil {
+					return nil, err
+				}
 			}
 		}
 	} else {
@@ -101,7 +106,10 @@ func Messages(
 				Data:      string(in),
 				MediaType: "text/x.cucumber.gherkin+plain",
 			}
-			processSource(source)
+			err = processSource(source)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
