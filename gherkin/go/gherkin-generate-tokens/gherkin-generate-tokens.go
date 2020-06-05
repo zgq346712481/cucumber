@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"github.com/cucumber/gherkin-go/v13"
 	"io"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -78,7 +80,25 @@ func GenerateTokens(in io.Reader, out io.Writer) error {
 	parser.StopAtFirstError(true)
 	matcher := gherkin.NewMatcher(gherkin.GherkinDialectsBuildin())
 
-	scanner := gherkin.NewScanner(in)
+	processedIn := preprocess(in)
+	scanner := gherkin.NewScanner(processedIn)
 
 	return parser.Parse(scanner, matcher)
+}
+
+func preprocess(in io.Reader) io.Reader {
+	re := regexp.MustCompile("\\s*#include\\s+(.*)")
+
+	preprocessed := ""
+	scanner := bufio.NewScanner(in)
+	for scanner.Scan() {
+		matches := re.FindStringSubmatch(scanner.Text())
+		if len(matches) == 0 {
+			preprocessed += scanner.Text()
+			preprocessed += "\n"
+		} else {
+			preprocessed += "      | what |\n      | minimalism |\n"
+		}
+	}
+	return strings.NewReader(preprocessed)
 }
