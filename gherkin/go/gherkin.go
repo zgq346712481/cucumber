@@ -91,10 +91,11 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 	if len(t.includedLines) > 0 {
 		firstLine := t.includedLines[0]
 		line = &Line{firstLine, t.line, strings.TrimLeft(firstLine, " \t"), atEof}
-		t.includedLines = []string{}
+		t.includedLines = t.includedLines[1:]
 
 		return
 	}
+
 	scanning := t.s.Scan()
 	if !scanning {
 		err = t.s.Err()
@@ -102,18 +103,18 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 			atEof = true
 		}
 	}
+
 	if err == nil {
-		t.line += 1
+		t.line++
 		str := t.s.Text()
 		re := regexp.MustCompile("\\s*#include\\s+(.*)")
 		matches := re.FindStringSubmatch(str)
 		if len(matches) == 0 {
 			line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
 		} else {
-			firstLine := "      | what |"
-			secondLine := "      | minimalism |"
-			line = &Line{firstLine, t.line, strings.TrimLeft(firstLine, " \t"), atEof}
-			t.includedLines = []string{secondLine}
+			t.includedLines = []string{"      | what |", "      | minimalism |"}
+
+			return nil, false, nil
 		}
 	}
 	return

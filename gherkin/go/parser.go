@@ -251,6 +251,11 @@ func (p *parser) Parse(s Scanner, m Matcher) (err error) {
 				break
 			}
 		}
+
+		if gl == nil {
+			continue
+		}
+
 		state, err = ctxt.match(state, gl)
 		if err != nil {
 			ctxt.addError(err)
