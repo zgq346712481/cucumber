@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"regexp"
 	"strings"
 
@@ -112,7 +113,13 @@ func (t *scanner) Scan() (line *Line, atEof bool, err error) {
 		if len(matches) == 0 {
 			line = &Line{str, t.line, strings.TrimLeft(str, " \t"), atEof}
 		} else {
-			t.includedLines = []string{"      | what |", "      | minimalism |"}
+			filename := "testdata/good/" + matches[1]
+			data, err := ioutil.ReadFile(filename)
+			if err != nil {
+				return nil, false, err
+			}
+			body := string(data)
+			t.includedLines = strings.Split(body, "\n")
 
 			return nil, false, nil
 		}
