@@ -1,0 +1,3 @@
+../../LICENSE LICENSE
+../../.templates/python/ .
+../messages.proto messages.proto
