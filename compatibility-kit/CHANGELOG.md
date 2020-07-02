@@ -24,7 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * First release
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/compatibility-kit/v1.0.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/compatibility-kit/v1.0.0...main
 [1.0.0]:      https://github.com/cucumber/cucumber/releases/tag/compatibility-kit/v1.0.0
 
 <!-- Contributors in alphabetical order -->

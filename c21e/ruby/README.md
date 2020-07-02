@@ -1,3 +1,3 @@
 # C21e for Ruby
 
-[Overview](https://github.com/cucumber/cucumber/tree/master/c21e)
+[Overview](https://github.com/cucumber/cucumber/tree/main/c21e)

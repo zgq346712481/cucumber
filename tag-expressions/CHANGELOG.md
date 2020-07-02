@@ -131,7 +131,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * First stable release!
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/tag-expressions/v3.0.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/tag-expressions/v3.0.0...main
 [3.0.0]: https://github.com/cucumber/cucumber/compare/tag-expressions/v2.0.4...tag-expressions/v3.0.0
 [2.0.4]: https://github.com/cucumber/cucumber/compare/tag-expressions/v2.0.3...tag-expressions/v2.0.4
 [2.0.3]: https://github.com/cucumber/cucumber/compare/tag-expressions/v2.0.2...tag-expressions/v2.0.3

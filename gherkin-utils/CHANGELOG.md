@@ -30,7 +30,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * First release
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/gherkin-utils/v1.0.1...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/gherkin-utils/v1.0.1...main
 [1.0.1]:      https://github.com/cucumber/cucumber/compare/gherkin-utils/v1.0.0...gherkin-utils/v1.0.1
 [1.0.0]:      https://github.com/cucumber/cucumber/releases/tag/gherkin-utils/v1.0.0
 

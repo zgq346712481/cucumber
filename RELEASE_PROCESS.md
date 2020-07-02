@@ -6,7 +6,7 @@ When a package is released, _all_ implementations of the package are released.
 For example, when you release `cucumber-expressions`, it will release the Java, Ruby,
 Go and JavaScript implementations of that library, with the same version number.
 
-You *must* be on the `master` branch when you make a release. The steps below
+You *must* be on the `main` branch when you make a release. The steps below
 outline the process:
 
 * Decrypt credentials

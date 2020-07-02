@@ -371,7 +371,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * Protobuf messages for Go, Java, JavaScript, TypeScript and Ruby
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/messages/v12.2.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/messages/v12.2.0...main
 [12.2.0]:      https://github.com/cucumber/cucumber/compare/cucumber-messages/v12.1.1...messages/v12.2.0
 [12.1.1]:      https://github.com/cucumber/cucumber/compare/cucumber-messages/v12.1.0...messages/v12.1.1
 [12.1.0]:      https://github.com/cucumber/cucumber/compare/cucumber-messages/v12.0.0...messages/v12.1.0

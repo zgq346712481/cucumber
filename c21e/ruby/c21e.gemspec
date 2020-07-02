@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
                     'bug_tracker_uri'   => 'https://github.com/cucumber/cucumber/issues',
                     'documentation_uri' => 'https://www.rubydoc.info/github/cucumber/c21e-ruby',
                     'mailing_list_uri'  => 'https://groups.google.com/forum/#!forum/cukes',
-                    'source_code_uri'   => 'https://github.com/cucumber/cucumber/blob/master/c21e/ruby',
+                    'source_code_uri'   => 'https://github.com/cucumber/cucumber/blob/main/c21e/ruby',
                   }
 
   s.add_development_dependency 'rake', '~> 13.0', '>= 13.0.1'

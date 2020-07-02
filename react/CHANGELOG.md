@@ -194,7 +194,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * First release
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/react/v8.0.1...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/react/v8.0.1...main
 [8.0.1]:      https://github.com/cucumber/cucumber/compare/react/v8.0.0...react/v8.0.1
 [8.0.0]:      https://github.com/cucumber/cucumber/compare/react/v7.0.0...react/v8.0.0
 [7.0.0]:      https://github.com/cucumber/cucumber/compare/react/v6.0.0...react/v7.0.0

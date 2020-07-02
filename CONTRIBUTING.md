@@ -52,7 +52,7 @@ this is for the main cucumber program; which should be submitted to the subrepos
 
 Pull requests should be independent so they can be merged/rejected independently of other
 pull requests. Every pull request must be made on a separate branch, branched off from the HEAD
-of the master branch. No pull requests should depend on other pull requests or be branched off
+of the main branch. No pull requests should depend on other pull requests or be branched off
 from non-master branches. Where a Pull request requires changes in multiple languages, assistance
 can be sought from others (If you're not comfortable in multiple languages), who can either
 raise another pull request for the separate implementation or commit to yours (Whichever is easier).

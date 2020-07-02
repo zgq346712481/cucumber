@@ -25,7 +25,7 @@ are required to build it. Here is how:
 
 ### Branching and CI
 
-The CI build will synchronise from the monorepo to all the subrepos for the `master` branch.
+The CI build will synchronise from the monorepo to all the subrepos for the `main` branch.
 For other branches, a naming convention is used to decide what subrepos to sync to. 
 (This is to avoid an explosion of unrelated branches in every subrepo).
 
@@ -108,7 +108,7 @@ In the new directory, create the following files:
 #### Create new subrepo.
 
 Create a new, empty subrepo at GitHub. Check the box for initialising
-with a `README.md` file - it's needed to create an initial `master` branch to push to.
+with a `README.md` file - it's needed to create an initial `main` branch to push to.
 
 Log into CircleCI and set up a build for the new (empty) subrepo.
 

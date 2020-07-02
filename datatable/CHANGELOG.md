@@ -167,7 +167,7 @@ There are no (1.1.0 and 1.1.1 releases).
 * java: OSGI fixes
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/datatable/v3.3.1...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/datatable/v3.3.1...main
 [3.3.1]:      https://github.com/cucumber/cucumber/compare/datatable/v3.3.0...datatable/v3.3.1
 [3.3.0]:      https://github.com/cucumber/cucumber/compare/datatable/v3.2.1...datatable/v3.3.0
 [3.2.1]:      https://github.com/cucumber/cucumber/compare/datatable/v3.2.0...datatable/v3.2.1

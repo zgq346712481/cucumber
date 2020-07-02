@@ -692,7 +692,7 @@ N/A
 * First stable release!
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/cucumber-expressions/v10.2.1...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/cucumber-expressions/v10.2.1...main
 [10.2.1]:      https://github.com/cucumber/cucumber/compare/cucumber-expressions/v10.2.0...cucumber-expressions/v10.2.1
 [10.2.0]:      https://github.com/cucumber/cucumber/compare/cucumber-expressions/v10.1.0...cucumber-expressions/v10.2.0
 [10.1.0]:      https://github.com/cucumber/cucumber/compare/cucumber-expressions/v10.0.0...cucumber-expressions/v10.1.0

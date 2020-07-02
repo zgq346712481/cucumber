@@ -82,7 +82,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 * First JavaScript implementation
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/query/v6.1.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/query/v6.1.0...main
 [6.1.0]:      https://github.com/cucumber/cucumber/compare/cucumber-query/v6.0.0...query/v6.1.0
 [6.0.0]:      https://github.com/cucumber/cucumber/compare/cucumber-query/v5.0.0...query/v6.0.0
 [5.0.0]:      https://github.com/cucumber/cucumber/compare/cucumber-query/v4.0.0...query/v5.0.0

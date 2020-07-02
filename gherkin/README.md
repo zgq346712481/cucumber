@@ -187,7 +187,7 @@ design docs (which might be a little outdated, but mostly OK).
 
 The AST produced by the parser can be described with the following class diagram:
 
-![](https://github.com/cucumber/cucumber/blob/master/gherkin/docs/ast.png)
+![](https://github.com/cucumber/cucumber/blob/main/gherkin/docs/ast.png)
 
 Every class represents a node in the AST. Every node has a `Location` that describes
 the line number and column number in the input file. These numbers are 1-indexed.
@@ -202,7 +202,7 @@ Each node in the JSON representation also has a `type` property with the name
 of the node type.
 
 You can see some examples in the
-[testdata/good](https://github.com/cucumber/cucumber/tree/master/gherkin/testdata/good)
+[testdata/good](https://github.com/cucumber/cucumber/tree/main/gherkin/testdata/good)
 directory.
 
 ### Pickles

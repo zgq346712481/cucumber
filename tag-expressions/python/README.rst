@@ -1,7 +1,7 @@
 Cucumber Tag Expressions for Python
 ===============================================================================
 
-.. image:: https://img.shields.io/travis/cucumber/tag-expressions-python/master.svg
+.. image:: https://img.shields.io/travis/cucumber/tag-expressions-python/main.svg
     :target: https://travis-ci.org/cucumber/tag-expressions-python
     :alt: Travis CI Build Status
 

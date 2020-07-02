@@ -96,7 +96,7 @@ Upgrade messages
 * Initial release
 
 <!-- Releases -->
-[Unreleased]: https://github.com/cucumber/cucumber/compare/json-formatter/v5.1.0...master
+[Unreleased]: https://github.com/cucumber/cucumber/compare/json-formatter/v5.1.0...main
 [5.1.0]:      https://github.com/cucumber/cucumber/compare/json-formatter/v5.0.0...json-formatter/v5.1.0
 [5.0.0]:      https://github.com/cucumber/cucumber/compare/json-formatter/v4.0.0...json-formatter/v5.0.0
 [4.0.0]:      https://github.com/cucumber/cucumber/compare/json-formatter/v3.1.1...json-formatter/v4.0.0
