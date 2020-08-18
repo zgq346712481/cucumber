@@ -60,7 +60,7 @@ docker-run:
 	  --volume "${shell pwd}":/app \
 	  --volume "${HOME}/.m2"/repository:/home/cukebot/.m2/repository \
 	  --volume "${HOME}/.gitconfig":/home/cukebot/.gitconfig \
-	  --user 1000 \
+	  --user ${shell id -u}:${shell id -g} \
 	  --rm \
 	  -it cucumber/cucumber-build:latest \
 	  bash
