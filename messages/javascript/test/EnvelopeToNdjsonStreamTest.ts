@@ -1,19 +1,19 @@
-import { messages, MessageToNdjsonStream } from '../src'
+import {
+  messages,
+  EnvelopeToNdjsonStream,
+  EnvelopeFromNdjsonStream,
+} from '../src'
 import assert from 'assert'
-import NdjsonToMessageStream from '../src/NdjsonToMessageStream'
 import verifyStreamContract from './verifyStreamContract'
 import toArray from './toArray'
 
-describe('NdjsonStream', () => {
-  const makeToMessageStream = () =>
-    new NdjsonToMessageStream(
-      messages.Envelope.fromObject.bind(messages.Envelope)
-    )
-  const makeFromMessageStream = () => new MessageToNdjsonStream()
-  verifyStreamContract(makeFromMessageStream, makeToMessageStream)
+describe('EnvelopeToNdjsonStream', () => {
+  const makeToEncodedStream = () => new EnvelopeToNdjsonStream()
+  const makeFromEncodedStream = () => new EnvelopeFromNdjsonStream()
+  verifyStreamContract(makeToEncodedStream, makeFromEncodedStream)
 
   it('converts a buffer stream written byte by byte', (cb) => {
-    const stream = makeToMessageStream()
+    const stream = makeFromEncodedStream()
     const envelope = messages.Envelope.create({
       testStepFinished: messages.TestStepFinished.create({
         testStepResult: messages.TestStepFinished.TestStepResult.create({
@@ -35,7 +35,7 @@ describe('NdjsonStream', () => {
   })
 
   it('converts messages to JSON with enums as strings', (cb) => {
-    const stream = new MessageToNdjsonStream()
+    const stream = makeToEncodedStream()
     stream.on('data', (json: string) => {
       const ob = JSON.parse(json)
       assert.deepStrictEqual(ob, {
@@ -59,7 +59,7 @@ describe('NdjsonStream', () => {
   })
 
   it('converts messages to JSON with undefined arrays omitted', (cb) => {
-    const stream = new MessageToNdjsonStream()
+    const stream = makeToEncodedStream()
     stream.on('data', (json: string) => {
       const ob = JSON.parse(json)
       assert.deepStrictEqual(ob, { testCase: { pickleId: '123' } })
@@ -75,7 +75,7 @@ describe('NdjsonStream', () => {
   })
 
   it('converts messages to JSON with undefined strings omitted', (cb) => {
-    const stream = new MessageToNdjsonStream()
+    const stream = makeToEncodedStream()
     stream.on('data', (json: string) => {
       const ob = JSON.parse(json)
       assert.deepStrictEqual(ob, { testCase: {} })
@@ -89,7 +89,7 @@ describe('NdjsonStream', () => {
   })
 
   it('converts messages to JSON with undefined numbers omitted', (cb) => {
-    const stream = new MessageToNdjsonStream()
+    const stream = makeToEncodedStream()
     stream.on('data', (json: string) => {
       const ob = JSON.parse(json)
       assert.deepStrictEqual(ob, {
@@ -117,7 +117,7 @@ describe('NdjsonStream', () => {
   })
 
   it('ignores missing fields', async () => {
-    const toMessageStream = makeToMessageStream()
+    const toMessageStream = makeFromEncodedStream()
     toMessageStream.write('{"unused": 999}\n')
     toMessageStream.end()
 
@@ -127,7 +127,7 @@ describe('NdjsonStream', () => {
   })
 
   it('ignores empty lines', async () => {
-    const toMessageStream = makeToMessageStream()
+    const toMessageStream = makeFromEncodedStream()
     toMessageStream.write('{}\n{}\n\n{}\n')
     toMessageStream.end()
 

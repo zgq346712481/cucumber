@@ -3,11 +3,11 @@ import { messages } from '../src'
 
 export default function toArray(
   input: Readable
-): Promise<messages.IEnvelope[]> {
+): Promise<readonly messages.IEnvelope[]> {
   return new Promise((resolve, reject) => {
-    const result: messages.IEnvelope[] = []
-    input.on('data', (wrapper: messages.IEnvelope) => result.push(wrapper))
-    input.on('end', () => resolve(result))
+    const envelopes: messages.IEnvelope[] = []
+    input.on('data', (envelope: messages.IEnvelope) => envelopes.push(envelope))
+    input.on('end', () => resolve(envelopes))
     input.on('error', (err: Error) => reject(err))
   })
 }

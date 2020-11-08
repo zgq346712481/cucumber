@@ -4,15 +4,15 @@ import toArray from './toArray'
 import assert = require('assert')
 
 export default function verifyStreamContract(
-  makeFromMessageStream: () => Transform,
-  makeToMessageStream: () => Transform
+  makeToEncodedStream: () => Transform,
+  makeFromEncodedStream: () => Transform
 ) {
   describe('contract', () => {
     it('can be serialised over a stream', async () => {
-      const fromMessageStream = makeFromMessageStream()
-      const toMessageStream = makeToMessageStream()
+      const toEncodedStream = makeToEncodedStream()
+      const fromEncodedStream = makeFromEncodedStream()
 
-      fromMessageStream.pipe(toMessageStream)
+      toEncodedStream.pipe(fromEncodedStream)
 
       const outgoingMessages: messages.IEnvelope[] = [
         messages.Envelope.create({
@@ -26,11 +26,11 @@ export default function verifyStreamContract(
       ]
 
       for (const outgoingMessage of outgoingMessages) {
-        fromMessageStream.write(outgoingMessage)
+        toEncodedStream.write(outgoingMessage)
       }
-      fromMessageStream.end()
+      toEncodedStream.end()
 
-      const incomingMessages = await toArray(toMessageStream)
+      const incomingMessages = await toArray(fromEncodedStream)
 
       assert.deepStrictEqual(incomingMessages, outgoingMessages)
     })

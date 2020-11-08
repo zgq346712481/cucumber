@@ -1,15 +1,14 @@
 import { Transform, TransformCallback } from 'stream'
 import { Reader } from 'protobufjs'
+import { messages } from './index'
 
 /**
  * Transforms a binary stream to a stream of message objects
  */
-export default class BinaryToMessageStream<T> extends Transform {
+export default class EnvelopeFromProtobufStream extends Transform {
   private buffer = Buffer.alloc(0)
 
-  constructor(
-    private readonly decodeDelimited: (reader: Reader | Uint8Array) => T
-  ) {
+  constructor() {
     super({ writableObjectMode: false, readableObjectMode: true })
   }
 
@@ -23,8 +22,8 @@ export default class BinaryToMessageStream<T> extends Transform {
     do {
       try {
         const reader = Reader.create(this.buffer)
-        const message = this.decodeDelimited(reader)
-        this.push(message)
+        const envelope = messages.Envelope.decodeDelimited(reader)
+        this.push(envelope)
         this.buffer = this.buffer.slice(reader.pos)
         finished = true
       } catch (err) {

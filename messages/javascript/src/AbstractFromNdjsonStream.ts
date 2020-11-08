@@ -1,14 +1,11 @@
 import { Transform, TransformCallback } from 'stream'
 
-/**
- * Transforms an NDJSON stream to a stream of message objects
- */
-export default class NdjsonToMessageStream<T> extends Transform {
+export default abstract class AbstractFromNdjsonStream<T> extends Transform {
   private buffer: string
 
-  constructor(
+  protected constructor(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    private readonly fromObject: (object: { [k: string]: any }) => T
+    private readonly fromObject: (object: Record<string, any>) => T
   ) {
     super({ writableObjectMode: false, readableObjectMode: true })
   }

@@ -1,7 +1,7 @@
-import MessageToBinaryStream from './MessageToBinaryStream'
-import MessageToNdjsonStream from './MessageToNdjsonStream'
-import BinaryToMessageStream from './BinaryToMessageStream'
-import NdjsonToMessageStream from './NdjsonToMessageStream'
+import EnvelopeToProtobufStream from './EnvelopeToProtobufStream'
+import EnvelopeToNdjsonStream from './EnvelopeToNdjsonStream'
+import EnvelopeFromProtobufStream from './EnvelopeFromProtobufStream'
+import EnvelopeFromNdjsonStream from './EnvelopeFromNdjsonStream'
 import * as TimeConversion from './TimeConversion'
 import * as IdGenerator from './IdGenerator'
 import { io } from './messages'
@@ -10,10 +10,10 @@ import { version } from '../package.json'
 
 export {
   messages,
-  MessageToBinaryStream,
-  MessageToNdjsonStream,
-  BinaryToMessageStream,
-  NdjsonToMessageStream,
+  EnvelopeToProtobufStream,
+  EnvelopeToNdjsonStream,
+  EnvelopeFromProtobufStream,
+  EnvelopeFromNdjsonStream,
   TimeConversion,
   IdGenerator,
   version,

@@ -1,20 +1,14 @@
 import { Transform, TransformCallback } from 'stream'
-import { messages } from './index'
 
-/**
- * Transforms a stream of message objects to NDJSON
- */
-export default class MessageToNdjsonStream extends Transform {
-  constructor() {
+type ToObject<T> = (object: T) => Record<string, any>
+
+export default abstract class AbstractToNdjsonStream<T> extends Transform {
+  protected constructor(private readonly toObject: ToObject<T>) {
     super({ writableObjectMode: true, readableObjectMode: false })
   }
 
-  public _transform(
-    message: messages.Envelope,
-    encoding: string,
-    callback: TransformCallback
-  ) {
-    const object = message.toJSON()
+  public _transform(message: T, encoding: string, callback: TransformCallback) {
+    const object = this.toObject(message)
 
     // This reviver omits printing fields with empty values
     // This is to make it behave the same as Golang's protobuf->JSON converter
