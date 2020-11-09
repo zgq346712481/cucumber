@@ -30,6 +30,7 @@
     "@typescript-eslint/interface-name-prefix": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-namespace": "off",
     "react/prop-types": "off"
   },
   "settings": {
