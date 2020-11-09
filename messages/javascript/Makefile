@@ -10,8 +10,8 @@ src/messages.js: messages.proto
 src/messages.d.ts: src/messages.js
 	./node_modules/.bin/pbts $< > $@
 
-src/messagesLight.ts: src/messages.d.ts transform.sh
-	cat $< | ./transform.sh > $@
+src/messagesLight.ts: src/messages.d.ts writeMessagesLight.ts
+	cat $< | ./node_modules/.bin/ts-node ./writeMessagesLight.ts > $@
 
 clean:
 	rm -rf dist src/messages.js src/messages.d.ts src/messagesLight.ts
