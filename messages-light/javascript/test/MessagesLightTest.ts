@@ -1,5 +1,6 @@
-import { messages, messagesLight, messagesLightReviver } from '../src'
 import assert from 'assert'
+import { messages } from '@cucumber/messages'
+import { messagesLight, messagesLightReviver } from '../src'
 
 describe('MessagesLight', () => {
   it('are compatible with Status enums', () => {
