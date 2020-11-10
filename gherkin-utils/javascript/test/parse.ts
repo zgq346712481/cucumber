@@ -1,4 +1,5 @@
-import { IdGenerator, messages } from '@cucumber/messages'
+import { IdGenerator } from '@cucumber/messages'
+import { messages } from '@cucumber/messages-light'
 import { AstBuilder, Parser } from '@cucumber/gherkin'
 
 export default function parse(source: string): messages.IGherkinDocument {

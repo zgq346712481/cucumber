@@ -13,7 +13,10 @@ describe('Walking with messages', () => {
   const tckMessageFiles = glob.sync(
     `${__dirname}/../../../compatibility-kit/javascript/features/**/*.ndjson`
   )
-  const messageFiles = [].concat(localMessageFiles, tckMessageFiles)
+  const messageFiles = ([] as string[]).concat(
+    localMessageFiles,
+    tckMessageFiles
+  )
 
   for (const messageFile of messageFiles) {
     it(`can walk through GherkinDocuments in ${messageFile}`, async () => {
@@ -38,7 +41,7 @@ describe('Walking with messages', () => {
               }
               callback()
             } catch (error) {
-              error.message += `\n${envelope.gherkinDocument.uri}\n`
+              error.message += `\n${envelope.gherkinDocument?.uri}\n`
               callback(error)
             }
           },

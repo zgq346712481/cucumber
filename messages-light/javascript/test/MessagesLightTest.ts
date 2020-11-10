@@ -1,6 +1,6 @@
 import assert from 'assert'
 import { messages } from '@cucumber/messages'
-import { messagesLight, messagesLightReviver } from '../src'
+import { messages as messagesLight, messageReviver } from '../src'
 
 describe('MessagesLight', () => {
   it('are compatible with Status enums', () => {
@@ -14,7 +14,7 @@ describe('MessagesLight', () => {
 
     const envelope2: messagesLight.IEnvelope = JSON.parse(
       JSON.stringify(envelope.toJSON()),
-      messagesLightReviver
+      messageReviver
     )
 
     assert.strictEqual(
@@ -30,7 +30,7 @@ describe('MessagesLight', () => {
 
     const attachment2: messagesLight.IAttachment = JSON.parse(
       JSON.stringify(attachment.toJSON()),
-      messagesLightReviver
+      messageReviver
     )
 
     assert.strictEqual(attachment.contentEncoding, attachment2.contentEncoding)
@@ -47,7 +47,7 @@ describe('MessagesLight', () => {
 
     const stepDefinitionPattern2: messagesLight.StepDefinition.IStepDefinitionPattern = JSON.parse(
       JSON.stringify(stepDefinitionPattern.toJSON()),
-      messagesLightReviver
+      messageReviver
     )
 
     assert.strictEqual(stepDefinitionPattern.type, stepDefinitionPattern2.type)

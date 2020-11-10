@@ -15,7 +15,7 @@
     "lint": "eslint --ext ts --max-warnings 0 src test",
     "lint-fix": "eslint --ext ts --max-warnings 0 --fix src test",
     "coverage": "nyc --reporter=html --reporter=text mocha",
-    "build": "make src/messagesLight.ts && tsc",
+    "build": "make src/messages.ts && tsc",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {},

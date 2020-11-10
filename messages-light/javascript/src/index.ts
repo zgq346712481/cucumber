@@ -1,5 +1,5 @@
-import * as messagesLight from './messagesLight'
-import messagesLightReviver from './messagesLightReviver'
+import * as messages from './messages'
+import messageReviver from './messageReviver'
 import { version } from '../package.json'
 
-export { messagesLight, messagesLightReviver, version }
+export { messages, messageReviver, version }

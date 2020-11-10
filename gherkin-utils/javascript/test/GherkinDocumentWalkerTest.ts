@@ -4,6 +4,7 @@ import GherkinDocumentWalker, {
 } from '../src/GherkinDocumentWalker'
 import pretty from '../src/pretty'
 import parse from './parse'
+import { messageReviver } from '@cucumber/messages-light'
 
 describe('GherkinDocumentWalker', () => {
   let walker: GherkinDocumentWalker
@@ -12,9 +13,8 @@ describe('GherkinDocumentWalker', () => {
     walker = new GherkinDocumentWalker()
   })
 
-  function assertCopy(copy: any, source: any) {
-    assert.deepEqual(copy, source)
-    assert.notEqual(copy, source)
+  function assertCleanEqual(copy: any, source: any) {
+    assert.deepStrictEqual(clean(copy), clean(source))
   }
 
   it('returns a deep copy', () => {
@@ -38,28 +38,7 @@ Feature: hello
 `)
     const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
 
-    assertCopy(newGherkinDocument, gherkinDocument)
-    assertCopy(newGherkinDocument.feature, gherkinDocument.feature)
-    assertCopy(
-      newGherkinDocument.feature.children[0].background,
-      gherkinDocument.feature.children[0].background
-    )
-    assertCopy(
-      newGherkinDocument.feature.children[1].scenario,
-      gherkinDocument.feature.children[1].scenario
-    )
-    assertCopy(
-      newGherkinDocument.feature.children[2].rule,
-      gherkinDocument.feature.children[2].rule
-    )
-    assertCopy(
-      newGherkinDocument.feature.children[2].rule.children[1],
-      gherkinDocument.feature.children[2].rule.children[1]
-    )
-    assertCopy(
-      newGherkinDocument.feature.children[0].background.steps,
-      gherkinDocument.feature.children[0].background.steps
-    )
+    assertCleanEqual(newGherkinDocument, gherkinDocument)
   })
 
   context('filtering objects', () => {
@@ -99,7 +78,7 @@ Feature: hello
 
       const walker = new GherkinDocumentWalker({
         ...rejectAllFilters,
-        ...{ acceptStep: (step) => step.text.includes('liquid') },
+        ...{ acceptStep: (step) => step.text!.includes('liquid') },
       })
       const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
       const newSource = pretty(newGherkinDocument)
@@ -127,7 +106,7 @@ Feature: hello
       })
       const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
       assert.deepStrictEqual(
-        newGherkinDocument.feature.children.filter((child) => child === null),
+        newGherkinDocument.feature!.children!.filter((child) => child === null),
         []
       )
     })
@@ -209,7 +188,7 @@ Feature: hello
 
       const walker = new GherkinDocumentWalker({
         ...rejectAllFilters,
-        ...{ acceptStep: (step) => step.text.includes('space') },
+        ...{ acceptStep: (step) => step.text!.includes('space') },
       })
       const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
       const newSource = pretty(newGherkinDocument)
@@ -248,7 +227,11 @@ Feature: hello
 
       const walker = new GherkinDocumentWalker({
         ...rejectAllFilters,
-        ...{ acceptScenario: (scenario) => scenario.name === 'Andromeda' },
+        ...{
+          acceptScenario: (scenario) => {
+            return scenario.name === 'Andromeda'
+          },
+        },
       })
       const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
       const newSource = pretty(newGherkinDocument)
@@ -357,7 +340,7 @@ Feature: hello
       assert.deepStrictEqual(newSource, expectedNewSource)
     })
 
-    it('returns null when no hit found', () => {
+    it('returns empty feature when no hit found', () => {
       const gherkinDocument = parse(`Feature: Solar System
 
   Scenario: Saturn
@@ -369,7 +352,7 @@ Feature: hello
 
       const walker = new GherkinDocumentWalker(rejectAllFilters)
       const newGherkinDocument = walker.walkGherkinDocument(gherkinDocument)
-      assert.deepEqual(newGherkinDocument, null)
+      assert.deepStrictEqual(newGherkinDocument.feature, {})
     })
   })
 
@@ -386,12 +369,12 @@ Feature: hello
         const astWalker = new GherkinDocumentWalker(
           {},
           {
-            handleStep: (step) => stepText.push(step.text),
+            handleStep: (step) => stepText.push(step.text!),
           }
         )
         astWalker.walkGherkinDocument(source)
 
-        assert.deepEqual(stepText, ['it is a planet'])
+        assert.deepStrictEqual(stepText, ['it is a planet'])
       })
     })
 
@@ -410,12 +393,12 @@ Feature: hello
         const astWalker = new GherkinDocumentWalker(
           {},
           {
-            handleScenario: (scenario) => scenarioName.push(scenario.name),
+            handleScenario: (scenario) => scenarioName.push(scenario.name!),
           }
         )
         astWalker.walkGherkinDocument(source)
 
-        assert.deepEqual(scenarioName, ['Earth', 'Saturn'])
+        assert.deepStrictEqual(scenarioName, ['Earth', 'Saturn'])
       })
     })
 
@@ -433,12 +416,12 @@ Feature: hello
           {},
           {
             handleBackground: (background) =>
-              backgroundName.push(background.name),
+              backgroundName.push(background.name!),
           }
         )
         astWalker.walkGherkinDocument(source)
 
-        assert.deepEqual(backgroundName, ['Milky Way'])
+        assert.deepStrictEqual(backgroundName, ['Milky Way'])
       })
     })
 
@@ -459,12 +442,12 @@ Feature: hello
         const astWalker = new GherkinDocumentWalker(
           {},
           {
-            handleRule: (rule) => ruleName.push(rule.name),
+            handleRule: (rule) => ruleName.push(rule.name!),
           }
         )
         astWalker.walkGherkinDocument(source)
 
-        assert.deepEqual(ruleName, ['On a planet', 'On an exoplanet'])
+        assert.deepStrictEqual(ruleName, ['On a planet', 'On an exoplanet'])
       })
     })
 
@@ -485,12 +468,12 @@ Feature: hello
         const astWalker = new GherkinDocumentWalker(
           {},
           {
-            handleFeature: (feature) => featureName.push(feature.name),
+            handleFeature: (feature) => featureName.push(feature.name!),
           }
         )
         astWalker.walkGherkinDocument(source)
 
-        assert.deepEqual(featureName, ['Solar System'])
+        assert.deepStrictEqual(featureName, ['Solar System'])
       })
     })
   })
@@ -504,3 +487,12 @@ Feature: hello
     })
   })
 })
+
+function clean<T>(object: T): T {
+  return JSON.parse(JSON.stringify(object, removeEmptyReplacer), messageReviver)
+}
+
+function removeEmptyReplacer(key: string, value: any) {
+  const emptyArray = Array.isArray(value) && value.length === 0
+  return value === '' || emptyArray || value === null ? undefined : value
+}
